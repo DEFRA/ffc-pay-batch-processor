@@ -33,13 +33,7 @@ and
 | MESSAGE_QUEUE_HOST | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net` |
 | MESSAGE_QUEUE_PASSWORD | Azure Service Bus SAS policy key |
 | MESSAGE_QUEUE_USER     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey` |
-| VALIDATE_TOPIC_ADDRESS |  |
-| VALIDATION_TOPIC_ADDRESS |  |
-| VALIDATION_SUBSCRIPTION_ADDRESS |  |
-| CASE_TOPIC_ADDRESS |  |
-| CASE_SUBSCRIPTION_ADDRESS |  |
-| SUBMIT_TOPIC_ADDRESS |  |
-| SUBMIT_SUBSCRIPTION_ADDRESS |  |
+| PAYMENT_TOPIC_ADDRESS |  |
 
 ## Running the application
 
