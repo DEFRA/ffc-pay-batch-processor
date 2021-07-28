@@ -4,14 +4,13 @@ version: '3.8'
 # to provide dependencies and expose ports for local testing
 
 services:
-  ffc-template-node:
+  ffc-sfi-payment-batch-processor:
     build:
       target: development
-    image: ffc-template-node-development
-    container_name: ffc-template-node-development
+    image: ffc-sfi-payment-batch-processor-development
+    container_name: ffc-sfi-payment-batch-processor-development
     ports:
-      - "3000:3000"
-      - "9229:9229"
+      - "9237:9229"
     volumes:
       - ./app/:/home/node/app/
       - ./package.json:/home/node/package.json

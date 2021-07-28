@@ -1,8 +1,8 @@
 {
-  "name": "ffc-template-node",
+  "name": "ffc-sfi-payment-batch-processor",
   "version": "0.1.0",
-  "description": "description-of-project-goes-here",
-  "homepage": "https://github.com/DEFRA/ffc-template-node",
+  "description": "FFC SFI Payment Batch Processor",
+  "homepage": "https://github.com/DEFRA/ffc-sfi-payment-batch-processor",
   "main": "app/index.js",
   "scripts": {
     "test": "jest --runInBand",
