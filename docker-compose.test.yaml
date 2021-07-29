@@ -4,11 +4,11 @@ version: '3.8'
 # that test output is saved to the host
 
 services:
-  ffc-template-node:
+  ffc-sfi-payment-batch-processor:
     build:
       target: development
-    image: ffc-template-node-development
-    container_name: ffc-template-node-test
+    image: ffc-sfi-payment-batch-processor-development
+    container_name: ffc-sfi-payment-batch-processor-test
     command: npm run test
     volumes:
       - ./app/:/home/node/app/
