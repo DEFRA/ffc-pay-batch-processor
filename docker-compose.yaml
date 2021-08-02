@@ -7,4 +7,5 @@ services:
       target: production
     image: ffc-sfi-payment-batch-processor
     container_name: ffc-sfi-payment-batch-processor
-    environment: {}
+    environment:
+      AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
