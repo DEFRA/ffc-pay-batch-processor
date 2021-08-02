@@ -6,6 +6,10 @@ image: ffc-sfi-payment-batch-processor
 
 labels: {}
 
+azureIdentity:
+  clientID: not-a-real-clientID
+  resourceID: not-a-real-resourceID
+
 containerConfigMap:
   name: ffc-sfi-payment-batch-processor-config-map
 
@@ -22,6 +26,7 @@ container:
   limitMemory: 40Mi
   limitCpu: 40m
   port: 3007
+  azureStorageAccountName: sfipayments
 
 livenessProbe:
   path: /healthz
