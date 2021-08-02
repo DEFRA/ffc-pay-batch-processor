@@ -39,7 +39,6 @@ const parseFile = (fileBuffer) => {
     })
 
     readInvoiceLines.on('close', () => {
-
       validate(invoiceBatch, invoiceHeaders)
         ? resolve(invoiceToPaymentRequest(invoiceHeaders))
         : reject(new Error('Invalid file'))
