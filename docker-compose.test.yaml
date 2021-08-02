@@ -7,6 +7,8 @@ services:
   ffc-sfi-payment-batch-processor:
     build:
       target: development
+    depends_on:
+      - azurite
     image: ffc-sfi-payment-batch-processor-development
     container_name: ffc-sfi-payment-batch-processor-test
     command: npm run test
@@ -16,3 +18,16 @@ services:
       - ./test-output/:/home/node/test-output/
       - ./jest.config.js:/home/node/jest.config.js
       - ./package.json:/home/node/package.json
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: ffc-sfi-payment-batch-processor-azurite-test
+    command: "azurite-blob --loose --blobHost 0.0.0.0"
+    volumes:
+      - azurite_data:/data
+    ports:
+      - "10000:10000"
+
+volumes:
+  azurite_data:
+

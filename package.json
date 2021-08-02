@@ -1,6 +1,6 @@
 {
   "name": "ffc-sfi-payment-batch-processor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "FFC SFI Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-sfi-payment-batch-processor",
   "main": "app/index.js",
@@ -13,11 +13,15 @@
   },
   "author": "Defra",
   "contributors": [
-    "John Watson john.watson2@rpa.gov.uk"
+    "John Watson john.watson2@rpa.gov.uk",
+    "Paul Andrews paul.andrews@defra.gov.uk"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@hapi/hapi": "^20.0.0"
+    "@azure/identity": "^1.5.0",
+    "@azure/storage-blob": "^12.6.0",
+    "@hapi/hapi": "^20.0.0",
+    "joi": "^17.4.1"
   },
   "devDependencies": {
     "jest": "^26.4.0",
