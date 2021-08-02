@@ -1,5 +1,5 @@
-const fs = require('fs')
 const readline = require('readline')
+const { Readable } = require('stream')
 
 const transformBatch = require('./transform-batch')
 const transformHeaders = require('./transform-headers')
@@ -12,6 +12,7 @@ const invoiceHeaders = []
 
 const parseInvoiceLineType = (invoiceLine) => {
   const invoiceLineType = invoiceLine[0]
+  let validLine = true
 
   switch (invoiceLineType) {
     case 'B':
@@ -25,17 +26,22 @@ const parseInvoiceLineType = (invoiceLine) => {
         .lines
         .push(transformLines(invoiceLine))
       break
+    default:
+      validLine = false
+      break
   }
+
+  return validLine
 }
 
 const parseFile = (fileBuffer) => {
-  const invoiceInput = fs.createReadStream(fileBuffer)
+  const invoiceInput = Readable.from(fileBuffer)
   const readInvoiceLines = readline.createInterface(invoiceInput)
-
   return new Promise((resolve, reject) => {
     readInvoiceLines.on('line', (line) => {
       const splitInvoiceLines = line.split('^')
-      parseInvoiceLineType(splitInvoiceLines)
+      !parseInvoiceLineType(splitInvoiceLines) ??
+        reject(new Error('Invalid file - Unknown line'))
     })
 
     readInvoiceLines.on('close', () => {

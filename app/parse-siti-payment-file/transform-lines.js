@@ -6,7 +6,6 @@ const transformLines = (lineData) => ({
   fund: lineData[5],
   agreementNumber: lineData[6],
   deliveryBody: lineData[7],
-
   lineId: lineData[8],
   lineDescription: lineData[9],
   dueDate: lineData[10],
