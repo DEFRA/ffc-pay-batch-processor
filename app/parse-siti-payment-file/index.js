@@ -1,16 +1,16 @@
 const fs = require('fs')
 const readline = require('readline')
 
-const checkInvoiceTotal = require('./invoice-totals')
 const transformBatch = require('./transform-batch')
 const transformHeaders = require('./transform-headers')
 const transformLines = require('./transform-lines')
 const invoiceToPaymentRequest = require('./payment-request')
+const validate = require('./validate')
 
 const invoiceBatch = []
 const invoiceHeaders = []
 
-const parseInvoiceType = (invoiceLine) => {
+const parseInvoiceLineType = (invoiceLine) => {
   const invoiceLineType = invoiceLine[0]
 
   switch (invoiceLineType) {
@@ -28,14 +28,6 @@ const parseInvoiceType = (invoiceLine) => {
   }
 }
 
-const validate = () => {
-  const numberOfInvoicesValid = invoiceBatch[0].numberOfInvoices === invoiceHeaders.length
-  const invoiceTotalsValid = invoiceBatch[0].batchValue === checkInvoiceTotal(invoiceHeaders, 'totalValue')
-  const invoiceLinesTotalsValid = invoiceHeaders.filter(a => a.lineTotalsValid).length === 0 ?? false
-
-  return numberOfInvoicesValid && invoiceTotalsValid && invoiceLinesTotalsValid
-}
-
 const parseFile = (fileBuffer) => {
   const invoiceInput = fs.createReadStream(fileBuffer)
   const readInvoiceLines = readline.createInterface(invoiceInput)
@@ -43,11 +35,11 @@ const parseFile = (fileBuffer) => {
   return new Promise((resolve, reject) => {
     readInvoiceLines.on('line', (line) => {
       const splitInvoiceLines = line.split('^')
-      parseInvoiceType(splitInvoiceLines)
+      parseInvoiceLineType(splitInvoiceLines)
     })
 
     readInvoiceLines.on('close', () => {
-      validate() ? resolve(invoiceToPaymentRequest(invoiceHeaders)) : reject(new Error('Invalid file'))
+      validate(invoiceBatch, invoiceHeaders) ? resolve(invoiceToPaymentRequest(invoiceHeaders)) : reject(new Error('Invalid file'))
       readInvoiceLines.close()
       invoiceInput.destroy()
     })
