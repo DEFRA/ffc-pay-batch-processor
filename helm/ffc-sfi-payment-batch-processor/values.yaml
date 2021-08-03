@@ -17,6 +17,8 @@ deployment:
   restartPolicy: Always
   priorityClassName: default
   replicas: 1
+  minReplicas: 1
+  maxReplicas: 1
   minReadySeconds: 0
 
 container:
@@ -29,6 +31,8 @@ container:
   azureStorageAccountName: sfipayments
   messageQueueHost: namespace.servicebus.windows.net
   paymentBatchTopicAddress: ffc-sfi-payment-request
+  azureStorageConnectionString: dummy
+  azureStorageUseConnectionString: false
 
 livenessProbe:
   path: /healthz
