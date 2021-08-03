@@ -5,7 +5,7 @@ const init = async () => {
   await server.start()
   console.log('Server running on %s', server.info.uri)
 
-  setTimeout(require('./process-batches'), 30000)
+  setTimeout(require('./process-batches'), 10000)
 }
 
 process.on('unhandledRejection', (err) => {

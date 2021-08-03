@@ -10,7 +10,12 @@ async function checkAzureStorage () {
   const fileNameList = await blobStorage.getInboundFileList()
 
   if (fileNameList.length > 0) {
-    processPaymentFiles(fileNameList)
+    try {
+      processPaymentFiles(fileNameList)
+    } catch (e) {
+      console.log('Error')
+      console.log(e)
+    }
   }
 
   setTimeout(checkAzureStorage, pollingInterval)
