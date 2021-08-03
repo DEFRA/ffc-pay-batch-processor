@@ -15,7 +15,8 @@
   "contributors": [
     "John Watson john.watson2@rpa.gov.uk",
     "Paul Andrews paul.andrews@defra.gov.uk",
-    "Steve Dickinson steve.dickinson@defra.gov.uk"
+    "Steve Dickinson steve.dickinson@defra.gov.uk",
+    "Fay Toward fay.toward@rpa.gov.uk"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
