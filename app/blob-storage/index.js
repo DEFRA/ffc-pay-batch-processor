@@ -19,8 +19,8 @@ const archiveContainer = blobServiceClient.getContainerClient(config.archiveCont
 
 async function initialiseContainers () {
   console.log('Making sure blob containers exist')
-  await inboundContainer.createIfNotExists()
-  await archiveContainer.createIfNotExists()
+  // await inboundContainer.createIfNotExists()
+  // await archiveContainer.createIfNotExists()
   containersInitialised = true
 }
 
