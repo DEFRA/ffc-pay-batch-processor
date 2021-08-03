@@ -15,7 +15,7 @@ const config = {
   storageAccount: process.env.AZURE_STORAGE_ACCOUNT_NAME,
   inboundContainer: 'inbound',
   archiveContainer: 'archive',
-  useConnectionStr: process.env.NODE_ENV !== 'production'
+  useConnectionStr: process.env.AZURE_STORAGE_USE_CONNECTION_STRING === 'true'
 }
 
 // Validate config
