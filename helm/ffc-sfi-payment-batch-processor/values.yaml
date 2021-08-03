@@ -30,6 +30,7 @@ container:
   port: 3007
   azureStorageAccountName: sfipayments
   azureStorageConnectionString: dummy
+  azureStorageUseConnectionString: false
 
 livenessProbe:
   path: /healthz

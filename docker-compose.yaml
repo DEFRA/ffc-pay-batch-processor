@@ -9,4 +9,5 @@ services:
     container_name: ffc-sfi-payment-batch-processor
     environment:
       AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
+      AZURE_STORAGE_USE_CONNECTION_STRING: true
       POLLING_INTERVAL: ${POLLING_INTERVAL}
