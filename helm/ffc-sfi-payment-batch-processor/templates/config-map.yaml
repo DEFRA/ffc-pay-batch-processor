@@ -4,4 +4,6 @@ data:
   NODE_ENV: {{ quote .Values.environment }}
   PORT: {{ quote .Values.container.port }}
   AZURE_STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
+  MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  PAYMENT_BATCH_TOPIC_ADDRESS: {{ quote .Values.container.paymentBatchTopicAddress }}
 {{- end -}}

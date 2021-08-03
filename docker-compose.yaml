@@ -1,4 +1,4 @@
-version: '3.8'
+PAYversion: '3.8'
 
 services:
   ffc-sfi-payment-batch-processor:
@@ -9,3 +9,7 @@ services:
     container_name: ffc-sfi-payment-batch-processor
     environment:
       AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
+      MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST:-notset}
+      MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD:-notset}
+      MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER:-notset}
+      PAYMENT_BATCH_TOPIC_ADDRESS: ${PAYMENT_BATCH_TOPIC_ADDRESS:-notset}

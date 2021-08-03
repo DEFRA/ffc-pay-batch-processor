@@ -7,6 +7,8 @@ const transformLines = require('./transform-lines')
 const invoiceToPaymentRequest = require('./payment-request')
 const validate = require('./validate')
 
+const { sendPaymentBatchMessage } = require('../messaging')
+
 const invoiceBatch = []
 const invoiceHeaders = []
 
@@ -34,6 +36,13 @@ const parseInvoiceLineType = (invoiceLine) => {
   return validLine
 }
 
+const createGuid = () => {
+  const S4 = () => {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+  }
+  return (S4() + S4() + '-' + S4() + '-4' + S4().substr(0, 3) + '-' + S4() + '-' + S4() + S4() + S4()).toLowerCase()
+}
+
 const parseFile = (fileBuffer) => {
   const invoiceInput = Readable.from(fileBuffer)
   const readInvoiceLines = readline.createInterface(invoiceInput)
@@ -49,6 +58,7 @@ const parseFile = (fileBuffer) => {
         ? resolve(invoiceToPaymentRequest(invoiceHeaders))
         : reject(new Error('Invalid file'))
 
+      sendPaymentBatchMessage(invoiceToPaymentRequest(invoiceHeaders), createGuid())
       readInvoiceLines.close()
       invoiceInput.destroy()
     })
