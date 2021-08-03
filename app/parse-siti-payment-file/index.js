@@ -43,7 +43,7 @@ const createGuid = () => {
   return (S4() + S4() + '-' + S4() + '-4' + S4().substr(0, 3) + '-' + S4() + '-' + S4() + S4() + S4()).toLowerCase()
 }
 
-const parseFile = (fileBuffer) => {
+const buildAndTransformParseFile = (fileBuffer) => {
   const invoiceInput = Readable.from(fileBuffer)
   const readInvoiceLines = readline.createInterface(invoiceInput)
   return new Promise((resolve, reject) => {
@@ -57,12 +57,17 @@ const parseFile = (fileBuffer) => {
       validate(invoiceBatch, invoiceHeaders)
         ? resolve(invoiceToPaymentRequest(invoiceHeaders))
         : reject(new Error('Invalid file'))
-
-      sendPaymentBatchMessage(invoiceToPaymentRequest(invoiceHeaders), createGuid())
       readInvoiceLines.close()
       invoiceInput.destroy()
     })
   })
+}
+
+const parseFile = async (fileBuffer) => {
+  const paymentInvoice = await buildAndTransformParseFile(fileBuffer)
+  for (const paymentRequest of paymentInvoice) {
+    await sendPaymentBatchMessage(paymentRequest, createGuid())
+  }
 }
 
 module.exports = parseFile

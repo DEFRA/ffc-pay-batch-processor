@@ -7,7 +7,7 @@ const mqSchema = joi.object({
     type: joi.string(),
     appInsights: joi.object()
   },
-  paymentTopic: {
+  paymentBatchTopic: {
     name: joi.string().default('ffc-sfi-payment-request'),
     address: joi.string().default('payment'),
     username: joi.string(),
@@ -21,7 +21,7 @@ const mqConfig = {
     type: 'Topic',
     appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined
   },
-  paymentTopic: {
+  paymentBatchTopic: {
     name: process.env.PAYMENT_BATCH_TOPIC_NAME,
     address: process.env.PAYMENT_BATCH_TOPIC_ADDRESS,
     username: process.env.MESSAGE_QUEUE_USER,
