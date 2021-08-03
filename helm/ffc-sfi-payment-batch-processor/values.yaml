@@ -17,6 +17,8 @@ deployment:
   restartPolicy: Always
   priorityClassName: default
   replicas: 1
+  minReplicas: 1
+  maxReplicas: 1
   minReadySeconds: 0
 
 container:
