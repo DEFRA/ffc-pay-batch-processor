@@ -34,8 +34,14 @@ async function getInboundFileList () {
 
   console.log('getInboundFileList()')
   const fileList = []
-  for await (const item of inboundContainer.listBlobsFlat()) {
-    fileList.push(item.name)
+
+  try {
+    for await (const item of inboundContainer.listBlobsFlat()) {
+      fileList.push(item.name)
+    }
+  } catch (e) {
+    console.log('Error')
+    console.log(e)
   }
 
   return fileList
