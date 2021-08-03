@@ -19,8 +19,8 @@ const archiveContainer = blobServiceClient.getContainerClient(config.archiveCont
 
 async function initialiseContainers () {
   console.log('Making sure blob containers exist')
-  await inboundContainer.createIfNotExists()
-  await archiveContainer.createIfNotExists()
+  // await inboundContainer.createIfNotExists()
+  // await archiveContainer.createIfNotExists()
   containersInitialised = true
 }
 
@@ -32,6 +32,7 @@ async function getBlob (container, filename) {
 async function getInboundFileList () {
   containersInitialised ?? await initialiseContainers()
 
+  console.log('getInboundFileList()')
   const fileList = []
   for await (const item of inboundContainer.listBlobsFlat()) {
     fileList.push(item.name)
