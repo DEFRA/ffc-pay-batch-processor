@@ -29,6 +29,7 @@ container:
   limitCpu: 40m
   port: 3007
   azureStorageAccountName: sfipayments
+  azureStorageConnectionString: dummy
 
 livenessProbe:
   path: /healthz

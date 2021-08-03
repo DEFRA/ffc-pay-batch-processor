@@ -32,6 +32,7 @@ async function getBlob (container, filename) {
 async function getInboundFileList () {
   containersInitialised ?? await initialiseContainers()
 
+  console.log('listBlobsFlat()')
   const fileList = []
   for await (const item of inboundContainer.listBlobsFlat()) {
     fileList.push(item.name)
