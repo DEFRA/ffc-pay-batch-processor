@@ -8,7 +8,7 @@ services:
     build:
       target: development
     depends_on:
-      - azurite
+      - ffc-sfi-apayment-batch-processor-azurite
     image: ffc-sfi-payment-batch-processor-development
     container_name: ffc-sfi-payment-batch-processor-test
     command: npm run test
@@ -21,7 +21,7 @@ services:
     environment:
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-sfi-payment-batch-processor-azurite-test:10000/devstoreaccount1;
 
-  azurite:
+  ffc-sfi-apayment-batch-processor-azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     container_name: ffc-sfi-payment-batch-processor-azurite-test
     command: "azurite-blob --loose --blobHost 0.0.0.0"
