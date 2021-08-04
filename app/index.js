@@ -9,6 +9,8 @@ const init = async () => {
     const db = require('./data')
     await db.batch.create({ filename: 'testmcfile', sequenceNumber: 33, schemeId: 1 })
     console.info('created batch')
+    const messaging = require('./messaging')
+    messaging.sendPaymentBatchMessage({ test: 'McTestyFace' })
   }
 
   try {
@@ -21,7 +23,7 @@ const init = async () => {
     createBatch()
   }
 
-  // require('./process-batches')()
+  require('./process-batches')()
 }
 
 process.on('unhandledRejection', (err) => {
