@@ -11,7 +11,7 @@ const init = async () => {
     console.info('created batch')
   }
 
-  setTimeout(createBatch, 60000)
+  createBatch()
 
   // require('./process-batches')()
 }
