@@ -36,8 +36,4 @@ const dbConfig = {
   username: process.env.POSTGRES_USERNAME
 }
 
-module.exports = {
-  development: dbConfig,
-  production: dbConfig,
-  test: dbConfig
-}
+module.exports = dbConfig

@@ -1,8 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { Sequelize, DataTypes } = require('sequelize')
-const config = require('../config')
-const dbConfig = config.dbConfig[config.env]
+const dbConfig = require('../config/db-config')
 const modelPath = path.join(__dirname, 'models')
 const db = {}
 

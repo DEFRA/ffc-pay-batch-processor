@@ -5,7 +5,15 @@ const init = async () => {
   await server.start()
   console.log('Server running on %s', server.info.uri)
 
-  require('./process-batches')()
+  const createBatch = async () => {
+    const db = require('./data')
+    await db.batch.create({ filename: 'testmcfile', sequenceNumber: 33, schemeId: 1 })
+    console.info('created batch')
+  }
+
+  setTimeout(createBatch, 60000)
+
+  // require('./process-batches')()
 }
 
 process.on('unhandledRejection', (err) => {

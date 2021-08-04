@@ -43,7 +43,7 @@
     </createTable>
     <insert tableName="schemes">
 			<column name="schemeId" value="1"/>
-			<column name="scheme" value="SFI22"/>
+			<column name="scheme" value="SFI"/>
 		</insert>
     <addForeignKeyConstraint baseColumnNames="statusId"
                              baseTableName="batches"
