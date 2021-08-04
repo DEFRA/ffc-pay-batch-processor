@@ -77,9 +77,7 @@ const buildAndTransformParseFile = (fileBuffer) => {
 const parsePaymentFile = async (fileBuffer, batchId) => {
   reset(batchId)
   buildAndTransformParseFile(fileBuffer).then((paymentInvoice) => {
-    for (const paymentRequest of paymentInvoice) {
-      sendPaymentBatchMessage(paymentRequest)
-    }
+    sendPaymentBatchMessage(paymentInvoice)
   }).catch((error) => {
     console.log(error)
   })

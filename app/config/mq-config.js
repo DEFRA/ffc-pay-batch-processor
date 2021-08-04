@@ -22,8 +22,8 @@ const mqConfig = {
     appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined
   },
   paymentBatchTopic: {
-    name: process.env.PAYMENT_TOPIC_NAME,
-    address: process.env.PAYMENT_TOPIC_ADDRESS,
+    name: process.env.PAYMENT_BATCH_TOPIC_NAME,
+    address: process.env.PAYMENT_BATCH_TOPIC_ADDRESS,
     username: process.env.MESSAGE_QUEUE_USER,
     password: process.env.MESSAGE_QUEUE_PASSWORD
   }

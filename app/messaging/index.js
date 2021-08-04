@@ -1,8 +1,8 @@
-const sendMessage = require('./send-message')
+const sendBatchMessage = require('./send-batch-message')
 const config = require('../config/mq-config')
 
 async function sendPaymentBatchMessage (payload) {
-  await sendMessage(payload, 'uk.gov.sfi.payment.send', config.paymentBatchTopic)
+  await sendBatchMessage(payload, 'uk.gov.sfi.payment.send', config.paymentBatchTopic)
   console.info('Payment Sent')
 }
 

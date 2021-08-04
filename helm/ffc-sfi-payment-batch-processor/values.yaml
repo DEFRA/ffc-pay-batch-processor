@@ -37,7 +37,7 @@ container:
   port: 3007
   azureStorageAccountName: sfipayments
   messageQueueHost: namespace.servicebus.windows.net
-  paymentTopicAddress: ffc-sfi-payment-request
+  paymentBatchTopicAddress: ffc-sfi-payment-request
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
 
