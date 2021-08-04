@@ -13,6 +13,10 @@ azureIdentity:
 containerConfigMap:
   name: ffc-sfi-payment-batch-processor-config-map
 
+containerSecret:
+  name: ffc-sfi-payment-batch-processor-container-secret
+  type: Opaque
+
 deployment:
   restartPolicy: Always
   priorityClassName: default
