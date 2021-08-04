@@ -11,7 +11,15 @@ const init = async () => {
     console.info('created batch')
   }
 
-  createBatch()
+  try {
+    console.log('Try first time')
+    await createBatch()
+  } catch (err) {
+    console.log('Failed, wait a bit')
+    await new Promise(resolve => setTimeout(resolve, 10000))
+    console.log('Try second time')
+    createBatch()
+  }
 
   // require('./process-batches')()
 }
