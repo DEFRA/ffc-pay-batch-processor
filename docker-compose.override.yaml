@@ -8,7 +8,8 @@ services:
     build:
       target: development
     depends_on:
-      - azurite
+      - ffc-sfi-payment-batch-processor-azurite
+      - ffc-sfi-payment-batch-processor-postgres
     image: ffc-sfi-payment-batch-processor-development
     container_name: ffc-sfi-payment-batch-processor-development
     ports:
@@ -19,7 +20,7 @@ services:
     environment:
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-sfi-payment-batch-processor-azurite:10000/devstoreaccount1;
 
-  azurite:
+  ffc-sfi-payment-batch-processor-azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     container_name: ffc-sfi-payment-batch-processor-azurite
     command: "azurite-blob --loose --blobHost 0.0.0.0"
@@ -28,5 +29,12 @@ services:
     ports:
       - "10000:10000"
 
+  ffc-sfi-payment-batch-processor-postgres:
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   azurite_data:
+  postgres_data:

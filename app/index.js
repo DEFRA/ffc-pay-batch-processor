@@ -5,6 +5,24 @@ const init = async () => {
   await server.start()
   console.log('Server running on %s', server.info.uri)
 
+  const createBatch = async () => {
+    const db = require('./data')
+    await db.batch.create({ filename: 'testmcfile', sequenceNumber: 33, schemeId: 1 })
+    console.info('created batch')
+    const messaging = require('./messaging')
+    messaging.sendPaymentBatchMessage({ test: 'McTestyFace' })
+  }
+
+  try {
+    console.log('Try first time')
+    await createBatch()
+  } catch (err) {
+    console.log('Failed, wait a bit')
+    await new Promise(resolve => setTimeout(resolve, 10000))
+    console.log('Try second time')
+    createBatch()
+  }
+
   require('./process-batches')()
 }
 

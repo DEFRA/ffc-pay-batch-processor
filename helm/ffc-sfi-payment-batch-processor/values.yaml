@@ -13,9 +13,16 @@ azureIdentity:
 containerConfigMap:
   name: ffc-sfi-payment-batch-processor-config-map
 
+containerSecret:
+  name: ffc-sfi-payment-batch-processor-container-secret
+  type: Opaque
+
 deployment:
   restartPolicy: Always
   priorityClassName: default
+  # DO NOT have more than 1 replica
+  # Payment batch files need to be processed in order
+  # So concurrent processing with multiple pods could cause problems
   replicas: 1
   minReplicas: 1
   maxReplicas: 1
@@ -30,9 +37,17 @@ container:
   port: 3007
   azureStorageAccountName: sfipayments
   messageQueueHost: namespace.servicebus.windows.net
-  paymentBatchTopicAddress: ffc-sfi-payment-request
+  paymentTopicAddress: ffc-sfi-payment-request
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
+
+postgresService:
+  postgresDb: ffc_sfi_payment_batch_processor
+  postgresExternalName:
+  postgresHost: ffc-sfi-payment-batch-processor-postgres
+  postgresPort: 5432
+  postgresSchema: public
+  postgresUser: postgres
 
 livenessProbe:
   path: /healthz
