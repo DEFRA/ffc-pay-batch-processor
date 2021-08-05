@@ -7,6 +7,7 @@ const processSfiPaymentFile = async (fileName, buffer) => {
   const schemeType = parseFilename(fileName, filenameMasks.sfi)
   if (schemeType.scheme === 'SITIELM') {
     await parsePaymentFile(buffer, schemeType.batchId)
+    await blobStorage.archivePaymentFile(fileName, fileName)
   }
 }
 
