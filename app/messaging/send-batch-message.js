@@ -1,9 +1,9 @@
-const { MessageBulkSender } = require('ffc-messaging')
+const { MessageBatchSender } = require('ffc-messaging')
 const createMessage = require('./create-message')
 
 async function sendBatchMessage (body, type, options) {
   const messages = body.map(message => createMessage(message, type))
-  const sender = new MessageBulkSender(options)
+  const sender = new MessageBatchSender(options)
   await sender.sendBatchMessages(messages)
   await sender.closeConnection()
 }
