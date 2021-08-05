@@ -6,6 +6,8 @@ const validateLineTotals = (invoiceHeaders) => {
 }
 
 const validate = (invoiceBatch, invoiceHeaders) => {
+  if (invoiceBatch.length === 0) return false
+
   const numberOfInvoicesValid = invoiceBatch[0].numberOfInvoices === invoiceHeaders.length
   const invoiceTotalsValid = invoiceBatch[0].batchValue === getInvoiceTotal(invoiceHeaders, 'totalValue')
   const invoiceLinesTotalsValid = validateLineTotals(invoiceHeaders)

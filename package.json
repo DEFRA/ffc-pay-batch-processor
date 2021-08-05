@@ -1,6 +1,6 @@
 {
   "name": "ffc-sfi-payment-batch-processor",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "FFC SFI Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-sfi-payment-batch-processor",
   "main": "app/index.js",
@@ -24,7 +24,7 @@
     "@azure/storage-blob": "^12.6.0",
     "@hapi/hapi": "^20.0.0",
     "applicationinsights": "^2.1.4",
-    "ffc-messaging": "^2.1.3",
+    "ffc-messaging": "^2.3.0",
     "joi": "^17.4.1",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
