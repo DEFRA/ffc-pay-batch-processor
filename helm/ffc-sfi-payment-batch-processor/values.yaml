@@ -31,9 +31,9 @@ deployment:
 container:
   imagePullPolicy: IfNotPresent
   requestMemory: 100Mi
-  requestCpu: 40m
+  requestCpu: 60m
   limitMemory: 100Mi
-  limitCpu: 100m
+  limitCpu: 120m
   port: 3007
   azureStorageAccountName: sfipayments
   messageQueueHost: namespace.servicebus.windows.net
