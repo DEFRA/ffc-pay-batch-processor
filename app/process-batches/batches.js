@@ -15,13 +15,13 @@ async function nextSequenceId (schemeIdentifier) {
   return highestSequenceNumber + 1
 }
 
-async function create (filename, sequenceNumber, schemeIdentifier) {
+function create (filename, sequenceNumber, schemeIdentifier) {
   const schemeId = schemeDetails.getDbIdentifier(schemeIdentifier)
-  await db.batch.create({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
+  db.batch.create({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
 }
 
-async function updateStatus (filename, statusId) {
-  await db.batch.update({ statusId, processedOn: Date.now() }, { where: { filename } })
+function updateStatus (filename, statusId) {
+  db.batch.update({ statusId, processedOn: Date.now() }, { where: { filename } })
 }
 
 module.exports = {

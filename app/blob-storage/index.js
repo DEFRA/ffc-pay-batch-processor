@@ -66,12 +66,12 @@ async function moveFile (sourceContainer, destinationContainer, sourceFilename, 
   return false
 }
 
-async function archivePaymentFile (filename, archiveFilename) {
-  return (await moveFile(inboundContainer, archiveContainer, filename, archiveFilename))
+function archivePaymentFile (filename, archiveFilename) {
+  return moveFile(inboundContainer, archiveContainer, filename, archiveFilename)
 }
 
-async function quarantinePaymentFile (filename, quarantineFilename) {
-  return (await moveFile(inboundContainer, quarantineContainer, filename, quarantineFilename))
+function quarantinePaymentFile (filename, quarantineFilename) {
+  return moveFile(inboundContainer, quarantineContainer, filename, quarantineFilename)
 }
 
 module.exports = {
