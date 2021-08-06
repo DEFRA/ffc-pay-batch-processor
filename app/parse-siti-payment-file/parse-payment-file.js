@@ -76,11 +76,16 @@ const buildAndTransformParseFile = (fileBuffer) => {
 
 const parsePaymentFile = async (fileBuffer, batchId) => {
   reset(batchId)
-  buildAndTransformParseFile(fileBuffer).then((paymentInvoice) => {
-    sendPaymentBatchMessage(paymentInvoice)
-  }).catch((error) => {
-    console.log(error)
-  })
+
+  try {
+    const paymentInvoice = await buildAndTransformParseFile(fileBuffer)
+    await sendPaymentBatchMessage(paymentInvoice)
+    return true
+  } catch (err) {
+    console.log(err)
+  }
+
+  return false
 }
 
 module.exports = parsePaymentFile
