@@ -21,7 +21,7 @@ async function create (filename, sequenceNumber, schemeIdentifier) {
 }
 
 async function updateStatus (filename, statusId) {
-  await db.batch.update({ statusId }, { where: { filename } })
+  await db.batch.update({ statusId, processedOn: Date.now() }, { where: { filename } })
 }
 
 module.exports = {
