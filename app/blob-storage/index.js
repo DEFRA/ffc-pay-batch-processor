@@ -16,11 +16,13 @@ if (config.useConnectionStr) {
 
 const inboundContainer = blobServiceClient.getContainerClient(config.inboundContainer)
 const archiveContainer = blobServiceClient.getContainerClient(config.archiveContainer)
+const quarantineContainer = blobServiceClient.getContainerClient(config.quarantineContainer)
 
 async function initialiseContainers () {
   console.log('Making sure blob containers exist')
   await inboundContainer.createIfNotExists()
   await archiveContainer.createIfNotExists()
+  await quarantineContainer.createIfNotExists()
   containersInitialised = true
 }
 
@@ -50,10 +52,10 @@ async function downloadPaymentFile (filename) {
   return blob.downloadToBuffer()
 }
 
-// Copies blob from inbound container to archive container and deletes blob from inbound container
-async function archivePaymentFile (filename, archiveFilename) {
-  const sourceBlob = await getBlob(inboundContainer, filename)
-  const destinationBlob = await getBlob(archiveContainer, archiveFilename)
+// Copies blob from one container to another container and deletes blob from original container
+async function moveFile (sourceContainer, destinationContainer, sourceFilename, destinationFilename) {
+  const sourceBlob = await getBlob(sourceContainer, sourceFilename)
+  const destinationBlob = await getBlob(destinationContainer, destinationFilename)
   const copyResult = await (await destinationBlob.beginCopyFromURL(sourceBlob.url)).pollUntilDone()
 
   if (copyResult.copyStatus === 'success') {
@@ -64,10 +66,19 @@ async function archivePaymentFile (filename, archiveFilename) {
   return false
 }
 
+async function archivePaymentFile (filename, archiveFilename) {
+  return (await moveFile(inboundContainer, archiveContainer, filename, archiveFilename))
+}
+
+async function quarantinePaymentFile (filename, quarantineFilename) {
+  return (await moveFile(inboundContainer, quarantineContainer, filename, quarantineFilename))
+}
+
 module.exports = {
   getInboundFileList,
   getInboundFileDetails,
   downloadPaymentFile,
   archivePaymentFile,
+  quarantinePaymentFile,
   blobServiceClient
 }
