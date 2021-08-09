@@ -1,6 +1,6 @@
 {
   "name": "ffc-sfi-payment-batch-processor",
-  "version": "1.7.0",
+  "version": "1.08.0",
   "description": "FFC SFI Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-sfi-payment-batch-processor",
   "main": "app/index.js",
