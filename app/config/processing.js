@@ -2,12 +2,14 @@ const Joi = require('joi')
 
 // Define config schema
 const schema = Joi.object({
-  pollingInterval: Joi.number().default(60000)
+  pollingInterval: Joi.number().default(60000),
+  maxProcessingTries: Joi.number().default(3)
 })
 
 // Build config
 const config = {
-  pollingInterval: process.env.POLLING_INTERVAL
+  pollingInterval: process.env.POLLING_INTERVAL,
+  maxProcessingTries: process.env.MAX_PROCESSING_TRIES
 }
 
 // Validate config
@@ -17,7 +19,7 @@ const result = schema.validate(config, {
 
 // Throw if config is invalid
 if (result.error) {
-  throw new Error(`The polling config is invalid. ${result.error.message}`)
+  throw new Error(`The processing config is invalid. ${result.error.message}`)
 }
 
 module.exports = result.value

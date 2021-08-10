@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     schemeId: DataTypes.INTEGER,
     statusId: DataTypes.INTEGER,
     processedOn: DataTypes.DATE,
+    processingTries: DataTypes.INTEGER,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE
   },
