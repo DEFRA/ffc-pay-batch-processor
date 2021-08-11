@@ -24,10 +24,20 @@ function updateStatus (filename, statusId) {
   db.batch.update({ statusId, processedOn: Date.now() }, { where: { filename } })
 }
 
+function incrementProcessingTries (filename) {
+  db.batch.increment('processingTries', { by: 1, where: { filename } })
+}
+
+function exists (filename) {
+  return db.batch.findOne({ where: { filename } })
+}
+
 module.exports = {
   nextSequenceId,
   create,
   updateStatus,
+  exists,
+  incrementProcessingTries,
   status: {
     inProgress: 1,
     success: 2,
