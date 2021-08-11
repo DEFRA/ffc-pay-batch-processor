@@ -3,7 +3,7 @@ const invoiceToPaymentRequest = (invoiceHeaders) => {
     {
       sourceSystem: invoiceHeader.creatorId,
       deliveryBody: invoiceHeader.deliveryBodyCode,
-      invoiceHeader: invoiceHeader.invoiceNumber,
+      invoiceNumber: invoiceHeader.invoiceNumber,
       frn: invoiceHeader.frn,
       marketingYear: invoiceHeader.lines[0].marketingYear,
       paymentRequestNumber: invoiceHeader.paymentType,

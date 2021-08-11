@@ -17,6 +17,7 @@ services:
       PAYMENT_TOPIC_ADDRESS: ${PAYMENT_TOPIC_ADDRESS:-notset}
       AZURE_STORAGE_USE_CONNECTION_STRING: "true"
       POLLING_INTERVAL: ${POLLING_INTERVAL}
+      MAX_PROCESSING_TRIES: ${MAX_PROCESSING_TRIES:-notset}
       POSTGRES_DB: ffc_sfi_payment_batch_processor
       POSTGRES_HOST: ${POSTGRES_HOST:-ffc-sfi-payment-batch-processor-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_SCHEMA_PASSWORD:-ppp}

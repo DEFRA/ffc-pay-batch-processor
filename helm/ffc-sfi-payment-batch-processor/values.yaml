@@ -40,6 +40,8 @@ container:
   paymentTopicAddress: ffc-sfi-payment-request
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
+  pollingInterval: 60000
+  maxProcessingTries: 3
 
 postgresService:
   postgresDb: ffc_sfi_payment_batch_processor
