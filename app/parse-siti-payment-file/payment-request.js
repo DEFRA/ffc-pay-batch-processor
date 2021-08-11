@@ -5,7 +5,6 @@ const invoiceToPaymentRequest = (invoiceHeaders) => {
       deliveryBody: invoiceHeader.deliveryBodyCode,
       invoiceHeader: invoiceHeader.invoiceNumber,
       frn: invoiceHeader.frn,
-      sbi: invoiceHeader.frn,
       marketingYear: invoiceHeader.lines[0].marketingYear,
       paymentRequestNumber: invoiceHeader.paymentType,
       agreementNumber: invoiceHeader.lines[0].agreementNumber,
