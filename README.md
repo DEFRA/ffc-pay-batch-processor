@@ -24,9 +24,9 @@ When deployed into an appropriately configured AKS
 cluster (where [AAD Pod Identity](https://github.com/Azure/aad-pod-identity) is
 configured) the microservice will use AAD Pod Identity through the manifests
 for
-[azure-identity](./helm/ffc-demo-claim-service/templates/azure-identity.yaml)
+[azure-identity](./helm/ffc-sfi-payment-batch-processor/templates/azure-identity.yaml)
 and
-[azure-identity-binding](./helm/ffc-demo-claim-service/templates/azure-identity-binding.yaml).
+[azure-identity-binding](./helm/ffc-sfi-payment-batch-processor/templates/azure-identity-binding.yaml).
 
 | Name | Description |
 | ---| --- |
