@@ -5,4 +5,4 @@ services:
     ports:
       - "9237:9229"
     volumes:
-      - ./app/:/home/node/app/
+      - ./app:/home/node/app
