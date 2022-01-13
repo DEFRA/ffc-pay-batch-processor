@@ -2,7 +2,7 @@ function createMessage (body, type, correlationId) {
   return {
     body,
     type,
-    source: 'ffc-sfi-payment-batch-processor',
+    source: 'ffc-pay-batch-processor',
     correlationId
   }
 }

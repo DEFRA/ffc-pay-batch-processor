@@ -4,13 +4,13 @@ version: '3.8'
 # that test output is saved to the host
 
 services:
-  ffc-sfi-payment-batch-processor:
+  ffc-pay-batch-processor:
     build:
       target: development
     depends_on:
       - ffc-sfi-apayment-batch-processor-azurite
-    image: ffc-sfi-payment-batch-processor-development
-    container_name: ffc-sfi-payment-batch-processor-test
+    image: ffc-pay-batch-processor-development
+    container_name: ffc-pay-batch-processor-test
     command: npm run test
     volumes:
       - ./app:/home/node/app
@@ -19,11 +19,11 @@ services:
       - ./jest.config.js:/home/node/jest.config.js
       - ./package.json:/home/node/package.json
     environment:
-      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-sfi-payment-batch-processor-azurite-test:10000/devstoreaccount1;
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-batch-processor-azurite-test:10000/devstoreaccount1;
 
   ffc-sfi-apayment-batch-processor-azurite:
     image: mcr.microsoft.com/azure-storage/azurite
-    container_name: ffc-sfi-payment-batch-processor-azurite-test
+    container_name: ffc-pay-batch-processor-azurite-test
     command: "azurite-blob --loose --blobHost 0.0.0.0"
     volumes:
       - azurite_data:/data

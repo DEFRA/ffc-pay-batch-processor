@@ -27,7 +27,7 @@ const dbConfig = {
   database: process.env.POSTGRES_DB || 'ffc_sfi_payment_batch_processor',
   dialect: 'postgres',
   hooks,
-  host: process.env.POSTGRES_HOST || 'ffc-sfi-payment-batch-processor',
+  host: process.env.POSTGRES_HOST || 'ffc-pay-batch-processor',
   password: process.env.POSTGRES_PASSWORD,
   port: process.env.POSTGRES_PORT || 5432,
   logging: process.env.POSTGRES_LOGGING || false,

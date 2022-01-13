@@ -1,8 +1,8 @@
 environment: development
-name: ffc-sfi-payment-batch-processor
+name: ffc-pay-batch-processor
 namespace: ffc-sfi
 workstream: ffc-sfi
-image: ffc-sfi-payment-batch-processor
+image: ffc-pay-batch-processor
 
 labels: {}
 
@@ -11,10 +11,10 @@ azureIdentity:
   resourceID: not-a-real-resourceID
 
 containerConfigMap:
-  name: ffc-sfi-payment-batch-processor-config-map
+  name: ffc-pay-batch-processor-config-map
 
 containerSecret:
-  name: ffc-sfi-payment-batch-processor-container-secret
+  name: ffc-pay-batch-processor-container-secret
   type: Opaque
 
 deployment:
@@ -37,7 +37,7 @@ container:
   port: 3007
   azureStorageAccountName: sfipayments
   messageQueueHost: namespace.servicebus.windows.net
-  paymentTopicAddress: ffc-sfi-payment-request
+  paymentTopicAddress: ffc-pay-request
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   pollingInterval: 60000
@@ -46,7 +46,7 @@ container:
 postgresService:
   postgresDb: ffc_sfi_payment_batch_processor
   postgresExternalName:
-  postgresHost: ffc-sfi-payment-batch-processor-postgres
+  postgresHost: ffc-pay-batch-processor-postgres
   postgresPort: 5432
   postgresSchema: public
   postgresUser: postgres
