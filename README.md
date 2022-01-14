@@ -1,4 +1,4 @@
-# FFC Payment Batch Processor (SFI)
+# FFC Payment Batch Processor
 
 FFC service to process payment files.
 

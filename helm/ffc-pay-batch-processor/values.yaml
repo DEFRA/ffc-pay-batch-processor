@@ -1,7 +1,7 @@
 environment: development
 name: ffc-pay-batch-processor
-namespace: ffc-sfi
-workstream: ffc-sfi
+namespace: ffc-pay
+workstream: ffc-pay
 image: ffc-pay-batch-processor
 
 labels: {}
@@ -35,7 +35,7 @@ container:
   limitMemory: 100Mi
   limitCpu: 120m
   port: 3007
-  azureStorageAccountName: sfipayments
+  azureStorageAccountName: payments
   messageQueueHost: namespace.servicebus.windows.net
   paymentTopicAddress: ffc-pay-request
   azureStorageConnectionString: dummy
@@ -44,7 +44,7 @@ container:
   maxProcessingTries: 3
 
 postgresService:
-  postgresDb: ffc_sfi_payment_batch_processor
+  postgresDb: ffc_pay_batch_processor
   postgresExternalName:
   postgresHost: ffc-pay-batch-processor-postgres
   postgresPort: 5432

@@ -18,7 +18,7 @@ services:
       AZURE_STORAGE_USE_CONNECTION_STRING: "true"
       POLLING_INTERVAL: ${POLLING_INTERVAL:-60000}
       MAX_PROCESSING_TRIES: ${MAX_PROCESSING_TRIES:-3}
-      POSTGRES_DB: ffc_sfi_payment_batch_processor
+      POSTGRES_DB: ffc_pay_batch_processor
       POSTGRES_HOST: ${POSTGRES_HOST:-ffc-pay-batch-processor-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_SCHEMA_PASSWORD:-ppp}
       POSTGRES_PORT: 5432
@@ -28,6 +28,6 @@ services:
   ffc-pay-batch-processor-postgres:
     image: postgres:11.4-alpine
     environment:
-      POSTGRES_DB: ffc_sfi_payment_batch_processor
+      POSTGRES_DB: ffc_pay_batch_processor
       POSTGRES_PASSWORD: ppp
       POSTGRES_USERNAME: postgres
