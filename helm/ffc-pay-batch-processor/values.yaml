@@ -35,7 +35,7 @@ container:
   limitMemory: 100Mi
   limitCpu: 120m
   port: 3007
-  azureStorageAccountName: payments
+  azureStorageAccountName: ffcpay
   messageQueueHost: namespace.servicebus.windows.net
   paymentTopicAddress: ffc-pay-request
   azureStorageConnectionString: dummy
