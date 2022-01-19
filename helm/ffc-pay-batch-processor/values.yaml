@@ -6,6 +6,9 @@ image: ffc-pay-batch-processor
 
 labels: {}
 
+appInsights:
+  key:
+
 azureIdentity:
   clientID: not-a-real-clientID
   resourceID: not-a-real-resourceID

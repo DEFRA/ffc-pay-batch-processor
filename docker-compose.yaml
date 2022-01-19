@@ -10,6 +10,7 @@ services:
     depends_on:
       - ffc-pay-batch-processor-postgres
     environment:
+      APPINSIGHTS_CLOUDROLE: ffc-pay-batch-processor-local
       AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
       MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST}
       MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
@@ -24,7 +25,7 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_SCHEMA_NAME: ${POSTGRES_SCHEMA_NAME:-public}
       POSTGRES_USERNAME: ${POSTGRES_SCHEMA_USERNAME:-postgres}
-
+      APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
   ffc-pay-batch-processor-postgres:
     image: postgres:11.4-alpine
     environment:
