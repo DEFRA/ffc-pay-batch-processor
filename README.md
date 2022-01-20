@@ -1,6 +1,29 @@
 # FFC Payment Batch Processor (SFI)
 
-FFC service to process Siti Agri for Sustainable Farming Incentive (SFI).
+FFC service to process Siti Agri batch files and send individual transactions as messages.
+
+### Example output message
+
+```
+{
+  "sourceSystem": "SFIP",
+  "sbi": 123456789,
+  "frn": 1234567890
+  "marketingYear": 2022,
+  "paymentRequestNumber": 1,
+  "agreementNumber": "SFI12345",
+  "contractNumber": "SFI12345",
+  "currency": 'GBP",
+  "schedule": "Q4",
+  "dueDate": "09/11/2022",
+  "value": 1000.00,
+  "invoiceLines": [{
+    "standardCode": "80001",
+    "description": "G00 - Gross value of claim",
+    "value": 1000.00
+  }]
+}
+```
 
 ## Prerequisites
 

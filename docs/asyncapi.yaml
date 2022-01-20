@@ -1,0 +1,32 @@
+asyncapi: 2.2.0
+info:
+  title: FFC Pay Batch Processor
+  version: '1.0.0'
+channels:
+  payment/request:
+    publish:
+      message:
+        $ref: '#/components/messages/PaymentRequest'  
+
+components:
+  messages:
+    PaymentRequest:
+      contentType: application/json
+      headers:
+        type: object
+        properties:
+      payload:
+        type: object
+        properties:
+          sourceSystem:
+            type: string
+            description: System requesting payment
+          sbi:
+            type: number
+            description: Single Business Identifier, optional if frn provided
+          frn:
+            type: number
+            description: Firm Reference Number, optional if sbi provided
+          frn:
+            type: number
+            description: Firm Reference Number, optional if sbi provided
