@@ -12,9 +12,6 @@ components:
   messages:
     PaymentRequest:
       contentType: application/json
-      headers:
-        type: object
-        properties:
       payload:
         type: object
         properties:
@@ -33,6 +30,9 @@ components:
           paymentRequestNumber:
             type: number
             description: Version of payment request starting with 1, anything greater than 1 is an adjustment
+          invoiceNumber:
+            type: string
+            description: Unique request for payment, optional
           agreementNumber:
             type: string
             description: Unique reference number for agreement/application
