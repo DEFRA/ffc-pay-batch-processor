@@ -1,4 +1,4 @@
-# FFC Payment Batch Processor (SFI)
+# FFC Payment Batch Processor
 
 FFC service to process Siti Agri batch files and send individual transactions as messages.
 
@@ -24,16 +24,16 @@ When deployed into an appropriately configured AKS
 cluster (where [AAD Pod Identity](https://github.com/Azure/aad-pod-identity) is
 configured) the microservice will use AAD Pod Identity through the manifests
 for
-[azure-identity](./helm/ffc-sfi-payment-batch-processor/templates/azure-identity.yaml)
+[azure-identity](./helm/ffc-pay-batch-processor/templates/azure-identity.yaml)
 and
-[azure-identity-binding](./helm/ffc-sfi-payment-batch-processor/templates/azure-identity-binding.yaml).
+[azure-identity-binding](./helm/ffc-pay-batch-processor/templates/azure-identity-binding.yaml).
 
 | Name | Description |
 | ---| --- |
 | MESSAGE_QUEUE_HOST | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net` |
 | MESSAGE_QUEUE_PASSWORD | Azure Service Bus SAS policy key |
 | MESSAGE_QUEUE_USER     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey` |
-| PAYMENT_TOPIC_ADDRESS |  |
+| MESSAGE_QUEUE_SUFFIX | Developer initials |
 
 ### Example output message
 
