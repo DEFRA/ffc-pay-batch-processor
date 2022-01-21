@@ -1,6 +1,6 @@
 # FFC Payment Batch Processor
 
-FFC service to process payment files.
+FFC service to process Siti Agri batch files and send individual transactions as messages.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ Optional:
 - Kubernetes
 - Helm
 
-### Azure Service Bus
+## Azure Service Bus
 
 This service depends on a valid Azure Service Bus connection string for
 asynchronous communication.  The following environment variables need to be set
@@ -34,6 +34,30 @@ and
 | MESSAGE_QUEUE_PASSWORD | Azure Service Bus SAS policy key |
 | MESSAGE_QUEUE_USER     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey` |
 | MESSAGE_QUEUE_SUFFIX | Developer initials |
+
+### Example output message
+
+```
+{
+  "sourceSystem": "SFIP",
+  "sbi": 123456789,
+  "frn": 1234567890
+  "marketingYear": 2022,
+  "paymentRequestNumber": 1,
+  "invoiceNumber": "SFI12345678",
+  "agreementNumber": "SFI12345",
+  "contractNumber": "SFI12345",
+  "currency": 'GBP",
+  "schedule": "Q4",
+  "dueDate": "09/11/2022",
+  "value": 1000.00,
+  "invoiceLines": [{
+    "standardCode": "80001",
+    "description": "G00 - Gross value of claim",
+    "value": 1000.00
+  }]
+}
+```
 
 ## Running the application
 
