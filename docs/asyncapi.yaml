@@ -1,0 +1,68 @@
+asyncapi: 2.2.0
+info:
+  title: FFC Pay Batch Processor
+  version: '1.0.0'
+channels:
+  payment/request:
+    publish:
+      message:
+        $ref: '#/components/messages/PaymentRequest'
+
+components:
+  messages:
+    PaymentRequest:
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          sourceSystem:
+            type: string
+            description: System identifier request originates from
+          sbi:
+            type: number
+            description: Single Business Identifier, optional if frn provided
+          frn:
+            type: number
+            description: Firm Reference Number, optional if sbi provided
+          marketingYear:
+            type: number
+            description: Scheme year for request
+          paymentRequestNumber:
+            type: number
+            description: Version of payment request starting with 1, anything greater than 1 is an adjustment
+          invoiceNumber:
+            type: string
+            description: Unique request for payment, optional
+          agreementNumber:
+            type: string
+            description: Unique reference number for agreement/application
+          contractNumber:
+            type: string
+            description: Contract reference number of agreement
+          currency:
+            type: string
+            description: Currency of values in request, eg GBP
+          schedule:
+            type: string
+            description: Payment frequency instruction for DAX, eg Q4 for quarterly payments
+          dueDate:
+            type: string
+            description: Date request should be issued from DAX in format DD/MM/YYYY
+          value:
+            type: number
+            description: Decimal net value of request, ie sum of all invoice lines
+          invoiceLines:
+            type: array
+            description: List of Invoice lines that make up request
+            items:
+              type: object
+              properties:
+                standardCode:
+                  type: string
+                  description: Unique funding option code to be mapped to scheme code
+                description:
+                  type: string
+                  description: Description of what line relates to, eg gross or penalty
+                value:
+                  type: string
+                  description: Decimal value of invoice line

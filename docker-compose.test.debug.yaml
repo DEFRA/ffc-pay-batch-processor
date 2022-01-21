@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  ffc-sfi-payment-batch-processor:
+  ffc-pay-batch-processor:
     command: npm run test:debug
     ports:
       - "9237:9229"

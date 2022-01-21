@@ -1,8 +1,9 @@
-{{- include "ffc-helm-library.container-config-map" (list . "ffc-sfi-payment-batch-processor.config-map") -}}
-{{- define "ffc-sfi-payment-batch-processor.config-map" -}}
+{{- include "ffc-helm-library.container-config-map" (list . "ffc-pay-batch-processor.config-map") -}}
+{{- define "ffc-pay-batch-processor.config-map" -}}
 data:
   NODE_ENV: {{ quote .Values.environment }}
   PORT: {{ quote .Values.container.port }}
+  APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   AZURE_STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
   PAYMENT_TOPIC_ADDRESS: {{ quote .Values.container.paymentTopicAddress }}

@@ -8,7 +8,7 @@ const mqSchema = joi.object({
     appInsights: joi.object()
   },
   paymentBatchTopic: {
-    name: joi.string().default('ffc-sfi-payment-request'),
+    name: joi.string().default('ffc-pay-request'),
     address: joi.string().default('payment'),
     username: joi.string(),
     password: joi.string()

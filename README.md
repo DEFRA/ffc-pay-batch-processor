@@ -1,6 +1,6 @@
-# FFC Payment Batch Processor (SFI)
+# FFC Payment Batch Processor
 
-FFC service to process Siti Agri for Sustainable Farming Incentive (SFI).
+FFC service to process Siti Agri batch files and send individual transactions as messages.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ Optional:
 - Kubernetes
 - Helm
 
-### Azure Service Bus
+## Azure Service Bus
 
 This service depends on a valid Azure Service Bus connection string for
 asynchronous communication.  The following environment variables need to be set
@@ -24,16 +24,40 @@ When deployed into an appropriately configured AKS
 cluster (where [AAD Pod Identity](https://github.com/Azure/aad-pod-identity) is
 configured) the microservice will use AAD Pod Identity through the manifests
 for
-[azure-identity](./helm/ffc-sfi-payment-batch-processor/templates/azure-identity.yaml)
+[azure-identity](./helm/ffc-pay-batch-processor/templates/azure-identity.yaml)
 and
-[azure-identity-binding](./helm/ffc-sfi-payment-batch-processor/templates/azure-identity-binding.yaml).
+[azure-identity-binding](./helm/ffc-pay-batch-processor/templates/azure-identity-binding.yaml).
 
 | Name | Description |
 | ---| --- |
 | MESSAGE_QUEUE_HOST | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net` |
 | MESSAGE_QUEUE_PASSWORD | Azure Service Bus SAS policy key |
 | MESSAGE_QUEUE_USER     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey` |
-| PAYMENT_TOPIC_ADDRESS |  |
+| MESSAGE_QUEUE_SUFFIX | Developer initials |
+
+### Example output message
+
+```
+{
+  "sourceSystem": "SFIP",
+  "sbi": 123456789,
+  "frn": 1234567890
+  "marketingYear": 2022,
+  "paymentRequestNumber": 1,
+  "invoiceNumber": "SFI12345678",
+  "agreementNumber": "SFI12345",
+  "contractNumber": "SFI12345",
+  "currency": 'GBP",
+  "schedule": "Q4",
+  "dueDate": "09/11/2022",
+  "value": 1000.00,
+  "invoiceLines": [{
+    "standardCode": "80001",
+    "description": "G00 - Gross value of claim",
+    "value": 1000.00
+  }]
+}
+```
 
 ## Running the application
 
