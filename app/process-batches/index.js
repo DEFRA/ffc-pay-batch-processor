@@ -18,7 +18,7 @@ async function downloadAndParse (filename, schemeType) {
     await blobStorage.archivePaymentFile(filename, filename)
   } else {
     console.log(`Quarantining ${filename}, failed to parse file`)
-    fileProcessingFailed(filename)
+    await fileProcessingFailed(filename)
   }
 }
 

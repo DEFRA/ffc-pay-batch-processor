@@ -1,8 +1,8 @@
 describe('Blob storage tests', () => {
-  const createServer = require('../../../../app/server')
+  const createServer = require('../../../app/server')
   let server
-  const blobStorage = require('../../../../app/blob-storage')
-  const blobStorageConfig = require('../../../../app/config/blob-storage')
+  const blobStorage = require('../../../app/blob-storage')
+  const blobStorageConfig = require('../../../app/config/blob-storage')
   const mockFileList = ['test1.txt', 'test2.txt']
   const testFileContents = 'This is a test file'
 
