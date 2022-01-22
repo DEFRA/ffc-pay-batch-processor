@@ -52,7 +52,7 @@ and
   "dueDate": "09/11/2022",
   "value": 1000.00,
   "invoiceLines": [{
-    "standardCode": "80001",
+    "schemeCode": "80001",
     "description": "G00 - Gross value of claim",
     "value": 1000.00
   }]

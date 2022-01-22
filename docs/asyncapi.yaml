@@ -57,7 +57,7 @@ components:
             items:
               type: object
               properties:
-                standardCode:
+                schemeCode:
                   type: string
                   description: Unique funding option code to be mapped to scheme code
                 description:
