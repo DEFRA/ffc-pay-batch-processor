@@ -4,6 +4,12 @@
     <tagDatabase tag="v2.1.0" />
   </changeSet>
   <changeSet author="John Watson" id="2">
+    <insert tableName="schemes">
+      <column name="schemeId" value="2" />
+      <column name="scheme" value="SFI Pilot" />
+    </insert>
+  </changeSet>
+  <changeSet author="John Watson" id="3">
     <createTable tableName="sequences">
       <column autoIncrement="false" name="schemeId" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="sequenceId_pkey" />
@@ -14,8 +20,12 @@
       <column name="schemeId" value="1" />
       <column name="next" value="1" />
     </insert>
+    <insert tableName="sequences">
+      <column name="schemeId" value="2" />
+      <column name="next" value="1" />
+    </insert>
   </changeSet>
-  <changeSet author="John Watson" id="3">
+  <changeSet author="John Watson" id="4">
     <addForeignKeyConstraint baseColumnNames="schemeId" baseTableName="sequences" constraintName="fk_sequences_schemeId" referencedColumnNames="schemeId" referencedTableName="schemes" />
   </changeSet>
 </databaseChangeLog>

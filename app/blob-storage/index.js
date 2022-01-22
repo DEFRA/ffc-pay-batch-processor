@@ -6,7 +6,6 @@ let containersInitialised
 
 if (config.useConnectionStr) {
   console.log('Using connection string for BlobServiceClient')
-  console.log(config.connectionStr)
   blobServiceClient = BlobServiceClient.fromConnectionString(config.connectionStr)
 } else {
   console.log('Using DefaultAzureCredential for BlobServiceClient')

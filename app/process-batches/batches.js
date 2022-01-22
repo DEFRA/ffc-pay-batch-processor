@@ -1,16 +1,16 @@
 const db = require('../data')
 const schemeDetails = require('../scheme-details')
 
-async function nextSequenceId (schemeIdentifier) {
-  const dbSchemeId = schemeDetails.getDbIdentifier(schemeIdentifier)
-  if (!dbSchemeId) { return undefined }
+async function nextSequenceId (schemeName) {
+  const schemeId = await schemeDetails.getDbIdentifier(schemeName)
+  if (!schemeId) { return undefined }
 
-  const sequence = await db.sequence.findOne({ where: { schemeId: dbSchemeId } })
+  const sequence = await db.sequence.findOne({ where: { schemeId } })
   return sequence?.next
 }
 
-async function create (filename, sequenceNumber, schemeIdentifier) {
-  const schemeId = schemeDetails.getDbIdentifier(schemeIdentifier)
+async function create (filename, sequenceNumber, schemeName) {
+  const schemeId = await schemeDetails.getDbIdentifier(schemeName)
   await db.batch.create({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
   await db.sequence.update({ next: Number(sequenceNumber) + 1 }, { where: { schemeId } })
 }

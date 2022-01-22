@@ -1,6 +1,6 @@
 const blobStorage = require('../blob-storage')
 const processingConfig = require('../config/processing')
-const { parsePaymentFile, parseFilename, filenameMasks } = require('../parse-siti-payment-file')
+const { parsePaymentFile, parseFilename } = require('../parse-siti-payment-file')
 const batches = require('./batches')
 
 async function fileProcessingFailed (filename) {
@@ -97,12 +97,13 @@ async function checkAzureStorage () {
     console.log(`Found files to process ${filenameList}`)
 
     for (const filename of filenameList) {
-      const schemeType = parseFilename(filename, filenameMasks.sfi)
+      const schemeType = parseFilename(filename)
 
-      if (schemeType.scheme === 'SITIELM') {
+      if (schemeType) {
+        console.log(`Identified scheme as ${schemeType.scheme}`)
         await processPaymentFile(filename, schemeType)
       } else {
-        console.log(`Ignoring ${filename}, scheme ${schemeType.scheme} not recognised`)
+        console.log(`Ignoring ${filename}, scheme not recognised`)
       }
     }
   }
