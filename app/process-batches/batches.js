@@ -5,30 +5,25 @@ async function nextSequenceId (schemeIdentifier) {
   const dbSchemeId = schemeDetails.getDbIdentifier(schemeIdentifier)
   if (!dbSchemeId) { return undefined }
 
-  const batches = await db.batch.findAll({
-    where: { schemeId: dbSchemeId }
-  })
-
-  if (batches.length === 0) { return 1 }
-
-  const highestSequenceNumber = batches.reduce((pre, cur) => Math.max(pre, cur.sequenceNumber), 0)
-  return highestSequenceNumber + 1
+  const sequence = await db.sequence.findOne({ where: { schemeId: dbSchemeId } })
+  return sequence?.next
 }
 
-function create (filename, sequenceNumber, schemeIdentifier) {
+async function create (filename, sequenceNumber, schemeIdentifier) {
   const schemeId = schemeDetails.getDbIdentifier(schemeIdentifier)
-  db.batch.create({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
+  await db.batch.create({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
+  await db.sequence.update({ next: Number(sequenceNumber) + 1 }, { where: { schemeId } })
 }
 
-function updateStatus (filename, statusId) {
-  db.batch.update({ statusId, processedOn: Date.now() }, { where: { filename } })
+async function updateStatus (filename, statusId) {
+  await db.batch.update({ statusId, processedOn: Date.now() }, { where: { filename } })
 }
 
-function incrementProcessingTries (filename) {
-  db.batch.increment('processingTries', { by: 1, where: { filename } })
+async function incrementProcessingTries (filename) {
+  await db.batch.increment('processingTries', { by: 1, where: { filename } })
 }
 
-function exists (filename) {
+async function exists (filename) {
   return db.batch.findOne({ where: { filename } })
 }
 

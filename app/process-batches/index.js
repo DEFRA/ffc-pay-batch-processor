@@ -91,7 +91,6 @@ async function processPaymentFile (filename, schemeType) {
 }
 
 async function checkAzureStorage () {
-  console.log('Checking Azure Storage')
   const filenameList = await blobStorage.getInboundFileList()
 
   if (filenameList.length > 0) {
