@@ -1,10 +1,21 @@
 const filenameMasks = {
   sfi: {
-    scheme: 'SFI21',
+    scheme: 'SFI',
+    schemeType: 'SITISFI',
+    mask: '####### #### ## #######',
+    data: {
+      source: '',
+      batchId: '',
+      prefix: '',
+      date: ''
+    }
+  },
+  sfiPilot: {
+    scheme: 'SFI Pilot',
     schemeType: 'SITIELM',
     mask: '####### #### ## #######',
     data: {
-      scheme: '',
+      source: '',
       batchId: '',
       prefix: '',
       date: ''

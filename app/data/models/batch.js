@@ -15,11 +15,11 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true
   })
   batch.associate = function (models) {
-    batch.hasOne(models.status, {
+    batch.belongsTo(models.status, {
       foreignKey: 'statusId',
       as: 'status'
     })
-    batch.hasOne(models.scheme, {
+    batch.belongsTo(models.scheme, {
       foreignKey: 'schemeId',
       as: 'scheme'
     })

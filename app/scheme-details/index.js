@@ -1,12 +1,8 @@
-const schemes = {
-  sfi: {
-    dbSchemeId: 1,
-    filenameId: 'SITIELM'
-  }
-}
+const db = require('../data')
 
-function getDbIdentifier (filenameId) {
-  return Object.values(schemes).find(s => s.filenameId === filenameId)?.dbSchemeId
+async function getDbIdentifier (schemeName) {
+  const scheme = await db.scheme.findOne({ where: { scheme: schemeName } })
+  return scheme?.schemeId
 }
 
 module.exports = {
