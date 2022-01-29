@@ -14,9 +14,9 @@ const schema = Joi.object({
 const config = {
   connectionStr: process.env.AZURE_STORAGE_CONNECTION_STRING,
   storageAccount: process.env.AZURE_STORAGE_ACCOUNT_NAME,
-  inboundContainer: 'inbound',
-  archiveContainer: 'archive',
-  quarantineContainer: 'quarantine',
+  inboundContainer: 'batch-inbound',
+  archiveContainer: 'batch-archive',
+  quarantineContainer: 'batch-quarantine',
   useConnectionStr: process.env.AZURE_STORAGE_USE_CONNECTION_STRING === 'true'
 }
 
