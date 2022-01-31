@@ -18,11 +18,18 @@ const container = blobServiceClient.getContainerClient(config.container)
 async function initialiseContainers () {
   console.log('Making sure blob containers exist')
   await container.createIfNotExists()
-  // ensure inbound folder exists with placeholder file
-  const client = container.getBlockBlobClient(`${config.inboundFolder}/default.txt`)
-  const placeHolderText = 'Placeholder'
-  await client.upload(placeHolderText, placeHolderText.length)
+  await initialiseFolders()
   containersInitialised = true
+}
+
+async function initialiseFolders () {
+  const placeHolderText = 'Placeholder'
+  const inboundClient = container.getBlockBlobClient(`${config.inboundFolder}/default.txt`)
+  const archiveClient = container.getBlockBlobClient(`${config.archiveFolder}/default.txt`)
+  const quarantineClient = container.getBlockBlobClient(`${config.quarantineFolder}/default.txt`)
+  await inboundClient.upload(placeHolderText, placeHolderText.length)
+  await archiveClient.upload(placeHolderText, placeHolderText.length)
+  await quarantineClient.upload(placeHolderText, placeHolderText.length)
 }
 
 async function getBlob (folder, filename) {
