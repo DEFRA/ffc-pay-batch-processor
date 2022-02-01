@@ -27,8 +27,6 @@ services:
     command: "azurite-blob --loose --blobHost 0.0.0.0"
     volumes:
       - azurite_data:/data
-    ports:
-      - "10000:10000"
 
 volumes:
   azurite_data:

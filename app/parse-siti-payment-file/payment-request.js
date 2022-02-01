@@ -19,12 +19,12 @@ const invoiceToPaymentRequest = (invoiceHeaders) => {
 }
 
 const invoiceLineToPaymentRequest = (invoiceLines) => {
-  return invoiceLines.map(invoiceline => ({
-    standardCode: invoiceline.schemeCode.toString(),
-    accountCode: invoiceline.msdaxAccountCode,
-    fundCode: invoiceline.fund,
-    description: invoiceline.lineDescription,
-    value: invoiceline.value
+  return invoiceLines.map(invoiceLine => ({
+    schemeCode: invoiceLine.schemeCode.toString(),
+    accountCode: invoiceLine.msdaxAccountCode,
+    fundCode: invoiceLine.fund,
+    description: invoiceLine.lineDescription,
+    value: invoiceLine.value
   })
   )
 }
