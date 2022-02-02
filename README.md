@@ -59,6 +59,16 @@ and
 }
 ```
 
+## Azure Storage
+
+This repository polls for files from Azure Blob Storage within a `batch` container.
+
+The following directories are automatically created within this container:
+
+- `inbound` - polling location
+- `archive` - successfully processed files
+- `quarantine` - unsuccessfully processed files
+
 ## Payment batch file specification
 ### SFI Pilot
 #### Example file
