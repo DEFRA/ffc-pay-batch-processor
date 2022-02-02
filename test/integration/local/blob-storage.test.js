@@ -1,26 +1,25 @@
 describe('Blob storage tests', () => {
   const createServer = require('../../../app/server')
+  let blobServiceClient
+  let container
   let server
+  const { BlobServiceClient } = require('@azure/storage-blob')
   const blobStorage = require('../../../app/blob-storage')
   const blobStorageConfig = require('../../../app/config/blob-storage')
-  const mockFileList = ['test1.txt', 'test2.txt']
+  const mockFileList = ['test1.dat', 'test2.dat']
   const testFileContents = 'This is a test file'
 
-  async function getContainer (containerName) {
-    const container = blobStorage.blobServiceClient.getContainerClient(containerName)
-    await container.createIfNotExists()
-    return container
-  }
-
   beforeEach(async () => {
-    server = await createServer()
-    await server.start()
+    blobServiceClient = BlobServiceClient.fromConnectionString(blobStorageConfig.connectionStr)
+    container = blobServiceClient.getContainerClient(blobStorageConfig.container)
+    await container.deleteIfExists()
+    await container.createIfNotExists()
 
-    // Set up the inbound container so it contains files needed for testing blob storage behaviour
-    const inboundContainer = await getContainer(blobStorageConfig.inboundContainer)
+    server = await createServer()
+    await server.initialize()
 
     for (const filename of mockFileList) {
-      const blob = inboundContainer.getBlockBlobClient(filename)
+      const blob = container.getBlockBlobClient(`${blobStorageConfig.inboundFolder}/${filename}`)
       const buffer = Buffer.from(testFileContents)
       await blob.upload(buffer, buffer.byteLength)
     }
@@ -55,17 +54,6 @@ describe('Blob storage tests', () => {
   })
 
   afterEach(async () => {
-    const deleteBlobs = async (containerName) => {
-      const container = await getContainer(containerName)
-
-      for (const filename of mockFileList) {
-        const blob = container.getBlockBlobClient(filename)
-        await blob.deleteIfExists()
-      }
-    }
-
-    await deleteBlobs(blobStorageConfig.inboundContainer)
-    await deleteBlobs(blobStorageConfig.archiveContainer)
     await server.stop()
   })
 })

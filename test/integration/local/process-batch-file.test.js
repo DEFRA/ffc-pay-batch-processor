@@ -19,9 +19,7 @@ let scheme
 let sequence
 let statuses
 let blobServiceClient
-let inboundContainer
-let archiveContainer
-let quarantineContainer
+let container
 const TEST_FILE = path.resolve(__dirname, '../../files/SITIELM0001_AP_20210812105407541.dat')
 const TEST_INVALID_FILE = path.resolve(__dirname, '../../files/SITIELM0001_AP_20210812105407542.dat')
 
@@ -55,15 +53,9 @@ describe('process acknowledgement', () => {
     await db.status.bulkCreate(statuses)
 
     blobServiceClient = BlobServiceClient.fromConnectionString(config.connectionStr)
-    inboundContainer = blobServiceClient.getContainerClient(config.inboundContainer)
-    archiveContainer = blobServiceClient.getContainerClient(config.archiveContainer)
-    quarantineContainer = blobServiceClient.getContainerClient(config.quarantineContainer)
-    await inboundContainer.deleteIfExists()
-    await archiveContainer.deleteIfExists()
-    await quarantineContainer.deleteIfExists()
-    await inboundContainer.createIfNotExists()
-    await archiveContainer.createIfNotExists()
-    await quarantineContainer.createIfNotExists()
+    container = blobServiceClient.getContainerClient(config.container)
+    await container.deleteIfExists()
+    await container.createIfNotExists()
   })
 
   afterAll(async () => {
@@ -72,14 +64,14 @@ describe('process acknowledgement', () => {
   })
 
   test('sends all payment requests', async () => {
-    const blockBlobClient = inboundContainer.getBlockBlobClient('SITIELM0001_AP_20210812105407541.dat')
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('sends invoice numbers', async () => {
-    const blockBlobClient = inboundContainer.getBlockBlobClient('SITIELM0001_AP_20210812105407541.dat')
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('SFI00000001')
@@ -87,35 +79,36 @@ describe('process acknowledgement', () => {
   })
 
   test('archives file on success', async () => {
-    const blockBlobClient = inboundContainer.getBlockBlobClient('SITIELM0001_AP_20210812105407541.dat')
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     const fileList = []
-    for await (const item of archiveContainer.listBlobsFlat()) {
+    for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === 'SITIELM0001_AP_20210812105407541.dat').length).toBe(1)
+    console.log(fileList)
+    expect(fileList.filter(x => x === `${config.archiveFolder}/SITIELM0001_AP_20210812105407541.dat`).length).toBe(1)
   })
 
   test('ignores unrelated file', async () => {
-    const blockBlobClient = inboundContainer.getBlockBlobClient('ignore me.dat')
+    const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     const fileList = []
-    for await (const item of inboundContainer.listBlobsFlat()) {
+    for await (const item of container.listBlobsFlat()) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === 'ignore me.dat').length).toBe(1)
+    expect(fileList.filter(x => x === `${config.inbound}/ignore me.dat`).length).toBe(1)
   })
 
   test('quarantines invalid file', async () => {
-    const blockBlobClient = inboundContainer.getBlockBlobClient('SITIELM0001_AP_20210812105407542.dat')
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407542.dat`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILE)
     await processBatches()
     const fileList = []
-    for await (const item of quarantineContainer.listBlobsFlat()) {
+    for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === 'SITIELM0001_AP_20210812105407542.dat').length).toBe(1)
+    expect(fileList.filter(x => x === `${config.quarantineFolder}/SITIELM0001_AP_20210812105407542.dat`).length).toBe(1)
   })
 })
