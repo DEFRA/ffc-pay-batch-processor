@@ -3,7 +3,7 @@ const config = require('../config/mq-config')
 
 async function sendPaymentBatchMessage (payload) {
   await sendBatchMessage(payload, 'uk.gov.pay.send', config.paymentBatchTopic)
-  console.info('Payment request sent', payload)
+  console.info('Payment requests sent', payload)
 }
 
 module.exports = {
