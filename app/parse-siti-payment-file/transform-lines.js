@@ -11,7 +11,7 @@ const transformLines = (lineData) => ({
   lineDescription: lineData[10],
   dueDate: lineData[11],
   batchToCustomerDate: lineData[12],
-  msdaxAccountCode: lineData[13]
+  accountCode: lineData[13]
 })
 
 module.exports = transformLines

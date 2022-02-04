@@ -21,7 +21,7 @@ const invoiceToPaymentRequest = (invoiceHeaders) => {
 const invoiceLineToPaymentRequest = (invoiceLines) => {
   return invoiceLines.map(invoiceLine => ({
     schemeCode: invoiceLine.schemeCode.toString(),
-    accountCode: invoiceLine.msdaxAccountCode,
+    accountCode: invoiceLine.accountCode,
     fundCode: invoiceLine.fund,
     description: invoiceLine.lineDescription,
     value: invoiceLine.value

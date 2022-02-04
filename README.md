@@ -40,19 +40,20 @@ and
 ```
 {
   "sourceSystem": "SFIP",
-  "sbi": 123456789,
-  "frn": 1234567890
+  "frn": 1234567890,
   "marketingYear": 2022,
   "paymentRequestNumber": 1,
   "invoiceNumber": "SFI12345678",
   "agreementNumber": "SFI12345",
   "contractNumber": "SFI12345",
-  "currency": 'GBP",
+  "currency": "GBP",
   "schedule": "Q4",
   "dueDate": "09/11/2022",
   "value": 1000.00,
   "invoiceLines": [{
     "schemeCode": "80001",
+    "accountCode": "SOS100",
+    "fundCode": "DRD10",
     "description": "G00 - Gross value of claim",
     "value": 1000.00
   }]

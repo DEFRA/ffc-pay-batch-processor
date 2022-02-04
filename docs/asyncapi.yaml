@@ -18,9 +18,6 @@ components:
           sourceSystem:
             type: string
             description: System identifier request originates from
-          sbi:
-            type: number
-            description: Single Business Identifier, optional if frn provided
           frn:
             type: number
             description: Firm Reference Number, optional if sbi provided
@@ -32,7 +29,7 @@ components:
             description: Version of payment request starting with 1, anything greater than 1 is an adjustment
           invoiceNumber:
             type: string
-            description: Unique request for payment, optional
+            description: Unique request for payment
           agreementNumber:
             type: string
             description: Unique reference number for agreement/application
@@ -59,7 +56,10 @@ components:
               properties:
                 schemeCode:
                   type: string
-                  description: Unique funding option code to be mapped to scheme code
+                  description: Unique funding option code
+                accountCode:
+                  type: string
+                  description: Unique account code for budgeting
                 description:
                   type: string
                   description: Description of what line relates to, eg gross or penalty
