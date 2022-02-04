@@ -6,11 +6,12 @@ const transformLines = (lineData) => ({
   fund: lineData[5],
   agreementNumber: lineData[6],
   deliveryBody: lineData[7],
-  lineId: lineData[8],
-  lineDescription: lineData[9],
-  dueDate: lineData[10],
-  batchToCustomerDate: lineData[11],
-  msdaxAccountCode: lineData[12]
+  convergence: lineData[8],
+  lineId: lineData[9],
+  lineDescription: lineData[10],
+  dueDate: lineData[11],
+  batchToCustomerDate: lineData[12],
+  msdaxAccountCode: lineData[13]
 })
 
 module.exports = transformLines
