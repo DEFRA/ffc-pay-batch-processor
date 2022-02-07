@@ -40,19 +40,20 @@ and
 ```
 {
   "sourceSystem": "SFIP",
-  "sbi": 123456789,
-  "frn": 1234567890
+  "frn": 1234567890,
   "marketingYear": 2022,
   "paymentRequestNumber": 1,
   "invoiceNumber": "SFI12345678",
   "agreementNumber": "SFI12345",
   "contractNumber": "SFI12345",
-  "currency": 'GBP",
+  "currency": "GBP",
   "schedule": "Q4",
   "dueDate": "09/11/2022",
   "value": 1000.00,
   "invoiceLines": [{
     "schemeCode": "80001",
+    "accountCode": "SOS100",
+    "fundCode": "DRD10",
     "description": "G00 - Gross value of claim",
     "value": 1000.00
   }]
@@ -130,6 +131,7 @@ A batch file comprises three different line types which exist on a one : many : 
 | Fund | 5 | 6 | Y | String | `DRD10` |
 | Agreement Number | 15 | 7 | Y | String | SIP + 12 digits. Unique number related to the Agreement. Start at next available number (sequence is shared across all SitiAgri schemes). For example `SIP000012345678` | 
 |Delivery body | 4 | 8 | Y | String | Allowed values: For example `RP00` (Rural Payments Agency). As per Header Delivery body. |
+| Convergence | 1 | 9 | Y | String | `N` = Convergence, or `N` = non-convergence. |
 | Line ID | 3 | 10 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
 | Line type description | 60 | 11 | Y | String | Description of invoice line |
 |Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
