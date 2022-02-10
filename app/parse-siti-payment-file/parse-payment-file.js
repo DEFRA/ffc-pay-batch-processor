@@ -9,33 +9,29 @@ const validate = require('./validate')
 
 const { sendPaymentBatchMessage } = require('../messaging')
 
-let sequence = ''
-let batchHeaders = []
-let paymentRequests = []
-
-const checkAndTransformBatch = (batchHeaderLine) => {
+const checkAndTransformBatch = (batchHeaderLine, batch) => {
   const batchHeader = transformBatch(batchHeaderLine)
 
-  if (batchHeader.sequence === sequence) {
-    batchHeaders.push(batchHeader)
+  if (batchHeader.sequence === batch.sequence) {
+    batch.batchHeaders.push(batchHeader)
     return true
   }
 
   return false
 }
 
-const parseBatchLineType = (batchLine) => {
+const parseBatchLineType = (batchLine, batch) => {
   const lineType = batchLine[0]
 
   switch (lineType) {
     case 'B':
-      checkAndTransformBatch(batchLine)
+      checkAndTransformBatch(batchLine, batch)
       return true
     case 'H':
-      paymentRequests.push(transformHeaders(batchLine))
+      batch.paymentRequests.push(transformHeaders(batchLine))
       return true
     case 'L':
-      paymentRequests[paymentRequests.length - 1]
+      batch.paymentRequests[batch.paymentRequests.length - 1]
         .invoiceLines
         .push(transformInvoiceLines(batchLine))
       return true
@@ -44,38 +40,40 @@ const parseBatchLineType = (batchLine) => {
   }
 }
 
-const reset = (batchId) => {
-  sequence = batchId
-  batchHeaders = []
-  paymentRequests = []
+const createBatch = (sequence) => {
+  return {
+    sequence,
+    batchHeaders: [],
+    paymentRequests: []
+  }
 }
 
-const buildAndTransformParseFile = (fileBuffer) => {
-  const invoiceInput = Readable.from(fileBuffer)
-  const readBatchLines = readline.createInterface(invoiceInput)
+const buildAndTransformParseFile = (fileBuffer, batch) => {
+  const input = Readable.from(fileBuffer)
+  const readBatchLines = readline.createInterface(input)
   return new Promise((resolve, reject) => {
     readBatchLines.on('line', (line) => {
       const batchLine = line.split('^')
-      !parseBatchLineType(batchLine) ??
+      !parseBatchLineType(batchLine, batch) ??
         reject(new Error('Invalid file - Unknown line'))
     })
 
     readBatchLines.on('close', () => {
-      validate(batchHeaders, paymentRequests, sequence)
-        ? resolve(invoiceToPaymentRequest(paymentRequests))
+      validate(batch.batchHeaders, batch.paymentRequests, batch.sequence)
+        ? resolve(invoiceToPaymentRequest(batch.paymentRequests))
         : reject(new Error('Invalid file'))
       readBatchLines.close()
-      invoiceInput.destroy()
+      input.destroy()
     })
   })
 }
 
-const parsePaymentFile = async (fileBuffer, batchId) => {
-  reset(batchId)
+const parsePaymentFile = async (fileBuffer, sequence) => {
+  const batch = createBatch(sequence)
 
   try {
-    const paymentInvoice = await buildAndTransformParseFile(fileBuffer)
-    await sendPaymentBatchMessage(paymentInvoice)
+    const paymentRequests = await buildAndTransformParseFile(fileBuffer, batch)
+    await sendPaymentBatchMessage(paymentRequests)
     return true
   } catch (err) {
     console.log(err)
