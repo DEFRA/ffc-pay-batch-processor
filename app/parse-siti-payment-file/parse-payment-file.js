@@ -9,23 +9,12 @@ const validate = require('./validate')
 
 const { sendPaymentBatchMessage } = require('../messaging')
 
-const checkAndTransformBatch = (batchHeaderLine, batch) => {
-  const batchHeader = transformBatch(batchHeaderLine)
-
-  if (batchHeader.sequence === batch.sequence) {
-    batch.batchHeaders.push(batchHeader)
-    return true
-  }
-
-  return false
-}
-
 const parseBatchLineType = (batchLine, batch) => {
   const lineType = batchLine[0]
 
   switch (lineType) {
     case 'B':
-      checkAndTransformBatch(batchLine, batch)
+      batch.batchHeaders.push(transformBatch(batchLine))
       return true
     case 'H':
       batch.paymentRequests.push(transformHeaders(batchLine))
