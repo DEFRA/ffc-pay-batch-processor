@@ -37,7 +37,8 @@ const createBatch = (sequence) => {
   }
 }
 
-const buildAndTransformParseFile = (fileBuffer, batch) => {
+const buildAndTransformParseFile = (fileBuffer, sequence) => {
+  const batch = createBatch(sequence)
   const input = Readable.from(fileBuffer)
   const readBatchLines = readline.createInterface(input)
   return new Promise((resolve, reject) => {
@@ -58,10 +59,8 @@ const buildAndTransformParseFile = (fileBuffer, batch) => {
 }
 
 const parsePaymentFile = async (fileBuffer, sequence) => {
-  const batch = createBatch(sequence)
-
   try {
-    const paymentRequests = await buildAndTransformParseFile(fileBuffer, batch)
+    const paymentRequests = await buildAndTransformParseFile(fileBuffer, sequence)
     await sendPaymentBatchMessage(paymentRequests)
     return true
   } catch (err) {
