@@ -1,19 +1,19 @@
-const getInvoiceTotalInPence = require('./invoice-totals')
+const valueInPence = require('./invoice-totals')
 const { convertToPence } = require('../currency-convert')
 
-const validateLineTotals = (invoiceHeaders) => {
-  return invoiceHeaders
-    .every(a => convertToPence(a.totalValue) === getInvoiceTotalInPence(a.lines, 'value'))
+const validateLineTotals = (paymentRequests) => {
+  return paymentRequests
+    .every(a => convertToPence(a.value) === valueInPence(a.invoiceLines, 'value'))
 }
 
-const validate = (invoiceBatch, invoiceHeaders) => {
-  if (invoiceBatch.length === 0) return false
+const validate = (batchHeader, paymentRequests) => {
+  if (batchHeader.length === 0) return false
 
-  const numberOfInvoicesValid = invoiceBatch[0].numberOfInvoices === invoiceHeaders.length
-  const invoiceTotalsValid = convertToPence(invoiceBatch[0].batchValue) === getInvoiceTotalInPence(invoiceHeaders, 'totalValue')
-  const invoiceLinesTotalsValid = validateLineTotals(invoiceHeaders)
-  const checkNumberNumberOfBatches = invoiceBatch.length === 1
-  return numberOfInvoicesValid && invoiceTotalsValid && invoiceLinesTotalsValid && checkNumberNumberOfBatches
+  const numberOfPaymentRequestsValid = batchHeader[0].numberOfPaymentRequests === paymentRequests.length
+  const batchValueTotalsValid = convertToPence(batchHeader[0].batchValue) === valueInPence(paymentRequests, 'value')
+  const invoiceLinesValuesValid = validateLineTotals(paymentRequests)
+  const numberOfBatchHeadersValid = batchHeader.length === 1
+  return numberOfPaymentRequestsValid && batchValueTotalsValid && invoiceLinesValuesValid && numberOfBatchHeadersValid
 }
 
 module.exports = validate

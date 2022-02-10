@@ -1,14 +1,11 @@
-const transformBatch = (batchData) => {
-  const batchValue = parseFloat(batchData[3])
-  const numberOfInvoices = parseFloat(batchData[2])
-
+const transformBatch = (batchHeader) => {
   return {
-    exportDate: batchData[1],
-    numberOfInvoices,
-    batchValue,
-    batchId: batchData[4],
-    creatorId: batchData[5],
-    invoiceType: batchData[6]
+    exportDate: batchHeader[1],
+    numberOfPaymentRequests: Number(batchHeader[2]),
+    batchValue: parseFloat(batchHeader[3]),
+    sequence: batchHeader[4],
+    sourceSystem: batchHeader[5],
+    ledger: batchHeader[6]
   }
 }
 
