@@ -4,7 +4,7 @@ const { Readable } = require('stream')
 const transformBatch = require('./transform-batch')
 const transformHeaders = require('./transform-headers')
 const transformInvoiceLines = require('./transform-invoice-lines')
-const invoiceToPaymentRequest = require('./payment-request')
+const buildPaymentRequests = require('./payment-request')
 const validate = require('./validate')
 
 const { sendPaymentBatchMessage } = require('../messaging')
@@ -50,7 +50,7 @@ const buildAndTransformParseFile = (fileBuffer, sequence) => {
 
     readBatchLines.on('close', () => {
       validate(batch.batchHeaders, batch.paymentRequests, batch.sequence)
-        ? resolve(invoiceToPaymentRequest(batch.paymentRequests))
+        ? resolve(buildPaymentRequests(batch.paymentRequests))
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()
