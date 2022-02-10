@@ -1,4 +1,4 @@
-const valueInPence = require('./invoice-totals')
+const valueInPence = require('./value')
 const { convertToPence } = require('../currency-convert')
 
 const validateLineTotals = (paymentRequests) => {
