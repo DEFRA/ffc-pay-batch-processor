@@ -28,6 +28,13 @@ services:
     volumes:
       - azurite_data:/data
 
+  ffc-pay-batch-processor-postgres:
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   azurite_data:
+  postgres_data:
 
