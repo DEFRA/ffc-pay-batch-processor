@@ -1,6 +1,6 @@
 const { DefaultAzureCredential } = require('@azure/identity')
 const { BlobServiceClient } = require('@azure/storage-blob')
-const config = require('../config/blob-storage')
+const config = require('./config/blob-storage')
 let blobServiceClient
 let containersInitialised
 
@@ -16,8 +16,10 @@ if (config.useConnectionStr) {
 const container = blobServiceClient.getContainerClient(config.container)
 
 async function initialiseContainers () {
-  console.log('Making sure blob containers exist')
-  await container.createIfNotExists()
+  if (config.createContainers) {
+    console.log('Making sure blob containers exist')
+    await container.createIfNotExists()
+  }
   await initialiseFolders()
   containersInitialised = true
 }

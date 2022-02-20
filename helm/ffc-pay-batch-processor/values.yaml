@@ -43,6 +43,7 @@ container:
   paymentTopicAddress: ffc-pay-request
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
+  azureStorageCreateContainers: false
   pollingInterval: 60000
   maxProcessingTries: 3
 
