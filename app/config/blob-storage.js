@@ -8,7 +8,8 @@ const schema = Joi.object({
   inboundFolder: Joi.string().required(),
   archiveFolder: Joi.string().required(),
   quarantineFolder: Joi.string().required(),
-  useConnectionStr: Joi.boolean().default(false)
+  useConnectionStr: Joi.boolean().default(false),
+  createContainers: Joi.boolean().default(false)
 })
 
 // Build config
@@ -19,7 +20,8 @@ const config = {
   inboundFolder: 'inbound',
   archiveFolder: 'archive',
   quarantineFolder: 'quarantine',
-  useConnectionStr: process.env.AZURE_STORAGE_USE_CONNECTION_STRING === 'true'
+  useConnectionStr: process.env.AZURE_STORAGE_USE_CONNECTION_STRING,
+  createContainers: process.env.AZURE_STORAGE_CREATE_CONTAINERS
 }
 
 // Validate config
