@@ -78,6 +78,14 @@ describe('process acknowledgement', () => {
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('SFI00000002')
   })
 
+  test('sends payment request numbers', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
+    await blockBlobClient.uploadFile(TEST_FILE)
+    await processBatches()
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.paymentRequestNumber).toBe(1)
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.paymentRequestNumber).toBe(3)
+  })
+
   test('archives file on success', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
