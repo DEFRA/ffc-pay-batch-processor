@@ -1,8 +1,8 @@
 const transformHeaders = (headerData) => ({
   invoiceNumber: headerData[1],
-  paymentType: headerData[2],
+  paymentRequestNumber: parseInt(headerData[2]),
   contractNumber: headerData[3],
-  paymentRequestNumber: headerData[4],
+  paymentType: headerData[4],
   frn: headerData[5],
   currency: headerData[6],
   value: parseFloat(headerData[7]),
