@@ -16,7 +16,7 @@ services:
       MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
       MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}
       PAYMENT_TOPIC_ADDRESS: ${PAYMENT_TOPIC_ADDRESS:-ffc-pay-request}${MESSAGE_QUEUE_SUFFIX}
-      AZURE_STORAGE_USE_CONNECTION_STRING: "true"      
+      AZURE_STORAGE_USE_CONNECTION_STRING: "true"
       AZURE_STORAGE_CREATE_CONTAINERS: "true"
       POLLING_INTERVAL: ${POLLING_INTERVAL:-60000}
       MAX_PROCESSING_TRIES: ${MAX_PROCESSING_TRIES:-3}
@@ -27,6 +27,7 @@ services:
       POSTGRES_SCHEMA_NAME: ${POSTGRES_SCHEMA_NAME:-public}
       POSTGRES_USERNAME: ${POSTGRES_SCHEMA_USERNAME:-postgres}
       APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+
   ffc-pay-batch-processor-postgres:
     image: postgres:11.4-alpine
     environment:
@@ -34,6 +35,6 @@ services:
       POSTGRES_PASSWORD: ppp
       POSTGRES_USERNAME: postgres
 
-  ffc-pay-batch-processor-azurite:
+  ffc-pay-azurite:
     image: mcr.microsoft.com/azure-storage/azurite
-    command: "azurite-blob --loose --blobHost 0.0.0.0"
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose"
