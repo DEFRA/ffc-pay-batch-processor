@@ -41,6 +41,7 @@ container:
   azureStorageAccountName: ffcpay
   messageQueueHost: namespace.servicebus.windows.net
   paymentTopicAddress: ffc-pay-request
+  eventTopicAddress: ffc-pay-event
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false

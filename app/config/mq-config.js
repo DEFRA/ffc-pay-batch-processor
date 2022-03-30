@@ -12,6 +12,12 @@ const mqSchema = joi.object({
     address: joi.string().default('payment'),
     username: joi.string(),
     password: joi.string()
+  },
+  eventTopic: {
+    name: joi.string().default('ffc-pay-event'),
+    address: joi.string().default('payment'),
+    username: joi.string(),
+    password: joi.string()
   }
 })
 const mqConfig = {
@@ -24,6 +30,12 @@ const mqConfig = {
   paymentBatchTopic: {
     name: process.env.PAYMENT_TOPIC_NAME,
     address: process.env.PAYMENT_TOPIC_ADDRESS,
+    username: process.env.MESSAGE_QUEUE_USER,
+    password: process.env.MESSAGE_QUEUE_PASSWORD
+  },
+  eventTopic: {
+    name: process.env.EVENT_TOPIC_NAME,
+    address: process.env.EVENT_TOPIC_ADDRESS,
     username: process.env.MESSAGE_QUEUE_USER,
     password: process.env.MESSAGE_QUEUE_PASSWORD
   }
@@ -39,7 +51,9 @@ if (mqResult.error) {
 }
 
 const paymentBatchTopic = { ...mqResult.value.messageQueue, ...mqResult.value.paymentBatchTopic }
+const eventTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventTopic }
 
 module.exports = {
-  paymentBatchTopic
+  paymentBatchTopic,
+  eventTopic
 }
