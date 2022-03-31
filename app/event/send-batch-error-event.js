@@ -1,13 +1,13 @@
 const { v4: uuidv4 } = require('uuid')
 const raiseEvent = require('./raise-event')
 
-const sendBatchErrorEvent = async (filename, message, error) => {
+const sendBatchErrorEvent = async (filename, error) => {
   const correlationId = uuidv4()
   const event = {
     id: correlationId,
     name: 'batch-processing-error-event',
     type: 'error',
-    message,
+    message: error.message,
     data: { filename }
   }
   await raiseEvent(event, 'error', error)

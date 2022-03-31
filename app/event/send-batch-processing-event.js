@@ -1,6 +1,6 @@
 const raiseEvent = require('./raise-event')
 
-const sendBatchProcessingEvent = async (paymentRequest) => {
+const sendBatchProcessingEvent = async (filename, paymentRequest, sequence) => {
   if (paymentRequest) {
     const correlationId = paymentRequest.correlationId
     const event = {
@@ -8,7 +8,7 @@ const sendBatchProcessingEvent = async (paymentRequest) => {
       name: 'batch-processing-event',
       type: 'info',
       message: 'Payment request parsed from Siti payment file',
-      data: paymentRequest
+      data: { filename, sequence, paymentRequest }
     }
     await raiseEvent(event)
   }

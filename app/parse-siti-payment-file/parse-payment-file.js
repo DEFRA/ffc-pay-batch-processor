@@ -60,7 +60,7 @@ const buildAndTransformParseFile = (fileBuffer, sequence) => {
   })
 }
 
-const correlationIdEnrichment = async (filename, paymentRequests) => {
+const correlationIdEnrichment = async (filename, paymentRequests, sequence) => {
   const correlation = { filename, correlationIds: [] }
 
   for (const paymentRequest of paymentRequests) {
@@ -69,7 +69,7 @@ const correlationIdEnrichment = async (filename, paymentRequests) => {
     const invoiceNumber = paymentRequest.invoiceNumber
     const contractNumber = paymentRequest.contractNumber
     paymentRequest.correlationId = correlationId
-    await sendBatchProcessingEvent(paymentRequest)
+    await sendBatchProcessingEvent(filename, paymentRequest, sequence)
     correlation.correlationIds.push({ correlationId, agreementNumber, invoiceNumber, contractNumber })
   }
 
@@ -79,12 +79,12 @@ const correlationIdEnrichment = async (filename, paymentRequests) => {
 const parsePaymentFile = async (filename, fileBuffer, sequence) => {
   try {
     const paymentRequests = await buildAndTransformParseFile(fileBuffer, sequence)
-    const correlation = await correlationIdEnrichment(filename, paymentRequests)
+    const correlation = await correlationIdEnrichment(filename, paymentRequests, sequence)
     await sendBatchCaptureEvent(correlation)
     await sendPaymentBatchMessage(paymentRequests)
     return true
   } catch (err) {
-    await sendBatchErrorEvent(filename, 'Error parsing payment file', err.message)
+    await sendBatchErrorEvent(filename, err)
     console.log(err)
   }
 
