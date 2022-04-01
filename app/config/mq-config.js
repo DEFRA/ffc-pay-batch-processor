@@ -14,8 +14,7 @@ const mqSchema = joi.object({
     password: joi.string()
   },
   eventTopic: {
-    name: joi.string().default('ffc-pay-event'),
-    address: joi.string().default('payment'),
+    address: joi.string(),
     username: joi.string(),
     password: joi.string()
   }

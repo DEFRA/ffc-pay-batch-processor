@@ -5,7 +5,7 @@ const sendBatchErrorEvent = async (filename, error) => {
   const correlationId = uuidv4()
   const event = {
     id: correlationId,
-    name: 'batch-processing-error-event',
+    name: 'batch-processing-error',
     type: 'error',
     message: error.message,
     data: { filename }

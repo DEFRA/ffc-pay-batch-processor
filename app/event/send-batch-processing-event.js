@@ -5,7 +5,7 @@ const sendBatchProcessingEvent = async (filename, paymentRequest, sequence) => {
     const correlationId = paymentRequest.correlationId
     const event = {
       id: correlationId,
-      name: 'batch-processing-event',
+      name: 'batch-processing',
       type: 'info',
       message: 'Payment request parsed from Siti payment file',
       data: { filename, sequence, paymentRequest }
