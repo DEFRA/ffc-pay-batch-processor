@@ -9,6 +9,15 @@ jest.mock('ffc-messaging', () => {
     })
   }
 })
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: jest.fn().mockImplementation(() => {
+      return {
+        sendEvent: jest.fn()
+      }
+    })
+  }
+})
 jest.useFakeTimers()
 const processBatches = require('../../../app/process-batches')
 const { BlobServiceClient } = require('@azure/storage-blob')
