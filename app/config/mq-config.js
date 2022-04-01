@@ -33,7 +33,6 @@ const mqConfig = {
     password: process.env.MESSAGE_QUEUE_PASSWORD
   },
   eventTopic: {
-    name: process.env.EVENT_TOPIC_NAME,
     address: process.env.EVENT_TOPIC_ADDRESS,
     username: process.env.MESSAGE_QUEUE_USER,
     password: process.env.MESSAGE_QUEUE_PASSWORD
