@@ -7,7 +7,6 @@ const mapData = (data, maskData) => {
 
 const parseFilename = (filename) => {
   for (const key of Object.keys(filenameMasks)) {
-    console.log(`Trying to match file to ${filenameMasks[key].scheme}`)
     filename = filename.replace(/_/g, '')
     let i = 0
     const convertToMask = filenameMasks[key].mask.replace(/#/g, () => filename[i++])
@@ -15,7 +14,6 @@ const parseFilename = (filename) => {
     if (mappedData.source === filenameMasks[key].schemeType) {
       return { scheme: filenameMasks[key].scheme, ...mappedData }
     }
-    console.log(`No match for ${filenameMasks[key].scheme}`)
   }
 }
 
