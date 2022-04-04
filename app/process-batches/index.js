@@ -10,7 +10,7 @@ async function fileProcessingFailed (filename) {
 
 async function downloadAndParse (filename, schemeType) {
   const buffer = await blobStorage.downloadPaymentFile(filename)
-  const parseSuccess = await parsePaymentFile(buffer, schemeType.batchId)
+  const parseSuccess = await parsePaymentFile(filename, buffer, schemeType.batchId)
 
   if (parseSuccess) {
     console.log(`Archiving ${filename}, successfully parsed file`)
@@ -94,16 +94,12 @@ async function checkAzureStorage () {
   const filenameList = await blobStorage.getInboundFileList()
 
   if (filenameList.length > 0) {
-    console.log(`Found files to process ${filenameList}`)
-
     for (const filename of filenameList) {
       const schemeType = parseFilename(filename)
 
       if (schemeType) {
         console.log(`Identified scheme as ${schemeType.scheme}`)
         await processPaymentFile(filename, schemeType)
-      } else {
-        console.log(`Ignoring ${filename}, scheme not recognised`)
       }
     }
   }
