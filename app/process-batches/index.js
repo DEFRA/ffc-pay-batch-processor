@@ -94,16 +94,12 @@ async function checkAzureStorage () {
   const filenameList = await blobStorage.getInboundFileList()
 
   if (filenameList.length > 0) {
-    console.log(`Found files to process ${filenameList}`)
-
     for (const filename of filenameList) {
       const schemeType = parseFilename(filename)
 
       if (schemeType) {
         console.log(`Identified scheme as ${schemeType.scheme}`)
         await processPaymentFile(filename, schemeType)
-      } else {
-        console.log(`Ignoring ${filename}, scheme not recognised`)
       }
     }
   }
