@@ -1,15 +1,15 @@
 const { v4: uuidv4 } = require('uuid')
 const raiseEvent = require('../event/raise-event')
 
-const sendBatchCaptureEvent = async (correlation) => {
+const sendBatchCapturedEvent = async (correlation) => {
   const event = {
     id: uuidv4(),
-    name: 'batch-processing-capture',
+    name: 'batch-processing-captured',
     type: 'info',
-    message: 'Correlation for payment request within Siti payment file',
+    message: 'Correlation Ids allocated for payment requests',
     data: correlation
   }
   await raiseEvent(event)
 }
 
-module.exports = sendBatchCaptureEvent
+module.exports = sendBatchCapturedEvent
