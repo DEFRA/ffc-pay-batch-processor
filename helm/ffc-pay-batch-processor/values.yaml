@@ -35,8 +35,8 @@ container:
   imagePullPolicy: IfNotPresent
   requestMemory: 100Mi
   requestCpu: 60m
-  limitMemory: 1000Mi
-  limitCpu: 1000m
+  limitMemory: 500Mi
+  limitCpu: 500m
   port: 3007
   azureStorageAccountName: ffcpay
   messageQueueHost: namespace.servicebus.windows.net
