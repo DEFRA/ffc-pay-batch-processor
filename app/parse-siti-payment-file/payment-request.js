@@ -1,6 +1,7 @@
 const paymentRequestSchema = require('./schemas/payment-request')
 const invoiceLineSchema = require('./schemas/invoice-line')
 const handleSitiDefects = require('./handle-siti-defects')
+const { v4: uuidv4 } = require('uuid')
 
 const buildPaymentRequests = (paymentRequests) => {
   return paymentRequests.map(paymentRequest => ({
@@ -16,6 +17,7 @@ const buildPaymentRequests = (paymentRequests) => {
     schedule: paymentRequest.schedule,
     dueDate: paymentRequest.invoiceLines[0].dueDate,
     value: paymentRequest.value,
+    correlationId: uuidv4(),
     invoiceLines: buildInvoiceLines(paymentRequest.invoiceLines)
   })).map(handleSitiDefects).filter(isPaymentRequestValid)
 }

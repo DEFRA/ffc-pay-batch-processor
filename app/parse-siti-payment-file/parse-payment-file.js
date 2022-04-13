@@ -1,7 +1,6 @@
 const readline = require('readline')
 const { Readable } = require('stream')
-const { v4: uuidv4 } = require('uuid')
-const { sendBatchProcessedEvent, sendBatchCapturedEvent, sendBatchErrorEvent } = require('../event')
+const { sendBatchProcessedEvents, sendBatchErrorEvent } = require('../event')
 
 const transformBatch = require('./transform-batch')
 const transformHeaders = require('./transform-headers')
@@ -60,27 +59,10 @@ const buildAndTransformParseFile = (fileBuffer, sequence) => {
   })
 }
 
-const correlationIdEnrichment = async (filename, paymentRequests, sequence) => {
-  const correlation = { filename, correlationIds: [] }
-
-  for (const paymentRequest of paymentRequests) {
-    const correlationId = uuidv4()
-    const agreementNumber = paymentRequest.agreementNumber
-    const invoiceNumber = paymentRequest.invoiceNumber
-    const contractNumber = paymentRequest.contractNumber
-    paymentRequest.correlationId = correlationId
-    await sendBatchProcessedEvent(filename, paymentRequest, sequence)
-    correlation.correlationIds.push({ correlationId, agreementNumber, invoiceNumber, contractNumber })
-  }
-
-  return correlation
-}
-
 const parsePaymentFile = async (filename, fileBuffer, sequence) => {
   try {
     const paymentRequests = await buildAndTransformParseFile(fileBuffer, sequence)
-    const correlation = await correlationIdEnrichment(filename, paymentRequests, sequence)
-    await sendBatchCapturedEvent(correlation)
+    await sendBatchProcessedEvents(filename, paymentRequests, sequence)
     await sendPaymentBatchMessage(paymentRequests)
     return true
   } catch (err) {
