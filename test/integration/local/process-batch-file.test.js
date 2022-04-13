@@ -15,6 +15,11 @@ jest.mock('ffc-pay-event-publisher', () => {
       return {
         sendEvent: jest.fn()
       }
+    }),
+    PublishEventBatch: jest.fn().mockImplementation(() => {
+      return {
+        sendEvents: jest.fn()
+      }
     })
   }
 })

@@ -13,5 +13,6 @@ module.exports = Joi.object({
   schedule: Joi.string().regex(/^[A-Z]{1}\d+$/),
   dueDate: Joi.date().format('YYYY-MM-DD'),
   value: Joi.number().required(),
+  correlationId: Joi.string().required(),
   invoiceLines: Joi.array().required()
 })
