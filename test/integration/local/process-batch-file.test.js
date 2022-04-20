@@ -108,7 +108,6 @@ describe('process acknowledgement', () => {
     for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
       fileList.push(item.name)
     }
-    console.log(fileList)
     expect(fileList.filter(x => x === `${config.archiveFolder}/SITIELM0001_AP_20210812105407541.dat`).length).toBe(1)
   })
 

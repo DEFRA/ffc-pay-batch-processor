@@ -6,16 +6,14 @@ const raiseEvent = require('../../../app/event/raise-event')
 
 const sendBatchErrorEvent = require('../../../app/event/send-batch-error-event')
 
-const filename = 'SITIELM0001_AP_20210812105407541'
+const filename = 'SITIELM0001_AP_20210812105407541.dat'
 const error = {
   message: 'Payment file could not be parsed.'
 }
+
 let event
 
-// need to export APPINSIGHTS_CLOUDROLE="bluh"
-// if running jest indep -- used as source for event
-
-describe('SITI payment file could not be parsed', () => {
+describe('Sending event for unparsable SITI payment file', () => {
   beforeEach(async () => {
     uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
 
