@@ -10,7 +10,7 @@ const sendBatchErrorEvent = async (filename, error) => {
     message: error.message,
     data: { filename }
   }
-  await raiseEvent(event, 'error', error)
+  await raiseEvent(event, 'error')
 }
 
 module.exports = sendBatchErrorEvent
