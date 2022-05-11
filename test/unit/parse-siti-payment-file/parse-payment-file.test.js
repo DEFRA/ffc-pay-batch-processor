@@ -20,6 +20,13 @@ describe('Parse and send events on success or failure', () => {
     filename = 'SITIELM0001_AP_20210812105407541.dat'
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
     sequence = '0001'
+
+    buildAndTransformParseFile.mockResolvedValue({
+      PaymentRequests: [{
+        paymentRequestId: 1
+      }],
+      batchExportDate: '2021-08-12'
+    })
   })
 
   afterEach(async () => {
@@ -60,11 +67,8 @@ describe('Parse and send events on success or failure', () => {
   })
 
   test('should call sendBatchProcessedEvents with filename, paymentRequests and sequence when valid filename, fileBuffer and sequence are received', async () => {
-    buildAndTransformParseFile.mockResolvedValue('testing this value is passed through')
-    mockPaymentRequests = await buildAndTransformParseFile(fileBuffer, sequence)
-
     await parsePaymentFile(filename, fileBuffer, sequence)
-    expect(sendBatchProcessedEvents).toHaveBeenCalledWith(filename, mockPaymentRequests, sequence)
+    expect(sendBatchProcessedEvents).toHaveBeenCalledWith(filename, mockPaymentRequests, sequence, '2021-08-12')
   })
 
   test('should call sendPaymentBatchMessage when valid filename, fileBuffer and sequence are received', async () => {
@@ -73,9 +77,6 @@ describe('Parse and send events on success or failure', () => {
   })
 
   test('should call sendPaymentBatchMessage with paymentRequests when valid filename, fileBuffer and sequence are received', async () => {
-    buildAndTransformParseFile.mockResolvedValue('testing this value is passed through')
-    mockPaymentRequests = await buildAndTransformParseFile(fileBuffer, sequence)
-
     await parsePaymentFile(filename, fileBuffer, sequence)
     expect(sendPaymentBatchMessage).toHaveBeenCalledWith(mockPaymentRequests)
   })

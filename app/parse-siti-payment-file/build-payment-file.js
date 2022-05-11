@@ -47,8 +47,16 @@ const buildAndTransformParseFile = (fileBuffer, sequence) => {
     })
 
     readBatchLines.on('close', () => {
-      validate(batch.batchHeaders, batch.paymentRequests, batch.sequence)
-        ? resolve(buildPaymentRequests(batch.paymentRequests))
+      const batchHeaders = batch.batchHeaders
+      const paymentRequests = batch.paymentRequests
+      const batchSequence = batch.sequence
+      const batchExportDate = batchHeaders?.length ? batchHeaders[0].exportDate : null
+
+      validate(batchHeaders, paymentRequests, batchSequence)
+        ? resolve({
+            paymentRequests: buildPaymentRequests(paymentRequests),
+            batchExportDate
+          })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()
