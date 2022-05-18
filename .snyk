@@ -6,4 +6,11 @@ ignore:
     - '@azure/identity > keytar > prebuild-install > simple-get':
         reason: No fix
         expires: '2022-02-28T15:23:00.530Z'
+  SNYK-JS-ANSIREGEX-1583908:
+    - '@azure/identity > keytar > prebuild-install > npmlog > gauge > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2022-06-17T09:40:34.194Z'
+    - '@azure/identity > keytar > prebuild-install > npmlog > gauge > string-width > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2022-06-17T09:40:34.194Z'
 patch: {}
