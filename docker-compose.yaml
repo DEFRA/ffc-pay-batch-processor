@@ -36,5 +36,5 @@ services:
       POSTGRES_USERNAME: postgres
 
   ffc-pay-batch-processor-azurite:
-    image: mcr.microsoft.com/azure-storage/azurite:3.16.0
+    image: mcr.microsoft.com/azure-storage/azurite:3.17.1
     command: "azurite-blob --loose --blobHost 0.0.0.0"
