@@ -2,6 +2,7 @@ const blobStorage = require('../blob-storage')
 const batches = require('./batches')
 const reprocessIfNeeded = require('./reprocess-if-needed')
 const downloadAndParse = require('./download-and-parse')
+const { sendBatchErrorEvent } = require('../event')
 
 async function processPaymentFile (filename, schemeType) {
   try {
@@ -12,6 +13,7 @@ async function processPaymentFile (filename, schemeType) {
       await checkSequenceAndPerfomAction(schemeType, filename)
     }
   } catch (err) {
+    await sendBatchErrorEvent(filename, err)
     console.error(`Error thrown processing ${filename}`)
     console.error(err)
   }
