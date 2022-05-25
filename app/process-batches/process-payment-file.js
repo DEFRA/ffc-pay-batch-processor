@@ -9,7 +9,7 @@ async function processPaymentFile (filename, schemeType) {
     const reprocessed = await reprocessIfNeeded(filename, schemeType)
 
     if (!reprocessed) {
-      await checkSequence(schemeType, filename)
+      await checkSequenceAndPerfomAction(schemeType, filename)
     }
   } catch (err) {
     console.error(`Error thrown processing ${filename}`)
@@ -17,7 +17,7 @@ async function processPaymentFile (filename, schemeType) {
   }
 }
 
-async function checkSequence (schemeType, filename) {
+async function checkSequenceAndPerfomAction (schemeType, filename) {
   const expectedSequenceId = await batches.nextSequenceId(schemeType.scheme)
   const currentSequenceId = Number(schemeType.batchId)
 

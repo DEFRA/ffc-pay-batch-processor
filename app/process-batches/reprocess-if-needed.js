@@ -4,6 +4,32 @@ const blobStorage = require('../blob-storage')
 const fileProcessingFailed = require('./file-processing-failed')
 const downloadAndParse = require('./download-and-parse')
 
+async function reprocessIfNeeded (filename, schemeType) {
+  const batch = await batches.exists(filename)
+
+  if (batch) {
+    console.log(`${filename} already exists in database`)
+    switch (batch.statusId) {
+      case batches.status.inProgress:
+        await inProgress(filename, batch, schemeType)
+        break
+      case batches.status.success:
+        await success(filename)
+        break
+      case batches.status.failed:
+        await failed(filename)
+        break
+      default:
+        await unknown(filename)
+        break
+    }
+
+    return true
+  }
+
+  return false
+}
+
 async function inProgress (filename, batch, schemeType) {
   console.log('In progress status set, re-try processing')
   console.log(`Tried processing ${batch.processingTries} times already`)
@@ -30,32 +56,6 @@ async function failed (filename) {
 async function unknown (filename) {
   console.log('Previous processing unknown status set, quarantining')
   await fileProcessingFailed(filename)
-}
-
-async function reprocessIfNeeded (filename, schemeType) {
-  const batch = await batches.exists(filename)
-
-  if (batch) {
-    console.log(`${filename} already exists in database`)
-    switch (batch.statusId) {
-      case batches.status.inProgress:
-        await inProgress(filename, batch, schemeType)
-        break
-      case batches.status.success:
-        await success(filename)
-        break
-      case batches.status.failed:
-        await failed(filename)
-        break
-      default:
-        await unknown(filename)
-        break
-    }
-  } else {
-    return false
-  }
-
-  return true
 }
 
 module.exports = reprocessIfNeeded
