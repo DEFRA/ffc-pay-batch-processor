@@ -27,10 +27,10 @@ async function processIfValid (schemeType, filename) {
     await batches.create(filename, schemeType.batchId, schemeType.scheme)
     await downloadAndParse(filename, schemeType)
   } else if (currentSequenceId > expectedSequenceId) {
-    console.log(`Ignoring ${filename}, expected sequence id ${expectedSequenceId}`)
+    console.log(`Ignoring ${filename}, expected sequence id ${expectedSequenceId} and current sequence is ${currentSequenceId}`)
   } else {
     currentSequenceId < expectedSequenceId
-      ? console.log(`Quarantining ${filename}, sequence id ${currentSequenceId} below expected`)
+      ? console.log(`Quarantining ${filename}, sequence id ${currentSequenceId} below expected ${expectedSequenceId}`)
       : console.log(`Quarantining ${filename}, unable to get expected sequence id from database`)
 
     await blobStorage.quarantinePaymentFile(filename, filename)
