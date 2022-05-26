@@ -17,4 +17,5 @@ data:
   POSTGRES_SCHEMA_NAME: {{ quote .Values.postgresService.postgresSchema }}
   POLLING_INTERVAL: {{ quote .Values.container.pollingInterval }}
   MAX_PROCESSING_TRIES: {{ quote .Values.container.maxProcessingTries }}
+  DISABLE_SEQUENCE_VALIDATION: {{ quote .Values.container.disableSequenceValidation }}
 {{- end -}}

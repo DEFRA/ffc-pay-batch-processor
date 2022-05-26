@@ -17,7 +17,10 @@ const raiseEvent = async (event, status = 'success') => {
       }
     }
   }
-
+  const size = Buffer.byteLength(JSON.stringify(eventMessage))
+  const kiloBytes = size / 1024
+  const megaBytes = kiloBytes / 1024
+  console.log(`Size: ${size}, KB: ${kiloBytes}, MB: ${megaBytes}`)
   await eventPublisher.sendEvent(eventMessage)
 }
 
