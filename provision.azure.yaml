@@ -1,3 +1,4 @@
 resources:
   topics:
     - name: payment
+    - name: event
