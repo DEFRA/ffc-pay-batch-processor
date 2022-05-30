@@ -57,7 +57,7 @@ describe('Process payment file', () => {
     schemeType.batchId = '0002'
     batches.nextSequenceId.mockResolvedValue(1)
     await processPaymentFile(filename, schemeType)
-    expect(console.log).toHaveBeenLastCalledWith(`Ignoring ${filename}, expected sequence id 1`)
+    expect(console.log.mock.calls[1][0]).toContain(`Ignoring ${filename}, expected sequence id 1`)
   })
 
   test('currentSequenceId is less than expectedSequenceId and is quarantined', async () => {
@@ -65,7 +65,7 @@ describe('Process payment file', () => {
     batches.nextSequenceId.mockResolvedValue(2)
     await processPaymentFile(filename, schemeType)
     expect(blobStorage.quarantinePaymentFile).toHaveBeenCalled()
-    expect(console.log).toHaveBeenLastCalledWith(`Quarantining ${filename}, sequence id 1 below expected`)
+    expect(console.log.mock.calls[1][0]).toContain(`Quarantining ${filename}, sequence id 1 below expected`)
   })
 
   test('expectedSequenceId is undefined and is quarantined', async () => {
