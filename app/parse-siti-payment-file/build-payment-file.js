@@ -4,7 +4,7 @@ const { Readable } = require('stream')
 const transformBatch = require('./transform-batch')
 const transformHeaders = require('./transform-headers')
 const transformInvoiceLines = require('./transform-invoice-lines')
-const buildPaymentRequests = require('./payment-request')
+const buildPaymentRequests = require('./build-payment-requests')
 const validate = require('./validate')
 
 const parseBatchLineType = (batchLine, batch) => {
