@@ -1,6 +1,6 @@
 const paymentRequestSchema = require('./schemas/payment-request')
-const invoiceLineSchema = require('./schemas/invoice-line')
 const handleSitiDefects = require('./handle-siti-defects')
+const { buildInvoiceLines, isInvoiceLineValid } = require('./build-invoice-lines')
 const { v4: uuidv4 } = require('uuid')
 
 const buildPaymentRequests = (paymentRequests) => {
@@ -22,17 +22,6 @@ const buildPaymentRequests = (paymentRequests) => {
   })).map(handleSitiDefects).filter(isPaymentRequestValid)
 }
 
-const buildInvoiceLines = (invoiceLines) => {
-  return invoiceLines.map(invoiceLine => ({
-    schemeCode: invoiceLine.schemeCode.toString(),
-    accountCode: invoiceLine.accountCode,
-    fundCode: invoiceLine.fundCode,
-    description: invoiceLine.description,
-    value: invoiceLine.value
-  })
-  )
-}
-
 const isPaymentRequestValid = (paymentRequest) => {
   const validationResult = paymentRequestSchema.validate(paymentRequest)
   if (validationResult.error) {
@@ -40,15 +29,6 @@ const isPaymentRequestValid = (paymentRequest) => {
     return false
   }
   return paymentRequest.invoiceLines.every(isInvoiceLineValid)
-}
-
-const isInvoiceLineValid = (invoiceLine) => {
-  const validationResult = invoiceLineSchema.validate(invoiceLine)
-  if (validationResult.error) {
-    console.error(`Invoice line is invalid. ${validationResult.error.message}`)
-    return false
-  }
-  return true
 }
 
 module.exports = buildPaymentRequests
