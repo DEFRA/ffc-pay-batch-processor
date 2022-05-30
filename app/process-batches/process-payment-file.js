@@ -3,6 +3,7 @@ const batches = require('./batches')
 const reprocessIfNeeded = require('./reprocess-if-needed')
 const downloadAndParse = require('./download-and-parse')
 const { sendBatchErrorEvent } = require('../event')
+const { disableSequenceValidation } = require('../config/processing')
 
 async function processPaymentFile (filename, schemeType) {
   try {
@@ -20,10 +21,9 @@ async function processPaymentFile (filename, schemeType) {
 }
 
 async function processIfValid (schemeType, filename) {
-  const expectedSequenceId = await batches.nextSequenceId(schemeType.scheme)
-  const currentSequenceId = Number(schemeType.batchId)
+  const { success: sequenceValidationSuccess, currentSequenceId, expectedSequenceId } = await isSequenceValid(schemeType.scheme, schemeType.batchId)
 
-  if (currentSequenceId === expectedSequenceId) {
+  if (sequenceValidationSuccess) {
     await batches.create(filename, schemeType.batchId, schemeType.scheme)
     await downloadAndParse(filename, schemeType)
   } else if (currentSequenceId > expectedSequenceId) {
@@ -35,6 +35,24 @@ async function processIfValid (schemeType, filename) {
 
     await blobStorage.quarantinePaymentFile(filename, filename)
   }
+}
+
+async function isSequenceValid (scheme, batchId) {
+  const expectedSequenceId = await batches.nextSequenceId(scheme)
+  const currentSequenceId = Number(batchId)
+  const success = doesSequenceMatch(expectedSequenceId, currentSequenceId)
+  return {
+    success,
+    currentSequenceId,
+    expectedSequenceId
+  }
+}
+
+function doesSequenceMatch (expectedSequenceId, currentSequenceId) {
+  if (disableSequenceValidation) {
+    return true
+  }
+  return currentSequenceId === expectedSequenceId
 }
 
 module.exports = processPaymentFile
