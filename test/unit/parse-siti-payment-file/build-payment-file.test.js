@@ -1,5 +1,5 @@
-jest.mock('../../../app/parse-siti-payment-file/payment-request')
-const buildPaymentRequests = require('../../../app/parse-siti-payment-file/payment-request')
+jest.mock('../../../app/parse-siti-payment-file/build-payment-requests')
+const buildPaymentRequests = require('../../../app/parse-siti-payment-file/build-payment-requests')
 
 jest.mock('../../../app/parse-siti-payment-file/validate')
 const validate = require('../../../app/parse-siti-payment-file/validate')
