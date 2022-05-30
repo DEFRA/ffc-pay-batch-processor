@@ -24,4 +24,8 @@ if (result.error) {
   throw new Error(`The processing config is invalid. ${result.error.message}`)
 }
 
+if(result.value.disableSequenceValidation) {
+  console.log('Sequence validation disabled')
+}
+
 module.exports = result.value
