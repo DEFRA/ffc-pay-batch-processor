@@ -48,6 +48,7 @@ container:
   azureStorageCreateContainers: false
   pollingInterval: 10000
   maxProcessingTries: 500
+  disableSequenceValidation: false
 
 postgresService:
   postgresDb: ffc_pay_batch_processor

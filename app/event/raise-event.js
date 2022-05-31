@@ -17,7 +17,6 @@ const raiseEvent = async (event, status = 'success') => {
       }
     }
   }
-
   await eventPublisher.sendEvent(eventMessage)
 }
 
