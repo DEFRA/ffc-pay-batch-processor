@@ -6,7 +6,6 @@ function setup () {
       .setAutoCollectDependencies(false)
       .start()
     console.log('App Insights Running!')
-    console.log(process.env.APPINSIGHTS_INSTRUMENTATIONKEY)
     const cloudRoleTag = appInsights.defaultClient.context.keys.cloudRole
     const appName = process.env.APPINSIGHTS_CLOUDROLE
 
