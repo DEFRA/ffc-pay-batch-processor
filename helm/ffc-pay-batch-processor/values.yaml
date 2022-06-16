@@ -52,7 +52,7 @@ container:
 
 postgresService:
   postgresDb: ffc_pay_batch_processor
-  postgresHost: ffc-pay-batch-processor-postgres
+  postgresqlHost: ffc-pay-batch-processor-postgres
   postgresPort: 5432
   postgresSchema: public
   postgresUser: postgres
