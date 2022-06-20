@@ -17,7 +17,7 @@ data:
   AZURE_STORAGE_USE_CONNECTION_STRING: {{ quote .Values.container.azureStorageUseConnectionString }}
   AZURE_STORAGE_CREATE_CONTAINERS: {{ quote .Values.container.azureStorageCreateContainers }}
   POSTGRES_DB: {{ quote .Values.postgresService.postgresDb }}
-  POSTGRES_HOST: {{ quote .Values.postgresService.postgresHost }}
+  POSTGRES_HOST: {{ quote .Values.postgresService.postgresqlHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}
   POSTGRES_SCHEMA_NAME: {{ quote .Values.postgresService.postgresSchema }}
   POLLING_INTERVAL: {{ quote .Values.container.pollingInterval }}
