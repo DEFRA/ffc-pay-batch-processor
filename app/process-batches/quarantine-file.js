@@ -1,4 +1,4 @@
-const blobStorage = require('../storage')
+const blobStorage = require('../blob-storage')
 const sendResponsesQuarantineEvent = require('../event/send-responses-quarantine-event')
 
 const quarantineFile = async (filename, error) => {
