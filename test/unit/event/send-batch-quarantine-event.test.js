@@ -7,7 +7,7 @@ const raiseEvent = require('../../../app/event/raise-event')
 const sendBatchQuarantineEvent = require('../../../app/event/send-batch-quarantine-event')
 
 const filename = 'SITIELM0001_AP_20210812105407541.dat'
-const message = `Quarantined ${filename}`
+const error = 'Invalid file'
 
 let event
 
@@ -17,7 +17,12 @@ describe('Sending event for quarantined SITI payment file', () => {
 
     event = {
       name: 'batch-processing-quarantine-error',
-      type: 'error'
+      type: 'error',
+      message: `Quarantined ${filename}`,
+      data: {
+        filename,
+        error
+      }
     }
   })
 
@@ -25,25 +30,33 @@ describe('Sending event for quarantined SITI payment file', () => {
     jest.resetAllMocks()
   })
 
-  test('should call uuidv4 when a filename is received', async () => {
-    await sendBatchQuarantineEvent(filename)
+  test('should call uuidv4 when a filename and error are received', async () => {
+    await sendBatchQuarantineEvent(filename, error)
     expect(uuidv4).toHaveBeenCalled()
   })
 
-  test('should call raiseEvent when a filename is received', async () => {
-    await sendBatchQuarantineEvent(filename)
+  test('should call uuidv4 once when a filename and error are received', async () => {
+    await sendBatchQuarantineEvent(filename, error)
+    expect(uuidv4).toHaveBeenCalledTimes(1)
+  })
+
+  test('should call raiseEvent when a filename and error are received', async () => {
+    await sendBatchQuarantineEvent(filename, error)
     expect(raiseEvent).toHaveBeenCalled()
   })
 
-  test('should call raiseEvent with event and "error" when a filename is received', async () => {
+  test('should call raiseEvent once when a filename and error are received', async () => {
+    await sendBatchQuarantineEvent(filename, error)
+    expect(raiseEvent).toHaveBeenCalledTimes(1)
+  })
+
+  test('should call raiseEvent with event and "error" when a filename and error are received', async () => {
     event = {
       ...event,
-      id: uuidv4(),
-      message,
-      data: { filename }
+      id: uuidv4()
     }
 
-    await sendBatchQuarantineEvent(filename)
+    await sendBatchQuarantineEvent(filename, error)
     expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
   })
 })
