@@ -1,10 +1,10 @@
 const blobStorage = require('../blob-storage')
-const sendResponsesQuarantineEvent = require('../event/send-responses-quarantine-event')
+const sendBatchQuarantineEvent = require('../event/send-batch-quarantine-event')
 
 const quarantineFile = async (filename, error) => {
   console.error(`Quarantining ${filename}, failed to parse file`, error)
   await blobStorage.quarantineFile(filename, filename)
-  await sendResponsesQuarantineEvent(filename, error)
+  await sendBatchQuarantineEvent(filename, error)
 }
 
 module.exports = quarantineFile
