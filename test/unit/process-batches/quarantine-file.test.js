@@ -43,4 +43,16 @@ describe('quarantine file', () => {
     await quarantineFile(filename, error)
     expect(sendBatchQuarantineEvent).toHaveBeenCalledWith(filename, error)
   })
+
+  test('should return true when blobStorage.quarantinePaymentFile returns true', async () => {
+    blobStorage.quarantinePaymentFile.mockReturnValue(true)
+    const result = await quarantineFile(filename, error)
+    expect(result).toBe(true)
+  })
+
+  test('should return false when blobStorage.quarantinePaymentFile returns false', async () => {
+    blobStorage.quarantinePaymentFile.mockReturnValue(false)
+    const result = await quarantineFile(filename, error)
+    expect(result).toBe(false)
+  })
 })
