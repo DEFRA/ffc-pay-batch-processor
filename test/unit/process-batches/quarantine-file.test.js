@@ -7,7 +7,7 @@ const sendBatchQuarantineEvent = require('../../../app/event/send-batch-quaranti
 const quarantineFile = require('../../../app/process-batches/quarantine-file')
 
 const filename = 'SITIELM0001_AP_20210812105407541.dat'
-const error = 'Error: Unclosed root tag'
+const error = 'Error: Invalid file - Unknown line'
 
 describe('quarantine file', () => {
   afterEach(async () => {
