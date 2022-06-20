@@ -1,9 +1,9 @@
 const batches = require('./batches')
-const blobStorage = require('../blob-storage')
+const quarantineFile = require('./quarantine-file')
 
 async function fileProcessingFailed (filename) {
   await batches.updateStatus(filename, batches.status.failed)
-  await blobStorage.quarantinePaymentFile(filename, filename)
+  await quarantineFile(filename)
 }
 
 module.exports = fileProcessingFailed
