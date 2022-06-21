@@ -69,9 +69,9 @@ describe('quarantine file', () => {
     expect(sendBatchQuarantineEvent).toHaveBeenCalledTimes(1)
   })
 
-  test('should call sendBatchQuarantineEvent with filename and error when a filename and no error are received', async () => {
+  test('should call sendBatchQuarantineEvent with filename and no error when a filename and no error are received', async () => {
     await quarantineFile(filename, '')
-    expect(sendBatchQuarantineEvent).toHaveBeenCalledWith(filename, error)
+    expect(sendBatchQuarantineEvent).toHaveBeenCalledWith(filename, '')
   })
 
   test('should return true when blobStorage.quarantinePaymentFile returns true', async () => {
