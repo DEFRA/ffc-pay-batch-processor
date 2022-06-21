@@ -29,6 +29,21 @@ describe('quarantine file', () => {
     expect(blobStorage.quarantinePaymentFile).toHaveBeenCalledWith(filename, filename)
   })
 
+  test('should call blobStorage.quarantinePaymentFile when a filename and no error are received', async () => {
+    await quarantineFile(filename, '')
+    expect(blobStorage.quarantinePaymentFile).toHaveBeenCalled()
+  })
+
+  test('should call blobStorage.quarantinePaymentFile once when a filename and no error are received', async () => {
+    await quarantineFile(filename, '')
+    expect(blobStorage.quarantinePaymentFile).toHaveBeenCalledTimes(1)
+  })
+
+  test('should call blobStorage.quarantinePaymentFile with filename and filename when a filename and no error are received', async () => {
+    await quarantineFile(filename, '')
+    expect(blobStorage.quarantinePaymentFile).toHaveBeenCalledWith(filename, filename)
+  })
+
   test('should call sendBatchQuarantineEvent when a filename and error are received', async () => {
     await quarantineFile(filename, error)
     expect(sendBatchQuarantineEvent).toHaveBeenCalled()
@@ -41,6 +56,21 @@ describe('quarantine file', () => {
 
   test('should call sendBatchQuarantineEvent with filename and error when a filename and error are received', async () => {
     await quarantineFile(filename, error)
+    expect(sendBatchQuarantineEvent).toHaveBeenCalledWith(filename, error)
+  })
+
+  test('should call sendBatchQuarantineEvent when a filename and no error are received', async () => {
+    await quarantineFile(filename, '')
+    expect(sendBatchQuarantineEvent).toHaveBeenCalled()
+  })
+
+  test('should call sendBatchQuarantineEvent once when a filename and no error are received', async () => {
+    await quarantineFile(filename, '')
+    expect(sendBatchQuarantineEvent).toHaveBeenCalledTimes(1)
+  })
+
+  test('should call sendBatchQuarantineEvent with filename and error when a filename and no error are received', async () => {
+    await quarantineFile(filename, '')
     expect(sendBatchQuarantineEvent).toHaveBeenCalledWith(filename, error)
   })
 
