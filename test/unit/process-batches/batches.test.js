@@ -1,11 +1,11 @@
 
-const { nextSequenceId, incrementProcessingTries } = require('../../../app/process-batches/batches')
+const { nextSequenceId } = require('../../../app/process-batches/batches')
 
 jest.mock('../../../app/data')
 const db = require('../../../app/data')
 
 jest.mock('../../../app/scheme-details')
-const schemeDetails  = require('../../../app/scheme-details')
+const schemeDetails = require('../../../app/scheme-details')
 
 describe('Batches', () => {
   let schemeName
