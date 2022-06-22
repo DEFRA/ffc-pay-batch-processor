@@ -5,7 +5,7 @@
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
   "scripts": {
-    "pretest": "test:lint",
+    "pretest": "npm run test:lint",
     "test": "jest --runInBand",
     "test:lint": "standard",
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
