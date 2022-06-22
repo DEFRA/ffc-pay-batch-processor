@@ -10,7 +10,7 @@ module.exports = Joi.object({
   agreementNumber: Joi.string().required(),
   contractNumber: Joi.string().required(),
   currency: Joi.string().valid('GBP', 'EUR').required(),
-  schedule: Joi.string().regex(/^[A-Z]{1}\d+$/),
+  schedule: Joi.string().regex(/^[A-Z]{1}\d+$/).optional(),
   dueDate: Joi.date().format('YYYY-MM-DD'),
   value: Joi.number().required(),
   correlationId: Joi.string().required(),

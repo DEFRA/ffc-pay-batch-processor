@@ -20,6 +20,17 @@ const filenameMasks = {
       prefix: '',
       date: ''
     }
+  },
+  lumpSums: {
+    scheme: 'Lump Sums',
+    schemeType: 'SITILSES',
+    mask: '####### #### ## #######',
+    data: {
+      source: '',
+      batchId: '',
+      prefix: '',
+      date: ''
+    }
   }
 }
 
