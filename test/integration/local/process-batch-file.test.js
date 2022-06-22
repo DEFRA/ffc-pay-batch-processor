@@ -1,3 +1,5 @@
+jest.useFakeTimers()
+
 const mockSendBatchMessages = jest.fn()
 jest.mock('ffc-messaging', () => {
   return {
@@ -9,11 +11,13 @@ jest.mock('ffc-messaging', () => {
     })
   }
 })
+
+const mockSendEvent = jest.fn()
 jest.mock('ffc-pay-event-publisher', () => {
   return {
     PublishEvent: jest.fn().mockImplementation(() => {
       return {
-        sendEvent: jest.fn()
+        sendEvent: mockSendEvent
       }
     }),
     PublishEventBatch: jest.fn().mockImplementation(() => {
@@ -23,17 +27,17 @@ jest.mock('ffc-pay-event-publisher', () => {
     })
   }
 })
-jest.useFakeTimers()
-const processBatches = require('../../../app/process-batches')
+
 const { BlobServiceClient } = require('@azure/storage-blob')
+const path = require('path')
+
 const db = require('../../../app/data')
 const config = require('../../../app/config/blob-storage')
-const path = require('path')
-let scheme
-let sequence
-let statuses
+const processBatches = require('../../../app/process-batches')
+
 let blobServiceClient
 let container
+
 const TEST_FILE = path.resolve(__dirname, '../../files/SITIELM0001_AP_20210812105407541.dat')
 const TEST_INVALID_FILE = path.resolve(__dirname, '../../files/SITIELM0001_AP_20210812105407542.dat')
 
@@ -41,17 +45,17 @@ describe('process acknowledgement', () => {
   beforeEach(async () => {
     await db.sequelize.truncate({ cascade: true })
 
-    scheme = {
+    const scheme = {
       schemeId: 2,
       scheme: 'SFI Pilot'
     }
 
-    sequence = {
+    const sequence = {
       schemeId: 2,
       next: 1
     }
 
-    statuses = [{
+    const statuses = [{
       statusId: 1,
       status: 'In progress'
     }, {
@@ -67,9 +71,17 @@ describe('process acknowledgement', () => {
     await db.status.bulkCreate(statuses)
 
     blobServiceClient = BlobServiceClient.fromConnectionString(config.connectionStr)
+
     container = blobServiceClient.getContainerClient(config.container)
     await container.deleteIfExists()
     await container.createIfNotExists()
+
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
+    await blockBlobClient.uploadFile(TEST_FILE)
+  })
+
+  afterEach(async () => {
+    jest.clearAllMocks()
   })
 
   afterAll(async () => {
@@ -78,32 +90,25 @@ describe('process acknowledgement', () => {
   })
 
   test('sends all payment requests', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
-    await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('sends invoice numbers', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
-    await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('SFI00000001')
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('SFI00000002')
   })
 
   test('sends payment request numbers', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
-    await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.paymentRequestNumber).toBe(1)
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.paymentRequestNumber).toBe(3)
   })
 
   test('archives file on success', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
-    await blockBlobClient.uploadFile(TEST_FILE)
     await processBatches()
+
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
       fileList.push(item.name)
@@ -114,7 +119,9 @@ describe('process acknowledgement', () => {
   test('ignores unrelated file', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
+
     await processBatches()
+
     const fileList = []
     for await (const item of container.listBlobsFlat()) {
       fileList.push(item.name)
@@ -125,11 +132,40 @@ describe('process acknowledgement', () => {
   test('quarantines invalid file', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407542.dat`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILE)
+
     await processBatches()
+
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${config.quarantineFolder}/SITIELM0001_AP_20210812105407542.dat`).length).toBe(1)
+  })
+
+  test('calls PublishEvent.sendEvent once when an invalid file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407542.dat`)
+    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
+
+    await processBatches()
+
+    expect(mockSendEvent.mock.calls.length).toBe(1)
+  })
+
+  test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407542.dat`)
+    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
+
+    await processBatches()
+
+    expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing-quarantine-error')
+  })
+
+  test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407542.dat`)
+    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
+
+    await processBatches()
+
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 })
