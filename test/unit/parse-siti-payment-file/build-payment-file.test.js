@@ -40,14 +40,11 @@ describe('SITI payment file batch header is split into batches, headers and line
             [{
               accountCode: 'SOS27',
               agreementNumber: 'SIP00000000001',
-              batchToCustomerDate: '2022-12-01',
-              convergence: 'N',
               deliveryBody: 'RP00',
               description: 'G00 - Gross value of claim',
               dueDate: '2022-12-01',
               fundCode: 'DRD10',
               invoiceNumber: 'SFI00000001',
-              lineId: '1',
               marketingYear: '2022',
               schemeCode: '80001',
               value: 100
@@ -67,14 +64,11 @@ describe('SITI payment file batch header is split into batches, headers and line
             [{
               accountCode: 'SOS273',
               agreementNumber: 'SIP00000000002',
-              batchToCustomerDate: '2022-12-01',
-              convergence: 'N',
               deliveryBody: 'RP00',
               description: 'G00 - Gross value of claim',
               dueDate: '2022-12-01',
               fundCode: 'DRD10',
               invoiceNumber: 'SFI00000002',
-              lineId: '1',
               marketingYear: '2022',
               schemeCode: '80001',
               value: 100

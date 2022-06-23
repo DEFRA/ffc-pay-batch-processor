@@ -2,8 +2,8 @@ const readline = require('readline')
 const { Readable } = require('stream')
 
 const transformBatch = require('./transform-batch')
-const transformHeaders = require('./transform-headers')
-const transformInvoiceLines = require('./transform-invoice-lines')
+const transformHeader = require('./transform-header')
+const transformInvoiceLine = require('./transform-invoice-line')
 const buildPaymentRequests = require('./build-payment-requests')
 const validate = require('./validate')
 
@@ -52,12 +52,12 @@ const parseBatchLineType = (batchLine, batch, scheme) => {
       batch.batchHeaders.push(transformBatch(batchLine))
       return true
     case 'H':
-      batch.paymentRequests.push(transformHeaders(batchLine, scheme))
+      batch.paymentRequests.push(transformHeader(batchLine, scheme))
       return true
     case 'L':
       batch.paymentRequests[batch.paymentRequests.length - 1]
         .invoiceLines
-        .push(transformInvoiceLines(batchLine))
+        .push(transformInvoiceLine(batchLine, scheme))
       return true
     default:
       return false
