@@ -24,7 +24,7 @@ const filenameMasks = {
   lumpSums: {
     scheme: 'Lump Sums',
     schemeType: 'SITILSES',
-    mask: '####### #### ## #######',
+    mask: '######## #### ## #######',
     data: {
       source: '',
       batchId: '',
