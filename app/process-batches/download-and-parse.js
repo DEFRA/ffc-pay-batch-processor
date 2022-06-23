@@ -5,7 +5,7 @@ const fileProcessingFailed = require('./file-processing-failed')
 
 async function downloadAndParse (filename, schemeType) {
   const buffer = await blobStorage.downloadPaymentFile(filename)
-  const parseSuccess = await parsePaymentFile(filename, buffer, schemeType.batchId)
+  const parseSuccess = await parsePaymentFile(filename, buffer, schemeType)
 
   if (parseSuccess) {
     console.log(`Archiving ${filename}, successfully parsed file`)

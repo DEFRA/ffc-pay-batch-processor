@@ -2,11 +2,6 @@ const valueInPence = require('./value')
 const { convertToPence } = require('../currency-convert')
 const schema = require('./schemas/batch-header')
 
-const validateLineTotals = (paymentRequests) => {
-  return paymentRequests
-    .every(a => convertToPence(a.value) === valueInPence(a.invoiceLines, 'value'))
-}
-
 const validate = (batchHeader, paymentRequests) => {
   if (batchHeader.length === 0) return false
 
@@ -25,6 +20,11 @@ const isValidSchema = (batchHeader) => {
     return false
   }
   return true
+}
+
+const validateLineTotals = (paymentRequests) => {
+  return paymentRequests
+    .every(a => convertToPence(a.value) === valueInPence(a.invoiceLines, 'value'))
 }
 
 module.exports = validate

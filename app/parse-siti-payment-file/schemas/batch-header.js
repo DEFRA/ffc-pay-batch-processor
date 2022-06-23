@@ -1,3 +1,5 @@
+const { AP, AR } = require('../../ledgers')
+
 const Joi = require('joi').extend(require('@joi/date'))
 
 module.exports = Joi.object({
@@ -6,5 +8,5 @@ module.exports = Joi.object({
   batchValue: Joi.number().required(),
   sequence: Joi.number().integer().min(1).required(),
   sourceSystem: Joi.string().required(),
-  ledger: Joi.string().valid('AP', 'AR').required()
+  ledger: Joi.string().valid(AP, AR).required()
 })

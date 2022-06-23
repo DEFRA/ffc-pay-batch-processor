@@ -7,42 +7,14 @@ const transformInvoiceLines = require('./transform-invoice-lines')
 const buildPaymentRequests = require('./build-payment-requests')
 const validate = require('./validate')
 
-const parseBatchLineType = (batchLine, batch) => {
-  const lineType = batchLine[0]
-
-  switch (lineType) {
-    case 'B':
-      batch.batchHeaders.push(transformBatch(batchLine))
-      return true
-    case 'H':
-      batch.paymentRequests.push(transformHeaders(batchLine))
-      return true
-    case 'L':
-      batch.paymentRequests[batch.paymentRequests.length - 1]
-        .invoiceLines
-        .push(transformInvoiceLines(batchLine))
-      return true
-    default:
-      return false
-  }
-}
-
-const createBatch = (sequence) => {
-  return {
-    sequence,
-    batchHeaders: [],
-    paymentRequests: []
-  }
-}
-
-const buildAndTransformParseFile = (fileBuffer, sequence) => {
-  const batch = createBatch(sequence)
+const buildAndTransformParseFile = (fileBuffer, schemeType) => {
+  const batch = createBatch(schemeType.batchId)
   const input = Readable.from(fileBuffer)
   const readBatchLines = readline.createInterface(input)
   return new Promise((resolve, reject) => {
     readBatchLines.on('line', (line) => {
       const batchLine = line.split('^')
-      !parseBatchLineType(batchLine, batch) &&
+      !parseBatchLineType(batchLine, batch, schemeType.scheme) &&
         reject(new Error('Invalid file - Unknown line'))
     })
 
@@ -62,6 +34,34 @@ const buildAndTransformParseFile = (fileBuffer, sequence) => {
       input.destroy()
     })
   })
+}
+
+const createBatch = (sequence) => {
+  return {
+    sequence,
+    batchHeaders: [],
+    paymentRequests: []
+  }
+}
+
+const parseBatchLineType = (batchLine, batch, scheme) => {
+  const lineType = batchLine[0]
+
+  switch (lineType) {
+    case 'B':
+      batch.batchHeaders.push(transformBatch(batchLine))
+      return true
+    case 'H':
+      batch.paymentRequests.push(transformHeaders(batchLine, scheme))
+      return true
+    case 'L':
+      batch.paymentRequests[batch.paymentRequests.length - 1]
+        .invoiceLines
+        .push(transformInvoiceLines(batchLine))
+      return true
+    default:
+      return false
+  }
 }
 
 module.exports = {

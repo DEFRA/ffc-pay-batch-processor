@@ -7,7 +7,7 @@ const validate = require('../../../app/parse-siti-payment-file/validate')
 const { buildAndTransformParseFile } = require('../../../app/parse-siti-payment-file/build-payment-file')
 
 let fileBuffer
-let sequence
+let schemeType
 
 let batchHeaders
 let batchPaymentRequests
@@ -15,7 +15,10 @@ let batchPaymentRequests
 describe('SITI payment file batch header is split into batches, headers and lines', () => {
   beforeEach(async () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
-    sequence = '0001'
+    schemeType = {
+      batchId: '0001',
+      scheme: 'SFI Pilot'
+    }
 
     batchHeaders = [
       {
@@ -51,8 +54,6 @@ describe('SITI payment file batch header is split into batches, headers and line
             }],
         invoiceNumber: 'SFI00000001',
         paymentRequestNumber: 1,
-        paymentType: '1',
-        preferenceCurrency: 'GBP',
         schedule: 'M12',
         sourceSystem: 'SFIP',
         value: 100
@@ -80,8 +81,6 @@ describe('SITI payment file batch header is split into batches, headers and line
             }],
         invoiceNumber: 'SFI00000002',
         paymentRequestNumber: 3,
-        paymentType: '2',
-        preferenceCurrency: 'GBP',
         schedule: 'M12',
         sourceSystem: 'SFIP',
         value: 100
@@ -95,22 +94,22 @@ describe('SITI payment file batch header is split into batches, headers and line
   })
 
   test('should call validate when valid fileBuffer and sequence are received', async () => {
-    await buildAndTransformParseFile(fileBuffer, sequence)
+    await buildAndTransformParseFile(fileBuffer, schemeType)
     expect(validate).toHaveBeenCalled()
   })
 
   test('should call validate with batchHeaders, batchPaymentRequests and sequence when valid fileBuffer and sequence are received', async () => {
-    await buildAndTransformParseFile(fileBuffer, sequence)
-    expect(validate).toHaveBeenCalledWith(batchHeaders, batchPaymentRequests, sequence)
+    await buildAndTransformParseFile(fileBuffer, schemeType)
+    expect(validate).toHaveBeenCalledWith(batchHeaders, batchPaymentRequests, schemeType.batchId)
   })
 
   test('should call buildPaymentRequests when valid fileBuffer and sequence are received', async () => {
-    await buildAndTransformParseFile(fileBuffer, sequence)
+    await buildAndTransformParseFile(fileBuffer, schemeType)
     expect(buildPaymentRequests).toHaveBeenCalled()
   })
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true', async () => {
-    await buildAndTransformParseFile(fileBuffer, sequence)
+    await buildAndTransformParseFile(fileBuffer, schemeType)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequests)
   })
 
@@ -118,7 +117,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     fileBuffer = Buffer.from('V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
 
     const wrapper = async () => {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     }
 
     await expect(wrapper).rejects.toThrow()
@@ -128,7 +127,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     fileBuffer = Buffer.from('V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
 
     const wrapper = async () => {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     }
 
     await expect(wrapper).rejects.toThrowError(Error)
@@ -138,7 +137,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     fileBuffer = Buffer.from('V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
 
     const wrapper = async () => {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     }
 
     await expect(wrapper).rejects.toThrowError('Invalid file')
@@ -148,7 +147,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     validate.mockReturnValue(false)
 
     const wrapper = async () => {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     }
 
     await expect(wrapper).rejects.toThrow()
@@ -158,7 +157,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     validate.mockReturnValue(false)
 
     const wrapper = async () => {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     }
 
     await expect(wrapper).rejects.toThrowError(Error)
@@ -168,7 +167,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     validate.mockReturnValue(false)
 
     const wrapper = async () => {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     }
 
     await expect(wrapper).rejects.toThrowError('Invalid file')
@@ -178,7 +177,7 @@ describe('SITI payment file batch header is split into batches, headers and line
     validate.mockReturnValue(false)
 
     try {
-      await buildAndTransformParseFile(fileBuffer, sequence)
+      await buildAndTransformParseFile(fileBuffer, schemeType)
     } catch (err) { }
 
     expect(buildPaymentRequests).not.toHaveBeenCalled()
