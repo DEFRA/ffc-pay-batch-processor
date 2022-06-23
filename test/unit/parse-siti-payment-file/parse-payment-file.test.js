@@ -8,6 +8,7 @@ jest.mock('../../../app/parse-siti-payment-file/build-payment-file')
 const { buildAndTransformParseFile } = require('../../../app/parse-siti-payment-file/build-payment-file')
 
 const { parsePaymentFile } = require('../../../app/parse-siti-payment-file/parse-payment-file')
+const { SFI_PILOT } = require('../../../app/schemes')
 
 let filename
 let fileBuffer
@@ -21,7 +22,7 @@ describe('Parse and send events on success or failure', () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
     schemeType = {
       batchId: '0001',
-      scheme: 'SFI Pilot'
+      scheme: SFI_PILOT
     }
 
     buildAndTransformParseFile.mockResolvedValue({

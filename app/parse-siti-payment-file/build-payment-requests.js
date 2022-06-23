@@ -3,9 +3,9 @@ const handleSitiDefects = require('./handle-siti-defects')
 const { buildInvoiceLines, isInvoiceLineValid } = require('./build-invoice-lines')
 const { v4: uuidv4 } = require('uuid')
 
-const buildPaymentRequests = (paymentRequests) => {
+const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   return paymentRequests.map(paymentRequest => ({
-    sourceSystem: paymentRequest.sourceSystem,
+    sourceSystem,
     deliveryBody: paymentRequest.deliveryBody,
     invoiceNumber: paymentRequest.invoiceNumber,
     frn: paymentRequest.frn,

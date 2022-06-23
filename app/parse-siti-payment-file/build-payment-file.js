@@ -23,10 +23,11 @@ const buildAndTransformParseFile = (fileBuffer, schemeType) => {
       const paymentRequests = batch.paymentRequests
       const batchSequence = batch.sequence
       const batchExportDate = batchHeaders?.length ? batchHeaders[0].exportDate : null
+      const sourceSystem = batchHeaders?.length ? batchHeaders[0].sourceSystem : null
 
       validate(batchHeaders, paymentRequests, batchSequence)
         ? resolve({
-            paymentRequests: buildPaymentRequests(paymentRequests),
+            paymentRequests: buildPaymentRequests(paymentRequests, sourceSystem),
             batchExportDate
           })
         : reject(new Error('Invalid file'))

@@ -20,7 +20,6 @@ const transformSFIHeader = (headerData) => ({
   currency: headerData[6],
   value: parseFloat(headerData[7]),
   deliveryBody: headerData[8],
-  sourceSystem: headerData[10],
   schedule: headerData[11],
   invoiceLines: []
 })
