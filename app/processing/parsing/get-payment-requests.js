@@ -31,10 +31,7 @@ const readPaymentRequestsFromFile = async (readBatchLines, batch, scheme, input)
 
     readBatchLines.on('close', () => {
       validateBatch(batch.batchHeaders, batch.paymentRequests)
-        ? resolve({
-            paymentRequests: buildPaymentRequests(batch.paymentRequests, scheme.sourceSystem),
-            batchExportDate: batch.batchHeaders[0]?.exportDate
-          })
+        ? resolve({ paymentRequests: buildPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()
