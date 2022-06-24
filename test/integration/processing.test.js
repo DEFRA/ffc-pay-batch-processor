@@ -134,7 +134,7 @@ describe('process acknowledgement', () => {
     for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.quarantineFolder}/SITIELM0001_AP_20210812105407542.dat`).length).toBe(1)
+    expect(fileList.filter(x => x === `${config.quarantineFolder}/${TEST_INVALID_FILE_SFI_PILOT}`).length).toBe(1)
   })
 
   test('sends all payment requests for Lump Sums', async () => {
@@ -148,8 +148,8 @@ describe('process acknowledgement', () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_LUMP_SUMS)
     await pollInbound()
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('SFIP0000001')
-    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('SFIP0000002')
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('LSES0000001')
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('LSES0000002')
   })
 
   test('sends payment request numbers for Lump Sums', async () => {
@@ -190,6 +190,6 @@ describe('process acknowledgement', () => {
     for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.quarantineFolder}/SITIELM0001_AP_20210812105407542.dat`).length).toBe(1)
+    expect(fileList.filter(x => x === `${config.quarantineFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`).length).toBe(1)
   })
 })

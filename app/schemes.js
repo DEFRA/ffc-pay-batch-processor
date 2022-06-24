@@ -15,6 +15,6 @@ module.exports = {
     schemeId: 3,
     name: 'Lump Sums',
     sourceSystem: 'LSES',
-    fileMask: /^SITILSES\d{4}_AP_\d*.dat$/
+    fileMask: /^SITILSES_\d{4}_AP_\d*.dat$/
   }
 }

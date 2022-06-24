@@ -1,4 +1,4 @@
-const { buildInvoiceLines, isInvoiceLineValid } = require('../../../app/processing/parsing/build-invoice-lines')
+const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/parsing/build-invoice-lines')
 
 global.console.error = jest.fn()
 

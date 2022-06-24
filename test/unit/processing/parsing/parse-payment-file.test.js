@@ -1,14 +1,14 @@
-jest.mock('../../../app/event')
-const { sendBatchProcessedEvents, sendBatchErrorEvent } = require('../../../app/event')
+jest.mock('../../../../app/event')
+const { sendBatchProcessedEvents, sendBatchErrorEvent } = require('../../../../app/event')
 
-jest.mock('../../../app/messaging')
-const { sendPaymentBatchMessage } = require('../../../app/messaging')
+jest.mock('../../../../app/messaging')
+const { sendPaymentBatchMessage } = require('../../../../app/messaging')
 
-jest.mock('../../../app/processing/parsing/get-payment-requests')
-const getPaymentRequests = require('../../../app/processing/parsing/get-payment-requests')
+jest.mock('../../../../app/processing/parsing/get-payment-requests')
+const getPaymentRequests = require('../../../../app/processing/parsing/get-payment-requests')
 
-const parsePaymentFile = require('../../../app/processing/parsing/parse-payment-file')
-const { sfiPilot } = require('../../../app/schemes')
+const parsePaymentFile = require('../../../../app/processing/parsing/parse-payment-file')
+const { sfiPilot } = require('../../../../app/schemes')
 
 let sequence
 let filename
