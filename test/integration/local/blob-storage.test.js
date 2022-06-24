@@ -20,8 +20,6 @@ describe('Blob storage tests', () => {
     }
   })
 
-  // archivePaymentFile
-
   test('List files in inbound blob container', async () => {
     const fileList = await blobStorage.getInboundFileList()
     expect(fileList).toEqual(expect.arrayContaining(mockFileList))

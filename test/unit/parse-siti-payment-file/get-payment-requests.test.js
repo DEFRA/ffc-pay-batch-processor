@@ -134,19 +134,19 @@ describe('Get payment request from payment file content', () => {
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI Pilot input file', async () => {
     await getPaymentRequests(fileBuffer, sfiPilot)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, 'SFIP')
+    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
   })
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI input file', async () => {
     await getPaymentRequests(fileBuffer, sfi)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, 'SFIP')
+    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
   })
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true and Lump Sums input file', async () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^LSES^AP\r\nH^LSES0000001^001^L0000001^1000000001^1^100^RP00^GBP\r\nL^LSES0000001^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\nH^LSES0000002^002^L0000002^1000000002^1^100^RP00^GBP\r\nL^LSES0000002^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\n')
 
     await getPaymentRequests(fileBuffer, lumpSums)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, 'LSES')
+    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, lumpSums.sourceSystem)
   })
 
   test('should reject when any line in fileBuffer starts with a character other than "B", "H" or "L"', async () => {
