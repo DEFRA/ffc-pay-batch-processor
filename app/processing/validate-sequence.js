@@ -13,7 +13,7 @@ const getSequence = (schemeId, filename) => {
     case sfiPilot.schemeId:
       return Number(filename.substr(7, 4))
     case lumpSums.schemeId:
-      return Number(filename.substr(8, 4))
+      return Number(filename.substr(9, 4))
     default:
       throw new Error(`Unknown schemeId: ${schemeId}`)
   }

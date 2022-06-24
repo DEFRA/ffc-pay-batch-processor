@@ -44,6 +44,7 @@ const TEST_INVALID_FILEPATH_LUMP_SUMS = path.resolve(__dirname, '../files', TEST
 
 describe('process acknowledgement', () => {
   beforeEach(async () => {
+    jest.clearAllMocks()
     await db.sequelize.truncate({ cascade: true })
     await db.scheme.bulkCreate([{
       schemeId: 2,
