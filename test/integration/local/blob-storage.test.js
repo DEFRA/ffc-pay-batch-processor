@@ -1,7 +1,6 @@
 describe('Blob storage tests', () => {
   let blobServiceClient
   let container
-  let server
   const { BlobServiceClient } = require('@azure/storage-blob')
   const blobStorage = require('../../../app/storage')
   const blobStorageConfig = require('../../../app/config/storage')
@@ -47,9 +46,5 @@ describe('Blob storage tests', () => {
 
     expect(result).toEqual(true)
     expect(fileList.length).toEqual(mockFileList.length - 1)
-  })
-
-  afterEach(async () => {
-    await server.stop()
   })
 })
