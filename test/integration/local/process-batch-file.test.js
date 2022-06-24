@@ -24,7 +24,7 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 jest.useFakeTimers()
-const processBatches = require('../../../app/processing')
+const pollInbound = require('../../../app/processing/poll-inbound')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const db = require('../../../app/data')
 const config = require('../../../app/config/storage')
@@ -80,14 +80,14 @@ describe('process acknowledgement', () => {
   test('sends all payment requests', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
-    await processBatches()
+    await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('sends invoice numbers', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
-    await processBatches()
+    await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('SFI00000001')
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('SFI00000002')
   })
@@ -95,7 +95,7 @@ describe('process acknowledgement', () => {
   test('sends payment request numbers', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
-    await processBatches()
+    await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.paymentRequestNumber).toBe(1)
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.paymentRequestNumber).toBe(3)
   })
@@ -103,7 +103,7 @@ describe('process acknowledgement', () => {
   test('archives file on success', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407541.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
-    await processBatches()
+    await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
       fileList.push(item.name)
@@ -114,7 +114,7 @@ describe('process acknowledgement', () => {
   test('ignores unrelated file', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
     await blockBlobClient.uploadFile(TEST_FILE)
-    await processBatches()
+    await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat()) {
       fileList.push(item.name)
@@ -125,7 +125,7 @@ describe('process acknowledgement', () => {
   test('quarantines invalid file', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/SITIELM0001_AP_20210812105407542.dat`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILE)
-    await processBatches()
+    await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
       fileList.push(item.name)
