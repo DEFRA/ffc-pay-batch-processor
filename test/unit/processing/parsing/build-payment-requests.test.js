@@ -1,4 +1,7 @@
+const { GBP } = require('../../../../app/currency')
 const buildPaymentRequests = require('../../../../app/processing/parsing/build-payment-requests')
+const { Q4 } = require('../../../../app/schedules')
+const { sfiPilot } = require('../../../../app/schemes')
 
 global.console.error = jest.fn()
 
@@ -8,7 +11,7 @@ describe('Build payment requests', () => {
   let invoiceLines
 
   beforeEach(() => {
-    sourceSystem = 'SFIP'
+    sourceSystem = sfiPilot.sourceSystem
     invoiceLines = [
       {
         schemeCode: 'SITIELM',
@@ -18,22 +21,19 @@ describe('Build payment requests', () => {
         value: 100,
         dueDate: '2022-11-02',
         marketingYear: 2022,
-        agreementNumber: 'SFI12345'
+        agreementNumber: 'SIP123456789012'
       }
     ]
 
     paymentRequests = [{
-      sourceSystem: 'SFIP',
-      sbi: 123456789,
+      sourceSystem: sfiPilot.sourceSystem,
       frn: 1234567890,
       paymentRequestNumber: 1,
-      invoiceNumber: 'S123456789A123456V001',
-      contractNumber: 'SFI12345',
-      currency: 'GBP',
-      schedule: 'Q4',
+      invoiceNumber: 'SITI1234567',
+      contractNumber: 'S1234567',
+      currency: GBP,
+      schedule: Q4,
       value: 100000,
-      schemeId: 2,
-      ledger: 'AP',
       deliveryBody: 'RP00',
       invoiceLines
     }]
@@ -45,32 +45,27 @@ describe('Build payment requests', () => {
 
   test('build payment requests', async () => {
     const paymentRequestsParse = buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(paymentRequestsParse).toMatchObject([
-      {
-        sourceSystem: 'SFIP',
-        deliveryBody: 'RP00',
-        invoiceNumber: 'S123456789A123456V001',
-        frn: 1234567890,
-        marketingYear: 2022,
-        paymentRequestNumber: 1,
-        agreementNumber: 'SFI12345',
-        contractNumber: 'SFI12345',
-        currency: 'GBP',
-        schedule: 'Q4',
-        dueDate: '2022-11-02',
-        value: 100000,
-        correlationId: paymentRequestsParse[0].correlationId,
-        invoiceLines: [
-          {
-            schemeCode: 'SITIELM',
-            accountCode: 'ABC123',
-            fundCode: 'ABC12',
-            description: 'G00 - Gross value of claim',
-            value: 100
-          }
-        ]
-      }
-    ])
+    expect(paymentRequestsParse).toMatchObject([{
+      sourceSystem: sfiPilot.sourceSystem,
+      frn: 1234567890,
+      paymentRequestNumber: 1,
+      invoiceNumber: 'SITI1234567',
+      contractNumber: 'S1234567',
+      currency: GBP,
+      schedule: Q4,
+      value: 100000,
+      deliveryBody: 'RP00',
+      agreementNumber: 'SIP123456789012',
+      dueDate: '2022-11-02',
+      correlationId: paymentRequestsParse[0].correlationId,
+      invoiceLines: [{
+        schemeCode: 'SITIELM',
+        accountCode: 'ABC123',
+        fundCode: 'ABC12',
+        description: 'G00 - Gross value of claim',
+        value: 100
+      }]
+    }])
   })
 
   test('Validation error in payment requests with no sourceSystem', async () => {
