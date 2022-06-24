@@ -14,7 +14,7 @@ jest.mock('../../../app/process-batches/file-processing-failed')
 const fileProcessingFailed = require('../../../app/processing/file-processing-failed')
 
 jest.mock('../../../app/process-batches/download-and-parse')
-const downloadAndParse = require('../../../app/processing/download-and-parse')
+const downloadAndParse = require('../../../app/processing/parsing/download-and-parse')
 
 global.console.log = jest.fn()
 

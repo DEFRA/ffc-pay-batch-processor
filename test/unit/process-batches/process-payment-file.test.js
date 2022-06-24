@@ -11,7 +11,7 @@ jest.mock('../../../app/process-batches/reprocess-if-needed')
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
 jest.mock('../../../app/process-batches/download-and-parse')
-const downloadAndParse = require('../../../app/processing/download-and-parse')
+const downloadAndParse = require('../../../app/processing/parsing/download-and-parse')
 
 global.console.error = jest.fn()
 global.console.log = jest.fn()

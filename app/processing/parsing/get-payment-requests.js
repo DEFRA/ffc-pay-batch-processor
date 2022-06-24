@@ -11,7 +11,7 @@ const getPaymentRequests = (fileBuffer, scheme) => {
   const batch = createBatch()
   const input = Readable.from(fileBuffer)
   const readBatchLines = readline.createInterface(input)
-  return readFile(readBatchLines, batch, scheme, input)
+  return readPaymentRequestsFromFile(readBatchLines, batch, scheme, input)
 }
 
 const createBatch = () => {
@@ -21,7 +21,7 @@ const createBatch = () => {
   }
 }
 
-const readFile = async (readBatchLines, batch, scheme, input) => {
+const readPaymentRequestsFromFile = async (readBatchLines, batch, scheme, input) => {
   return new Promise((resolve, reject) => {
     readBatchLines.on('line', (line) => {
       const batchLine = line.split('^')
