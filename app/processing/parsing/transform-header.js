@@ -29,9 +29,9 @@ const transformLumpSumsHeader = (headerData) => ({
   paymentRequestNumber: parseInt(headerData[2]),
   contractNumber: headerData[3],
   frn: headerData[4],
+  currency: headerData[8],
   value: parseFloat(headerData[6]),
   deliveryBody: headerData[7],
-  currency: headerData[8],
   invoiceLines: []
 })
 
