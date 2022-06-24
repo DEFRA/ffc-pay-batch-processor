@@ -1,19 +1,19 @@
 
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
-jest.mock('../../../app/process-batches/batches')
+jest.mock('../../../app/processing/batch')
 const batches = require('../../../app/processing/batch')
 
-jest.mock('../../../app/blob-storage')
+jest.mock('../../../app/storage')
 const blobStorage = require('../../../app/storage')
 
 jest.mock('../../../app/config/processing')
 const processingConfig = require('../../../app/config/processing')
 
-jest.mock('../../../app/process-batches/file-processing-failed')
+jest.mock('../../../app/processing/file-processing-failed')
 const fileProcessingFailed = require('../../../app/processing/file-processing-failed')
 
-jest.mock('../../../app/process-batches/download-and-parse')
+jest.mock('../../../app/processing/parsing/download-and-parse')
 const downloadAndParse = require('../../../app/processing/parsing/download-and-parse')
 
 global.console.log = jest.fn()

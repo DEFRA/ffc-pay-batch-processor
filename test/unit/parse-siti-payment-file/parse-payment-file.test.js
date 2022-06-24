@@ -4,7 +4,7 @@ const { sendBatchProcessedEvents, sendBatchErrorEvent } = require('../../../app/
 jest.mock('../../../app/messaging')
 const { sendPaymentBatchMessage } = require('../../../app/messaging')
 
-jest.mock('../../../app/parse-siti-payment-file/build-payment-file')
+jest.mock('../../../app/processing/parsing/get-payment-requests')
 const { buildAndTransformParseFile } = require('../../../app/processing/parsing/get-payment-requests')
 
 const { parsePaymentFile } = require('../../../app/processing/parsing/parse-payment-file')

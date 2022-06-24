@@ -1,16 +1,16 @@
 
 const processPaymentFile = require('../../../app/processing/process-payment-file')
 
-jest.mock('../../../app/process-batches/batches')
+jest.mock('../../../app/processing/batch')
 const batches = require('../../../app/processing/batch')
 
-jest.mock('../../../app/blob-storage')
-const blobStorage = require('../../../app/storage')
+jest.mock('../../../app/storage')
+const storage = require('../../../app/storage')
 
-jest.mock('../../../app/process-batches/reprocess-if-needed')
+jest.mock('../../../app/processing/reprocess-if-needed')
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
-jest.mock('../../../app/process-batches/download-and-parse')
+jest.mock('../../../app/processing/parsing/download-and-parse')
 const downloadAndParse = require('../../../app/processing/parsing/download-and-parse')
 
 global.console.error = jest.fn()
@@ -64,7 +64,7 @@ describe('Process payment file', () => {
     schemeType.batchId = '0001'
     batches.nextSequenceId.mockResolvedValue(2)
     await processPaymentFile(filename, schemeType)
-    expect(blobStorage.quarantinePaymentFile).toHaveBeenCalled()
+    expect(storage.quarantinePaymentFile).toHaveBeenCalled()
     expect(console.log.mock.calls[1][0]).toContain(`Quarantining ${filename}, sequence id 1 below expected`)
   })
 
@@ -72,7 +72,7 @@ describe('Process payment file', () => {
     schemeType.batchId = '0001'
     batches.nextSequenceId.mockResolvedValue(undefined)
     await processPaymentFile(filename, schemeType)
-    expect(blobStorage.quarantinePaymentFile).toHaveBeenCalled()
+    expect(storage.quarantinePaymentFile).toHaveBeenCalled()
     expect(console.log).toHaveBeenLastCalledWith(`Quarantining ${filename}, unable to get expected sequence id from database`)
   })
 })

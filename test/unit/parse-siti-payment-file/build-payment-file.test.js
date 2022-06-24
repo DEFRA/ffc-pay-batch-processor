@@ -1,7 +1,7 @@
 jest.mock('../../../app/processing/parsing/build-payment-requests')
 const buildPaymentRequests = require('../../../app/processing/parsing/build-payment-requests')
 
-jest.mock('../../../app/processing/parsing/validate')
+jest.mock('../../../app/processing/parsing/validate-batch')
 const validate = require('../../../app/processing/parsing/validate-batch')
 
 const { buildAndTransformParseFile } = require('../../../app/processing/parsing/get-payment-requests')

@@ -1,5 +1,4 @@
 describe('Blob storage tests', () => {
-  const createServer = require('../../../app/server')
   let blobServiceClient
   let container
   let server
@@ -14,9 +13,6 @@ describe('Blob storage tests', () => {
     container = blobServiceClient.getContainerClient(blobStorageConfig.container)
     await container.deleteIfExists()
     await container.createIfNotExists()
-
-    server = await createServer()
-    await server.initialize()
 
     for (const filename of mockFileList) {
       const blob = container.getBlockBlobClient(`${blobStorageConfig.inboundFolder}/${filename}`)
