@@ -5,30 +5,35 @@ const transformBatch = require('./transform-batch')
 const transformHeader = require('./transform-header')
 const transformInvoiceLine = require('./transform-invoice-line')
 const buildPaymentRequests = require('./build-payment-requests')
-const validate = require('./validate')
+const validateBatch = require('./validate-batch')
 
-const buildAndTransformParseFile = (fileBuffer, schemeType) => {
-  const batch = createBatch(schemeType.batchId)
+const getPaymentRequests = (fileBuffer, scheme) => {
+  const batch = createBatch()
   const input = Readable.from(fileBuffer)
   const readBatchLines = readline.createInterface(input)
+  return readFile(readBatchLines, batch, scheme, input)
+}
+
+const createBatch = () => {
+  return {
+    batchHeaders: [],
+    paymentRequests: []
+  }
+}
+
+const readFile = async (readBatchLines, batch, scheme, input) => {
   return new Promise((resolve, reject) => {
     readBatchLines.on('line', (line) => {
       const batchLine = line.split('^')
-      !parseBatchLineType(batchLine, batch, schemeType.scheme) &&
+      !readLine(batchLine, batch, scheme) &&
         reject(new Error('Invalid file - Unknown line'))
     })
 
     readBatchLines.on('close', () => {
-      const batchHeaders = batch.batchHeaders
-      const paymentRequests = batch.paymentRequests
-      const batchSequence = batch.sequence
-      const batchExportDate = batchHeaders?.length ? batchHeaders[0].exportDate : null
-      const sourceSystem = batchHeaders?.length ? batchHeaders[0].sourceSystem : null
-
-      validate(batchHeaders, paymentRequests, batchSequence)
+      validateBatch(batch.batchHeaders, batch.paymentRequests)
         ? resolve({
-            paymentRequests: buildPaymentRequests(paymentRequests, sourceSystem),
-            batchExportDate
+            paymentRequests: buildPaymentRequests(batch.paymentRequests, scheme.sourceSystem),
+            batchExportDate: batch.batchHeaders[0]?.exportDate
           })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
@@ -37,15 +42,7 @@ const buildAndTransformParseFile = (fileBuffer, schemeType) => {
   })
 }
 
-const createBatch = (sequence) => {
-  return {
-    sequence,
-    batchHeaders: [],
-    paymentRequests: []
-  }
-}
-
-const parseBatchLineType = (batchLine, batch, scheme) => {
+const readLine = (batchLine, batch, scheme) => {
   const lineType = batchLine[0]
 
   switch (lineType) {
@@ -53,18 +50,16 @@ const parseBatchLineType = (batchLine, batch, scheme) => {
       batch.batchHeaders.push(transformBatch(batchLine))
       return true
     case 'H':
-      batch.paymentRequests.push(transformHeader(batchLine, scheme))
+      batch.paymentRequests.push(transformHeader(batchLine, scheme.schemeId))
       return true
     case 'L':
       batch.paymentRequests[batch.paymentRequests.length - 1]
         .invoiceLines
-        .push(transformInvoiceLine(batchLine, scheme))
+        .push(transformInvoiceLine(batchLine, scheme.schemeId))
       return true
     default:
       return false
   }
 }
 
-module.exports = {
-  buildAndTransformParseFile
-}
+module.exports = getPaymentRequests

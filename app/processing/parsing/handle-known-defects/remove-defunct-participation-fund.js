@@ -1,8 +1,12 @@
-const { convertToPence } = require('../../currency-convert')
+const { convertToPence } = require('../../../currency-convert')
+const { sfiPilot } = require('../../../schemes')
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 
 const removeDefunctParticipationPayment = (paymentRequest) => {
+  if (paymentRequest.sourceSystem !== sfiPilot.sourceSystem) {
+    return paymentRequest
+  }
   // Defect in Siti Agri where full agreement should be recovered, but Siti Agri cannot set the participation gross value to 0
   // If participation payment is only non-zero value grouped by scheme code, then we need to set it to 0 so Delta will calculate correctly
   const schemeCodeGroups = groupBySchemeCode(paymentRequest.invoiceLines)

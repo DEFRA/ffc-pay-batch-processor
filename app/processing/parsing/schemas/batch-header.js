@@ -1,4 +1,4 @@
-const { AP, AR } = require('../../ledgers')
+const { AP, AR } = require('../../../ledgers')
 
 const Joi = require('joi').extend(require('@joi/date'))
 

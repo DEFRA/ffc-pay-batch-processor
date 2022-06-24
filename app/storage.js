@@ -1,6 +1,6 @@
 const { DefaultAzureCredential } = require('@azure/identity')
 const { BlobServiceClient } = require('@azure/storage-blob')
-const config = require('./config/blob-storage')
+const config = require('./config/storage')
 let blobServiceClient
 let containersInitialised
 
@@ -15,7 +15,7 @@ if (config.useConnectionStr) {
 
 const container = blobServiceClient.getContainerClient(config.container)
 
-async function initialiseContainers () {
+const initialiseContainers = async () => {
   if (config.createContainers) {
     console.log('Making sure blob containers exist')
     await container.createIfNotExists()
@@ -24,7 +24,7 @@ async function initialiseContainers () {
   containersInitialised = true
 }
 
-async function initialiseFolders () {
+const initialiseFolders = async () => {
   const placeHolderText = 'Placeholder'
   const inboundClient = container.getBlockBlobClient(`${config.inboundFolder}/default.txt`)
   const archiveClient = container.getBlockBlobClient(`${config.archiveFolder}/default.txt`)
@@ -34,12 +34,12 @@ async function initialiseFolders () {
   await quarantineClient.upload(placeHolderText, placeHolderText.length)
 }
 
-async function getBlob (folder, filename) {
+const getBlob = async (folder, filename) => {
   containersInitialised ?? await initialiseContainers()
   return container.getBlockBlobClient(`${folder}/${filename}`)
 }
 
-async function getInboundFileList () {
+const getInboundFileList = async () => {
   containersInitialised ?? await initialiseContainers()
 
   const fileList = []
@@ -52,18 +52,18 @@ async function getInboundFileList () {
   return fileList
 }
 
-async function getInboundFileDetails (filename) {
+const getInboundFileDetails = async (filename) => {
   const blob = await getBlob(config.inboundFolder, filename)
   return blob.getProperties()
 }
 
-async function downloadPaymentFile (filename) {
+const downloadPaymentFile = async (filename) => {
   const blob = await getBlob(config.inboundFolder, filename)
   return blob.downloadToBuffer()
 }
 
 // Copies blob from one folder to another folder and deletes blob from original folder
-async function moveFile (sourceFolder, destinationFolder, sourceFilename, destinationFilename) {
+const moveFile = async (sourceFolder, destinationFolder, sourceFilename, destinationFilename) => {
   const sourceBlob = await getBlob(sourceFolder, sourceFilename)
   const destinationBlob = await getBlob(destinationFolder, destinationFilename)
   const copyResult = await (await destinationBlob.beginCopyFromURL(sourceBlob.url)).pollUntilDone()
@@ -76,11 +76,11 @@ async function moveFile (sourceFolder, destinationFolder, sourceFilename, destin
   return false
 }
 
-function archivePaymentFile (filename, archiveFilename) {
+const archivePaymentFile = async (filename, archiveFilename) => {
   return moveFile(config.inboundFolder, config.archiveFolder, filename, archiveFilename)
 }
 
-function quarantinePaymentFile (filename, quarantineFilename) {
+const quarantinePaymentFile = async (filename, quarantineFilename) => {
   return moveFile(config.inboundFolder, config.quarantineFolder, filename, quarantineFilename)
 }
 

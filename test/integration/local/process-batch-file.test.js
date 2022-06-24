@@ -24,10 +24,10 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 jest.useFakeTimers()
-const processBatches = require('../../../app/process-batches')
+const processBatches = require('../../../app/processing')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const db = require('../../../app/data')
-const config = require('../../../app/config/blob-storage')
+const config = require('../../../app/config/storage')
 const path = require('path')
 let scheme
 let sequence

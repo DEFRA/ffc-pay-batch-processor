@@ -1,17 +1,17 @@
 
-const processPaymentFile = require('../../../app/process-batches/process-payment-file')
+const processPaymentFile = require('../../../app/processing/process-payment-file')
 
 jest.mock('../../../app/process-batches/batches')
-const batches = require('../../../app/process-batches/batches')
+const batches = require('../../../app/processing/batch')
 
 jest.mock('../../../app/blob-storage')
-const blobStorage = require('../../../app/blob-storage')
+const blobStorage = require('../../../app/storage')
 
 jest.mock('../../../app/process-batches/reprocess-if-needed')
-const reprocessIfNeeded = require('../../../app/process-batches/reprocess-if-needed')
+const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
 jest.mock('../../../app/process-batches/download-and-parse')
-const downloadAndParse = require('../../../app/process-batches/download-and-parse')
+const downloadAndParse = require('../../../app/processing/download-and-parse')
 
 global.console.error = jest.fn()
 global.console.log = jest.fn()

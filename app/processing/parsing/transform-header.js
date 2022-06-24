@@ -1,11 +1,11 @@
-const { SFI, SFI_PILOT, LUMP_SUMS } = require('../schemes')
+const { sfi, sfiPilot, lumpSums } = require('../../schemes')
 
-const transformHeader = (headerData, scheme) => {
-  switch (scheme) {
-    case SFI:
-    case SFI_PILOT:
+const transformHeader = (headerData, schemeId) => {
+  switch (schemeId) {
+    case sfi.schemeId:
+    case sfiPilot.schemeId:
       return transformSFIHeader(headerData)
-    case LUMP_SUMS:
+    case lumpSums.schemeId:
       return transformLumpSumsHeader(headerData)
     default:
       throw new Error('Unknown scheme')

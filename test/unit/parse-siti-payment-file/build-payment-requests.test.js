@@ -1,4 +1,4 @@
-const buildPaymentRequests = require('../../../app/parse-siti-payment-file/build-payment-requests')
+const buildPaymentRequests = require('../../../app/processing/parsing/build-payment-requests')
 
 global.console.error = jest.fn()
 

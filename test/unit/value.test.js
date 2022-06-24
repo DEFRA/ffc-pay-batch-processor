@@ -1,4 +1,4 @@
-const getValueInPence = require('../../app/parse-siti-payment-file/value')
+const getValueInPence = require('../../app/processing/parsing/get-value-in-pence')
 
 describe('get invoice total', () => {
   test('calculates invoice total if integer single line', () => {

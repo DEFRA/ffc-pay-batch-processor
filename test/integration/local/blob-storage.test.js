@@ -4,8 +4,8 @@ describe('Blob storage tests', () => {
   let container
   let server
   const { BlobServiceClient } = require('@azure/storage-blob')
-  const blobStorage = require('../../../app/blob-storage')
-  const blobStorageConfig = require('../../../app/config/blob-storage')
+  const blobStorage = require('../../../app/storage')
+  const blobStorageConfig = require('../../../app/config/storage')
   const mockFileList = ['test1.dat', 'test2.dat']
   const testFileContents = 'This is a test file'
 

@@ -1,10 +1,10 @@
 jest.mock('../../../app/parse-siti-payment-file/build-payment-requests')
-const buildPaymentRequests = require('../../../app/parse-siti-payment-file/build-payment-requests')
+const buildPaymentRequests = require('../../../app/processing/parsing/build-payment-requests')
 
 jest.mock('../../../app/parse-siti-payment-file/validate')
-const validate = require('../../../app/parse-siti-payment-file/validate')
+const validate = require('../../../app/processing/parsing/validate-batch')
 
-const { buildAndTransformParseFile } = require('../../../app/parse-siti-payment-file/build-payment-file')
+const { buildAndTransformParseFile } = require('../../../app/processing/parsing/get-payment-requests')
 const { LUMP_SUMS, SFI_PILOT, SFI } = require('../../../app/schemes')
 
 let fileBuffer

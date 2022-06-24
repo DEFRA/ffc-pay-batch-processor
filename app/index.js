@@ -1,18 +1,7 @@
 require('./insights').setup()
 require('log-timestamp')
-const createServer = require('./server')
+const processing = require('./processing')
 
-const init = async () => {
-  const server = await createServer()
-  await server.start()
-  console.log('Server running on %s', server.info.uri)
-
-  require('./process-batches')()
-}
-
-process.on('unhandledRejection', (err) => {
-  console.log(err)
-  process.exit(1)
-})
-
-init()
+module.exports = (async function startService () {
+  await processing.start()
+}())

@@ -1,4 +1,4 @@
-const handleSitiDefects = require('../../app/parse-siti-payment-file/handle-siti-defects')
+const handleSitiDefects = require('../../app/processing/parsing/handle-known-defects')
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 

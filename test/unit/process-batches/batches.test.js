@@ -1,5 +1,5 @@
 
-const { nextSequenceId } = require('../../../app/process-batches/batches')
+const { nextSequenceId } = require('../../../app/processing/batch')
 
 jest.mock('../../../app/data')
 const db = require('../../../app/data')

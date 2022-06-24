@@ -5,9 +5,9 @@ jest.mock('../../../app/messaging')
 const { sendPaymentBatchMessage } = require('../../../app/messaging')
 
 jest.mock('../../../app/parse-siti-payment-file/build-payment-file')
-const { buildAndTransformParseFile } = require('../../../app/parse-siti-payment-file/build-payment-file')
+const { buildAndTransformParseFile } = require('../../../app/processing/parsing/get-payment-requests')
 
-const { parsePaymentFile } = require('../../../app/parse-siti-payment-file/parse-payment-file')
+const { parsePaymentFile } = require('../../../app/processing/parsing/parse-payment-file')
 const { SFI_PILOT } = require('../../../app/schemes')
 
 let filename
