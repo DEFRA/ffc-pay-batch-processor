@@ -47,7 +47,7 @@ const TEST_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_FILE_SFI)
 const TEST_INVALID_FILE_SFI = 'SITISFI0001_AP_20210812105407546.dat'
 const TEST_INVALID_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_INVALID_FILE_SFI)
 
-describe('process acknowledgement', () => {
+describe('process batch files', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
     await db.sequelize.truncate({ cascade: true })
@@ -127,7 +127,7 @@ describe('process acknowledgement', () => {
     expect(fileList.filter(x => x === `${config.archiveFolder}/${TEST_FILE_SFI_PILOT}`).length).toBe(1)
   })
 
-  test('ignores unrelated file for SFI Pilot', async () => {
+  test('ignores unrelated file', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI_PILOT)
     await pollInbound()
@@ -183,17 +183,6 @@ describe('process acknowledgement', () => {
     expect(fileList.filter(x => x === `${config.archiveFolder}/${TEST_FILE_LUMP_SUMS}`).length).toBe(1)
   })
 
-  test('ignores unrelated file for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
-    await blockBlobClient.uploadFile(TEST_FILEPATH_LUMP_SUMS)
-    await pollInbound()
-    const fileList = []
-    for await (const item of container.listBlobsFlat()) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${config.inbound}/ignore me.dat`).length).toBe(1)
-  })
-
   test('quarantines invalid file for Lump Sums', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_LUMP_SUMS)
@@ -237,17 +226,6 @@ describe('process acknowledgement', () => {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${config.archiveFolder}/${TEST_FILE_SFI}`).length).toBe(1)
-  })
-
-  test('ignores unrelated file for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
-    await blockBlobClient.uploadFile(TEST_FILEPATH_SFI)
-    await pollInbound()
-    const fileList = []
-    for await (const item of container.listBlobsFlat()) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${config.inbound}/ignore me.dat`).length).toBe(1)
   })
 
   test('quarantines invalid file for SFI', async () => {
