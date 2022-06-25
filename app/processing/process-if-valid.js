@@ -1,6 +1,6 @@
 const blobStorage = require('../storage')
 const batches = require('./batch')
-const downloadAndParse = require('./parsing/download-and-parse')
+const downloadAndParse = require('./download-and-parse')
 const validateSequence = require('./validate-sequence')
 
 const processIfValid = async (scheme, filename) => {

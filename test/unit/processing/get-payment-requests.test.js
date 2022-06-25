@@ -1,11 +1,11 @@
-jest.mock('../../../../app/processing/parsing/build-payment-requests')
-const buildPaymentRequests = require('../../../../app/processing/parsing/build-payment-requests')
+jest.mock('../../../app/processing/siti-agri/build-payment-requests')
+const buildPaymentRequests = require('../../../app/processing/siti-agri/build-payment-requests')
 
-jest.mock('../../../../app/processing/parsing/validate-batch')
-const validateBatch = require('../../../../app/processing/parsing/validate-batch')
+jest.mock('../../../app/processing/siti-agri/validate-batch')
+const validateBatch = require('../../../app/processing/siti-agri/validate-batch')
 
-const getPaymentRequests = require('../../../../app/processing/parsing/get-payment-requests')
-const { lumpSums, sfiPilot, sfi } = require('../../../../app/schemes')
+const getPaymentRequests = require('../../../app/processing/get-payment-requests')
+const { lumpSums, sfiPilot, sfi } = require('../../../app/schemes')
 
 let fileBuffer
 

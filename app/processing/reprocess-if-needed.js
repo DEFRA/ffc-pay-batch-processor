@@ -2,7 +2,7 @@ const batch = require('./batch')
 const processingConfig = require('../config/processing')
 const storage = require('../storage')
 const fileProcessingFailed = require('./file-processing-failed')
-const downloadAndParse = require('./parsing/download-and-parse')
+const downloadAndParse = require('./download-and-parse')
 
 const reprocessIfNeeded = async (filename, scheme) => {
   const existingBatch = await batch.exists(filename)

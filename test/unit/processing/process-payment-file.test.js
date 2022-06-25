@@ -9,8 +9,8 @@ const storage = require('../../../app/storage')
 jest.mock('../../../app/processing/reprocess-if-needed')
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
-jest.mock('../../../app/processing/parsing/download-and-parse')
-const downloadAndParse = require('../../../app/processing/parsing/download-and-parse')
+jest.mock('../../../app/processing/download-and-parse')
+const downloadAndParse = require('../../../app/processing/download-and-parse')
 const { sfiPilot } = require('../../../app/schemes')
 
 global.console.error = jest.fn()

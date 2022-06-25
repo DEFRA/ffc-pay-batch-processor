@@ -1,7 +1,7 @@
-const storage = require('../../storage')
+const storage = require('../storage')
 const parsePaymentFile = require('./parse-payment-file')
-const batch = require('../batch')
-const fileProcessingFailed = require('../file-processing-failed')
+const batch = require('./batch')
+const fileProcessingFailed = require('./file-processing-failed')
 
 const downloadAndParse = async (filename, scheme, sequence) => {
   const buffer = await storage.downloadPaymentFile(filename)

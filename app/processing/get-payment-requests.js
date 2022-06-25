@@ -1,6 +1,6 @@
 const readline = require('readline')
 const { Readable } = require('stream')
-const readSitiAgriFile = require('./read-siti-agri-file')
+const readSitiAgriFile = require('./siti-agri/read-siti-agri-file')
 
 const getPaymentRequests = (fileBuffer, scheme) => {
   const batch = createBatch()

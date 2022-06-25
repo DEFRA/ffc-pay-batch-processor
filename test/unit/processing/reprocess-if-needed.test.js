@@ -13,8 +13,8 @@ const processingConfig = require('../../../app/config/processing')
 jest.mock('../../../app/processing/file-processing-failed')
 const fileProcessingFailed = require('../../../app/processing/file-processing-failed')
 
-jest.mock('../../../app/processing/parsing/download-and-parse')
-const downloadAndParse = require('../../../app/processing/parsing/download-and-parse')
+jest.mock('../../../app/processing/download-and-parse')
+const downloadAndParse = require('../../../app/processing/download-and-parse')
 
 global.console.log = jest.fn()
 

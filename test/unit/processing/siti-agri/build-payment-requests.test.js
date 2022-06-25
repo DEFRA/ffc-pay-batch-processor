@@ -1,5 +1,5 @@
 const { GBP } = require('../../../../app/currency')
-const buildPaymentRequests = require('../../../../app/processing/parsing/build-payment-requests')
+const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
 const { Q4 } = require('../../../../app/schedules')
 const { sfiPilot } = require('../../../../app/schemes')
 
