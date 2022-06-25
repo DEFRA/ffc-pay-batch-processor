@@ -22,6 +22,7 @@ const createBatch = () => {
 }
 
 const readPaymentRequestsFromFile = async (readBatchLines, batch, scheme, input) => {
+  // TODO - SITI AGRI SPECIFIC HERE
   return new Promise((resolve, reject) => {
     readBatchLines.on('line', (line) => {
       const batchLine = line.split('^')
