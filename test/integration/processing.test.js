@@ -52,6 +52,9 @@ describe('process acknowledgement', () => {
     jest.clearAllMocks()
     await db.sequelize.truncate({ cascade: true })
     await db.scheme.bulkCreate([{
+      schemeId: 1,
+      scheme: 'SFI'
+    }, {
       schemeId: 2,
       scheme: 'SFI Pilot'
     }, {
@@ -59,6 +62,9 @@ describe('process acknowledgement', () => {
       scheme: 'Lump Sums'
     }])
     await db.sequence.bulkCreate([{
+      schemeId: 1,
+      next: 1
+    }, {
       schemeId: 2,
       next: 1
     }, {
