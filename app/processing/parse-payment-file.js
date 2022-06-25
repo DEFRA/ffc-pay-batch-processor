@@ -1,10 +1,10 @@
-const getPaymentRequests = require('./get-payment-requests')
+const getPaymentRequestsFromFile = require('./get-payment-requests-from-file')
 const { sendBatchProcessedEvents, sendBatchErrorEvent } = require('../event')
 const { sendPaymentBatchMessage } = require('../messaging')
 
 const parsePaymentFile = async (filename, fileBuffer, scheme, sequence) => {
   try {
-    const { paymentRequests, batchExportDate } = await getPaymentRequests(fileBuffer, scheme)
+    const { paymentRequests, batchExportDate } = await getPaymentRequestsFromFile(fileBuffer, scheme)
     await sendBatchProcessedEvents(filename, paymentRequests, sequence, batchExportDate)
     await sendPaymentBatchMessage(paymentRequests)
     return true

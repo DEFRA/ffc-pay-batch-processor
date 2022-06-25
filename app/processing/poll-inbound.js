@@ -1,17 +1,17 @@
 const storage = require('../storage')
-const getScheme = require('./get-scheme')
+const getSchemeFromFilename = require('./get-scheme-from-filename')
 const processPaymentFile = require('./process-payment-file')
 
 const pollInbound = async () => {
-  const paymentFiles = await storage.getInboundFileList()
+  const inboundFiles = await storage.getInboundFileList()
 
-  if (paymentFiles.length > 0) {
-    for (const paymentFile of paymentFiles) {
-      const scheme = getScheme(paymentFile)
+  if (inboundFiles.length > 0) {
+    for (const inboundFile of inboundFiles) {
+      const scheme = getSchemeFromFilename(inboundFile)
 
       if (scheme) {
         console.log(`Identified payment file as scheme: ${scheme.name}`)
-        await processPaymentFile(paymentFile, scheme)
+        await processPaymentFile(inboundFile, scheme)
       }
     }
   }

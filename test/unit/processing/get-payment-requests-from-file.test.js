@@ -4,7 +4,7 @@ const buildPaymentRequests = require('../../../app/processing/siti-agri/build-pa
 jest.mock('../../../app/processing/siti-agri/validate-batch')
 const validateBatch = require('../../../app/processing/siti-agri/validate-batch')
 
-const getPaymentRequests = require('../../../app/processing/get-payment-requests')
+const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
 const { lumpSums, sfiPilot, sfi } = require('../../../app/schemes')
 
 let fileBuffer
@@ -118,34 +118,34 @@ describe('Get payment request from payment file content', () => {
   })
 
   test('should call validate when valid fileBuffer and sequence are received', async () => {
-    await getPaymentRequests(fileBuffer, sfiPilot)
+    await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(validateBatch).toHaveBeenCalled()
   })
 
   test('should call validate with batchHeaders, batchPaymentRequests and sequence when valid fileBuffer and sequence are received', async () => {
-    await getPaymentRequests(fileBuffer, sfiPilot)
+    await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(validateBatch).toHaveBeenCalledWith(batchHeaders, batchPaymentRequestsSFI)
   })
 
   test('should call buildPaymentRequests when valid fileBuffer and sequence are received', async () => {
-    await getPaymentRequests(fileBuffer, sfiPilot)
+    await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(buildPaymentRequests).toHaveBeenCalled()
   })
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI Pilot input file', async () => {
-    await getPaymentRequests(fileBuffer, sfiPilot)
+    await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
   })
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI input file', async () => {
-    await getPaymentRequests(fileBuffer, sfi)
+    await getPaymentRequestsFromFile(fileBuffer, sfi)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
   })
 
   test('should call buildPaymentRequests with batchPaymentRequests when validate return true and Lump Sums input file', async () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^LSES^AP\r\nH^LSES0000001^001^L0000001^1000000001^1^100^RP00^GBP\r\nL^LSES0000001^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\nH^LSES0000002^002^L0000002^1000000002^1^100^RP00^GBP\r\nL^LSES0000002^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\n')
 
-    await getPaymentRequests(fileBuffer, lumpSums)
+    await getPaymentRequestsFromFile(fileBuffer, lumpSums)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, lumpSums.sourceSystem)
   })
 
@@ -153,7 +153,7 @@ describe('Get payment request from payment file content', () => {
     fileBuffer = Buffer.from('V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
 
     const wrapper = async () => {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     }
 
     await expect(wrapper).rejects.toThrow()
@@ -163,7 +163,7 @@ describe('Get payment request from payment file content', () => {
     fileBuffer = Buffer.from('V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
 
     const wrapper = async () => {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     }
 
     await expect(wrapper).rejects.toThrowError(Error)
@@ -173,7 +173,7 @@ describe('Get payment request from payment file content', () => {
     fileBuffer = Buffer.from('V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\nH^SFI00000002^03^SFIP000002^2^1000000002^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273\r\n')
 
     const wrapper = async () => {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     }
 
     await expect(wrapper).rejects.toThrowError('Invalid file')
@@ -183,7 +183,7 @@ describe('Get payment request from payment file content', () => {
     validateBatch.mockReturnValue(false)
 
     const wrapper = async () => {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     }
 
     await expect(wrapper).rejects.toThrow()
@@ -193,7 +193,7 @@ describe('Get payment request from payment file content', () => {
     validateBatch.mockReturnValue(false)
 
     const wrapper = async () => {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     }
 
     await expect(wrapper).rejects.toThrowError(Error)
@@ -203,7 +203,7 @@ describe('Get payment request from payment file content', () => {
     validateBatch.mockReturnValue(false)
 
     const wrapper = async () => {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     }
 
     await expect(wrapper).rejects.toThrowError('Invalid file')
@@ -213,7 +213,7 @@ describe('Get payment request from payment file content', () => {
     validateBatch.mockReturnValue(false)
 
     try {
-      await getPaymentRequests(fileBuffer, sfiPilot)
+      await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     } catch (err) { }
 
     expect(buildPaymentRequests).not.toHaveBeenCalled()
