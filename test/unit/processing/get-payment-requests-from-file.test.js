@@ -6,6 +6,9 @@ const validateBatch = require('../../../app/processing/siti-agri/validate-batch'
 
 const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
 const { lumpSums, sfiPilot, sfi } = require('../../../app/schemes')
+const { M12 } = require('../../../app/schedules')
+const { GBP } = require('../../../app/currency')
+const { AP } = require('../../../app/ledgers')
 
 let fileBuffer
 
@@ -20,7 +23,7 @@ describe('Get payment request from payment file content', () => {
     batchHeaders = [{
       batchValue: 200,
       exportDate: '2021-08-12',
-      ledger: 'AP',
+      ledger: AP,
       numberOfPaymentRequests: 2,
       sequence: '0001',
       sourceSystem: 'SFIP'
@@ -28,12 +31,12 @@ describe('Get payment request from payment file content', () => {
 
     batchPaymentRequestsSFI = [{
       contractNumber: 'SFIP000001',
-      currency: 'GBP',
+      currency: GBP,
       deliveryBody: 'RP00',
       frn: '1000000001',
       invoiceNumber: 'SFI00000001',
       paymentRequestNumber: 1,
-      schedule: 'M12',
+      schedule: M12,
       value: 100,
       invoiceLines: [{
         accountCode: 'SOS27',
@@ -43,19 +46,19 @@ describe('Get payment request from payment file content', () => {
         dueDate: '2022-12-01',
         fundCode: 'DRD10',
         invoiceNumber: 'SFI00000001',
-        marketingYear: '2022',
+        marketingYear: 2022,
         schemeCode: '80001',
         value: 100
       }]
     },
     {
       contractNumber: 'SFIP000002',
-      currency: 'GBP',
+      currency: GBP,
       deliveryBody: 'RP00',
       frn: '1000000002',
       invoiceNumber: 'SFI00000002',
       paymentRequestNumber: 3,
-      schedule: 'M12',
+      schedule: M12,
       value: 100,
       invoiceLines: [{
         accountCode: 'SOS273',
@@ -65,7 +68,7 @@ describe('Get payment request from payment file content', () => {
         dueDate: '2022-12-01',
         fundCode: 'DRD10',
         invoiceNumber: 'SFI00000002',
-        marketingYear: '2022',
+        marketingYear: 2022,
         schemeCode: '80001',
         value: 100
       }]
@@ -73,7 +76,7 @@ describe('Get payment request from payment file content', () => {
 
     batchPaymentRequestsLumpSums = [{
       contractNumber: 'L0000001',
-      currency: 'GBP',
+      currency: GBP,
       deliveryBody: 'RP00',
       frn: '1000000001',
       invoiceNumber: 'LSES0000001',
@@ -85,14 +88,14 @@ describe('Get payment request from payment file content', () => {
         dueDate: '2022-12-01',
         fundCode: 'DOM10',
         invoiceNumber: 'LSES0000001',
-        marketingYear: '2022',
+        marketingYear: 2022,
         schemeCode: '10570',
         value: 100
       }]
     },
     {
       contractNumber: 'L0000002',
-      currency: 'GBP',
+      currency: GBP,
       deliveryBody: 'RP00',
       frn: '1000000002',
       invoiceNumber: 'LSES0000002',
@@ -104,7 +107,7 @@ describe('Get payment request from payment file content', () => {
         dueDate: '2022-12-01',
         fundCode: 'DOM10',
         invoiceNumber: 'LSES0000002',
-        marketingYear: '2022',
+        marketingYear: 2022,
         schemeCode: '10570',
         value: 100
       }]

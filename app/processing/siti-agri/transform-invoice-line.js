@@ -8,14 +8,14 @@ const transformInvoiceLine = (lineData, schemeId) => {
     case lumpSums.schemeId:
       return transformLumpSumsInvoiceLine(lineData)
     default:
-      throw new Error('Unknown scheme')
+      throw new Error(`Unknown scheme: ${schemeId}`)
   }
 }
 
 const transformSFIInvoiceLine = (lineData) => ({
   invoiceNumber: lineData[1],
-  value: parseFloat(lineData[2]),
-  marketingYear: lineData[3],
+  value: !isNaN(lineData[2]) ? parseFloat(lineData[2]) : undefined,
+  marketingYear: !isNaN(lineData[3]) ? parseInt(lineData[3]) : undefined,
   schemeCode: lineData[4],
   fundCode: lineData[5],
   agreementNumber: lineData[6],
@@ -27,8 +27,8 @@ const transformSFIInvoiceLine = (lineData) => ({
 
 const transformLumpSumsInvoiceLine = (lineData) => ({
   invoiceNumber: lineData[1],
-  value: parseFloat(lineData[2]),
-  marketingYear: lineData[3],
+  value: !isNaN(lineData[2]) ? parseFloat(lineData[2]) : undefined,
+  marketingYear: !isNaN(lineData[3]) ? parseInt(lineData[3]) : undefined,
   schemeCode: lineData[4],
   fundCode: lineData[5],
   deliveryBody: lineData[6],

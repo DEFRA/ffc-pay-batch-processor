@@ -6,15 +6,13 @@ describe('Build invoice lines', () => {
   let invoiceLines
 
   beforeEach(() => {
-    invoiceLines = [
-      {
-        schemeCode: 'SITIELM',
-        accountCode: 'ABC123',
-        fundCode: 'ABC12',
-        description: 'G00 - Gross value of claim',
-        value: 100
-      }
-    ]
+    invoiceLines = [{
+      schemeCode: 'SITIELM',
+      accountCode: 'ABC123',
+      fundCode: 'ABC12',
+      description: 'G00 - Gross value of claim',
+      value: 100
+    }]
   })
 
   afterEach(async () => {
@@ -34,7 +32,7 @@ describe('Build invoice lines', () => {
     ])
   })
 
-  test('Sucessful validation of invoice lines', async () => {
+  test('Successful validation of invoice lines', async () => {
     const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
     expect(invoiceLineIsValid).toBe(true)
   })
