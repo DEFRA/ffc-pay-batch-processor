@@ -1,5 +1,4 @@
-const getValueInPence = require('./get-value-in-pence')
-const { convertToPence } = require('../../currency-convert')
+const { convertToPence, getTotalValueInPence } = require('../../currency-convert')
 const schema = require('./schemas/batch-header')
 
 const validateBatch = (batchHeader, paymentRequests) => {
@@ -7,7 +6,7 @@ const validateBatch = (batchHeader, paymentRequests) => {
 
   const validSchema = isValidSchema(batchHeader[0])
   const numberOfPaymentRequestsValid = batchHeader[0].numberOfPaymentRequests === paymentRequests.length
-  const batchValueTotalsValid = convertToPence(batchHeader[0].batchValue) === getValueInPence(paymentRequests, 'value')
+  const batchValueTotalsValid = convertToPence(batchHeader[0].batchValue) === getTotalValueInPence(paymentRequests, 'value')
   const invoiceLinesValuesValid = validateLineTotals(paymentRequests)
   const numberOfBatchHeadersValid = batchHeader.length === 1
   return validSchema && numberOfPaymentRequestsValid && batchValueTotalsValid && invoiceLinesValuesValid && numberOfBatchHeadersValid
@@ -24,7 +23,7 @@ const isValidSchema = (batchHeader) => {
 
 const validateLineTotals = (paymentRequests) => {
   return paymentRequests
-    .every(a => convertToPence(a.value) === getValueInPence(a.invoiceLines, 'value'))
+    .every(a => convertToPence(a.value) === getTotalValueInPence(a.invoiceLines, 'value'))
 }
 
 module.exports = validateBatch

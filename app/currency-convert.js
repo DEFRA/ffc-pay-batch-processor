@@ -10,6 +10,15 @@ const convertToPence = (valueInPounds) => {
   }
 }
 
+const getTotalValueInPence = (data, key) => {
+  try {
+    return data.reduce((a, b) => { return a + convertToPence(b[key] ?? 0) }, 0)
+  } catch {
+    return undefined
+  }
+}
+
 module.exports = {
-  convertToPence
+  convertToPence,
+  getTotalValueInPence
 }
