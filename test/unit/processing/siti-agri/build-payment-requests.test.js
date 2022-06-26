@@ -103,7 +103,7 @@ describe('Build payment requests', () => {
   })
 
   test('Validation error in payment requests with invalid currency', async () => {
-    paymentRequests[0].currency = 'US'
+    paymentRequests[0].currency = 'USD'
     buildPaymentRequests(paymentRequests, sourceSystem)
     expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "currency" must be one of [GBP, EUR]')
   })

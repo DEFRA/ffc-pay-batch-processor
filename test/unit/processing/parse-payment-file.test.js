@@ -34,17 +34,17 @@ describe('Parse and send events on success or failure', () => {
     jest.resetAllMocks()
   })
 
-  test('should call buildAndTransformParseFile when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile when valid filename, fileBuffer and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
     expect(getPaymentRequestsFromFile).toHaveBeenCalled()
   })
 
-  test('should call buildAndTransformParseFile with fileBuffer and sequence when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when valid filename, fileBuffer and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
     expect(getPaymentRequestsFromFile).toHaveBeenCalledWith(fileBuffer, sfiPilot)
   })
 
-  test('should call buildAndTransformParseFile when invalid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile when invalid filename, fileBuffer and sequence are received', async () => {
     filename = ''
     fileBuffer = ''
 
@@ -52,7 +52,7 @@ describe('Parse and send events on success or failure', () => {
     expect(getPaymentRequestsFromFile).toHaveBeenCalled()
   })
 
-  test('should call buildAndTransformParseFile with fileBuffer and sequence when invalid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when invalid filename, fileBuffer and sequence are received', async () => {
     filename = ''
     fileBuffer = ''
     sequence = ''
@@ -86,14 +86,14 @@ describe('Parse and send events on success or failure', () => {
     expect(result).toBe(true)
   })
 
-  test('should call sendBatchErrorEvent when buildAndTransformParseFile rejects', async () => {
+  test('should call sendBatchErrorEvent when getPaymentRequestsFromFile rejects', async () => {
     getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
 
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
     expect(sendBatchErrorEvent).toHaveBeenCalled()
   })
 
-  test('should call sendBatchErrorEvent with filename and reject error when buildAndTransformParseFile rejects', async () => {
+  test('should call sendBatchErrorEvent with filename and reject error when getPaymentRequestsFromFile rejects', async () => {
     getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
 
     filename = 'notAFormattedFileName.dat'
@@ -102,7 +102,7 @@ describe('Parse and send events on success or failure', () => {
     expect(sendBatchErrorEvent).toHaveBeenCalledWith(filename, new Error('Invalid file - Unknown line'))
   })
 
-  test('should return false when buildAndTransformParseFile rejects', async () => {
+  test('should return false when getPaymentRequestsFromFile rejects', async () => {
     getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
 
     const result = await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
