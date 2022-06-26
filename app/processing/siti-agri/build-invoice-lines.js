@@ -12,7 +12,7 @@ const buildInvoiceLines = (invoiceLines) => {
 }
 
 const isInvoiceLineValid = (invoiceLine) => {
-  const validationResult = invoiceLineSchema.validate(invoiceLine)
+  const validationResult = invoiceLineSchema.validate(invoiceLine, { abortEarly: false })
   if (validationResult.error) {
     console.error(`Invoice line is invalid. ${validationResult.error.message}`)
     return false

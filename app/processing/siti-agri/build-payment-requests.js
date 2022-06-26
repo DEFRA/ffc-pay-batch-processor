@@ -23,7 +23,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
 }
 
 const isPaymentRequestValid = (paymentRequest) => {
-  const validationResult = paymentRequestSchema.validate(paymentRequest)
+  const validationResult = paymentRequestSchema.validate(paymentRequest, { abortEarly: false })
   if (validationResult.error) {
     console.error(`Payment request is invalid. ${validationResult.error.message}`)
     return false
