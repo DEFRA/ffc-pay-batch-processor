@@ -61,4 +61,9 @@ describe('Transform invoice lines', () => {
     const lineData = []
     expect(() => transformInvoiceLine(lineData)).toThrowError('Unknown scheme: undefined')
   })
+
+  test('throws error if unknown scheme', async () => {
+    const lineData = []
+    expect(() => transformInvoiceLine(lineData, 99)).toThrowError('Unknown scheme: 99')
+  })
 })
