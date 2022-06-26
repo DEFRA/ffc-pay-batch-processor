@@ -1,5 +1,5 @@
-const handleKnownDefects = require('../../app/processing/siti-agri/handle-known-defects')
-const { sfiPilot } = require('../../app/schemes')
+const handleKnownDefects = require('../../../../app/processing/siti-agri/handle-known-defects')
+const { sfiPilot } = require('../../../../app/schemes')
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 
