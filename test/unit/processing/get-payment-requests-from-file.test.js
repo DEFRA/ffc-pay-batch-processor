@@ -25,7 +25,7 @@ describe('Get payment request from payment file content', () => {
       exportDate: '2021-08-12',
       ledger: AP,
       numberOfPaymentRequests: 2,
-      sequence: '0001',
+      sequence: 1,
       sourceSystem: 'SFIP'
     }]
 

@@ -54,7 +54,7 @@ describe('Transform header', () => {
   test('returns undefined values if line empty', async () => {
     const headerData = []
     const result = transformHeader(headerData, lumpSums.schemeId)
-    Object.values(result).forEach(value => console.log(value) && expect(value === undefined || value.length === 0).toBeTruthy())
+    Object.values(result).forEach(value => expect(value === undefined || value.length === 0).toBeTruthy())
   })
 
   test('throws error if no scheme', async () => {
