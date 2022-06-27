@@ -120,32 +120,32 @@ describe('Get payment request from payment file content', () => {
     jest.resetAllMocks()
   })
 
-  test('should call validate when valid fileBuffer and sequence are received', async () => {
+  test('should call validate when valid fileBuffer and scheme are received', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(validateBatch).toHaveBeenCalled()
   })
 
-  test('should call validate with batchHeaders, batchPaymentRequests and sequence when valid fileBuffer and sequence are received', async () => {
+  test('should call validate with batchHeader and payment requests when valid fileBuffer and scheme are received', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(validateBatch).toHaveBeenCalledWith(batchHeaders, batchPaymentRequestsSFI)
   })
 
-  test('should call buildPaymentRequests when valid fileBuffer and sequence are received', async () => {
+  test('should call buildPaymentRequests when valid fileBuffer and scheme are received', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(buildPaymentRequests).toHaveBeenCalled()
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI Pilot input file', async () => {
+  test('should call buildPaymentRequests with paymentRequests when validate return true and SFI Pilot', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI input file', async () => {
+  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfi)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and Lump Sums input file', async () => {
+  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and Lump Sums', async () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^LSES^AP\r\nH^LSES0000001^001^L0000001^1000000001^1^100^RP00^GBP\r\nL^LSES0000001^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\nH^LSES0000002^002^L0000002^1000000002^1^100^RP00^GBP\r\nL^LSES0000002^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\n')
 
     await getPaymentRequestsFromFile(fileBuffer, lumpSums)
