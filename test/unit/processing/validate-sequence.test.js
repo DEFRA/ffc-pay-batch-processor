@@ -93,7 +93,7 @@ describe('Validate sequence', () => {
   //   expect(result.currentSequence).toBe(1)
   // })
 
-  // test('returns success if sequence validation disabled and higher than expected', async () => {    
+  // test('returns success if sequence validation disabled and higher than expected', async () => {
   //   batch.nextSequenceId.mockResolvedValue(1)
   //   const result = await validateSequence(sfi.schemeId, 'SITISFI0002_AP_20220622120000000.dat')
   //   expect(result.success).toBeTruthy()
