@@ -1,9 +1,4 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.22.0
-# ignores vulnerabilities until expiry date; change duration by modifying expiry date
-ignore:
-  SNYK-JS-SIMPLEGET-2361683:
-    - '@azure/identity > keytar > prebuild-install > simple-get':
-        reason: No fix
-        expires: '2022-02-28T15:23:00.530Z'
+version: v1.22.1
+ignore: {}
 patch: {}
