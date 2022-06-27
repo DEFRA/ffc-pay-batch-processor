@@ -3,6 +3,7 @@ const processingConfig = require('../config/processing')
 const blobStorage = require('../blob-storage')
 const fileProcessingFailed = require('./file-processing-failed')
 const downloadAndParse = require('./download-and-parse')
+const quarantineFile = require('./quarantine-file')
 
 async function reprocessIfNeeded (filename, schemeType) {
   const batch = await batches.exists(filename)
@@ -50,7 +51,7 @@ async function success (filename) {
 
 async function failed (filename) {
   console.log('Previous processing failure status set, quarantining')
-  await blobStorage.quarantinePaymentFile(filename, filename)
+  await quarantineFile(filename)
 }
 
 async function unknown (filename) {

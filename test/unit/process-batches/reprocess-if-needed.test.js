@@ -16,6 +16,9 @@ const fileProcessingFailed = require('../../../app/process-batches/file-processi
 jest.mock('../../../app/process-batches/download-and-parse')
 const downloadAndParse = require('../../../app/process-batches/download-and-parse')
 
+jest.mock('../../../app/process-batches/quarantine-file')
+const quarantineFile = require('../../../app/process-batches/quarantine-file')
+
 global.console.log = jest.fn()
 
 describe('Reprocess if needed', () => {
@@ -87,7 +90,7 @@ describe('Reprocess if needed', () => {
     const response = await reprocessIfNeeded(filename, schemeType)
     expect(response).toBe(true)
     expect(console.log).toHaveBeenLastCalledWith('Previous processing failure status set, quarantining')
-    expect(blobStorage.quarantinePaymentFile).toHaveBeenCalled()
+    expect(quarantineFile).toHaveBeenCalled()
   })
 
   test('batch status is unknown and and file processing is failed', async () => {
