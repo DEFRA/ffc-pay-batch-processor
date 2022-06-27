@@ -27,16 +27,10 @@ describe('Process payment file', () => {
     jest.resetAllMocks()
   })
 
-  test('File has already been processed', async () => {
+  test('Should not process file again if previously processed', async () => {
     reprocessIfNeeded.mockResolvedValue(true)
     await processPaymentFile(filename, sfiPilot)
     expect(batch.nextSequenceId).not.toHaveBeenCalled()
-  })
-
-  test('An error is thrown with a console.error', async () => {
-    reprocessIfNeeded.mockImplementation(() => { throw new Error() })
-    await processPaymentFile(filename, sfiPilot)
-    expect(console.error).toHaveBeenCalledTimes(2)
   })
 
   test('Both current sequence and expected sequence are equal so download and parse', async () => {

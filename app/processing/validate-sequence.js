@@ -31,7 +31,6 @@ const isSequenceValid = async (schemeId, sequence) => {
 }
 
 const doesSequenceMatch = (expectedSequence, currentSequence) => {
-  console.log(disableSequenceValidation)
   if (disableSequenceValidation) {
     return true
   }
