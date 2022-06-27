@@ -3,9 +3,6 @@ const processPaymentFile = require('../../../app/processing/process-payment-file
 jest.mock('../../../app/processing/batch')
 const batch = require('../../../app/processing/batch')
 
-jest.mock('../../../app/storage')
-const storage = require('../../../app/storage')
-
 jest.mock('../../../app/processing/quarantine-file')
 const quarantineFile = require('../../../app/processing/quarantine-file')
 

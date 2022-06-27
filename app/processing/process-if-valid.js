@@ -1,4 +1,3 @@
-const blobStorage = require('../storage')
 const batch = require('./batch')
 const downloadAndParse = require('./download-and-parse')
 const quarantineFile = require('./quarantine-file')

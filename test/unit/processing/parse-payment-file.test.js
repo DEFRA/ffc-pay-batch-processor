@@ -1,5 +1,5 @@
 jest.mock('../../../app/event')
-const { sendBatchProcessedEvents, sendBatchErrorEvent } = require('../../../app/event')
+const { sendBatchProcessedEvents } = require('../../../app/event')
 
 jest.mock('../../../app/messaging')
 const { sendPaymentBatchMessage } = require('../../../app/messaging')
