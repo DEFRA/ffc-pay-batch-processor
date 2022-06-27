@@ -16,8 +16,8 @@ const fileProcessingFailed = require('../../../app/processing/file-processing-fa
 jest.mock('../../../app/processing/download-and-parse')
 const downloadAndParse = require('../../../app/processing/download-and-parse')
 
-jest.mock('../../../app/process-batches/quarantine-file')
-const quarantineFile = require('../../../app/process-batches/quarantine-file')
+jest.mock('../../../app/processing/quarantine-file')
+const quarantineFile = require('../../../app/processing/quarantine-file')
 
 global.console.log = jest.fn()
 

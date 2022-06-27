@@ -1,9 +1,9 @@
 const batch = require('./batch')
-const storage = require('../storage')
+const quarantineFile = require('./quarantine-file')
 
 const fileProcessingFailed = async (filename) => {
   await batch.updateStatus(filename, batch.status.failed)
-  await storage.quarantinePaymentFile(filename, filename)
+  await quarantineFile(filename)
 }
 
 module.exports = fileProcessingFailed

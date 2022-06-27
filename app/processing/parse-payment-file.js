@@ -8,9 +8,7 @@ const parsePaymentFile = async (filename, fileBuffer, scheme, sequence) => {
     await sendBatchProcessedEvents(filename, paymentRequests, sequence, batchExportDate)
     await sendPaymentBatchMessage(paymentRequests)
     return true
-  } catch (err) {
-    await sendBatchErrorEvent(filename, err)
-    console.error(err)
+  } catch {
   }
   return false
 }

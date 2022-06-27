@@ -88,22 +88,6 @@ describe('Parse and send events on success or failure', () => {
     expect(result).toBe(true)
   })
 
-  test('should call sendBatchErrorEvent when getPaymentRequestsFromFile rejects', async () => {
-    getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
-
-    await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendBatchErrorEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendBatchErrorEvent with filename and reject error when getPaymentRequestsFromFile rejects', async () => {
-    getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
-
-    filename = 'notAFormattedFileName.dat'
-
-    await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendBatchErrorEvent).toHaveBeenCalledWith(filename, new Error('Invalid file - Unknown line'))
-  })
-
   test('should return false when getPaymentRequestsFromFile rejects', async () => {
     getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
 

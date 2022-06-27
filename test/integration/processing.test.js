@@ -1,4 +1,5 @@
 const mockSendBatchMessages = jest.fn()
+const mockSendEvent = jest.fn()
 jest.mock('ffc-messaging', () => {
   return {
     MessageBatchSender: jest.fn().mockImplementation(() => {
@@ -13,7 +14,7 @@ jest.mock('ffc-pay-event-publisher', () => {
   return {
     PublishEvent: jest.fn().mockImplementation(() => {
       return {
-        sendEvent: jest.fn()
+        sendEvent: mockSendEvent
       }
     }),
     PublishEventBatch: jest.fn().mockImplementation(() => {
@@ -23,7 +24,6 @@ jest.mock('ffc-pay-event-publisher', () => {
     })
   }
 })
-jest.useFakeTimers()
 const pollInbound = require('../../app/processing/poll-inbound')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const db = require('../../app/data')
@@ -237,5 +237,32 @@ describe('process batch files', () => {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${config.quarantineFolder}/${TEST_INVALID_FILE_SFI}`).length).toBe(1)
+  })
+
+  test('calls PublishEvent.sendEvent once when an invalid file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+
+    await pollInbound()
+
+    expect(mockSendEvent.mock.calls.length).toBe(1)
+  })
+
+  test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+
+    await pollInbound()
+
+    expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing-quarantine-error')
+  })
+
+  test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+
+    await pollInbound()
+
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 })

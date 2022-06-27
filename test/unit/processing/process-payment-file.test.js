@@ -6,6 +6,9 @@ const batch = require('../../../app/processing/batch')
 jest.mock('../../../app/storage')
 const storage = require('../../../app/storage')
 
+jest.mock('../../../app/processing/quarantine-file')
+const quarantineFile = require('../../../app/processing/quarantine-file')
+
 jest.mock('../../../app/processing/reprocess-if-needed')
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
@@ -50,14 +53,14 @@ describe('Process payment file', () => {
   test('currentSequence is less than expectedSequence and is quarantined', async () => {
     batch.nextSequenceId.mockResolvedValue(2)
     await processPaymentFile(filename, sfiPilot)
-    expect(storage.quarantinePaymentFile).toHaveBeenCalled()
+    expect(quarantineFile).toHaveBeenCalled()
     expect(console.log.mock.calls[1][0]).toContain(`Quarantining ${filename}, sequence id 1 below expected`)
   })
 
   test('expectedSequence is undefined and is quarantined', async () => {
     batch.nextSequenceId.mockResolvedValue(undefined)
     await processPaymentFile(filename, sfiPilot)
-    expect(storage.quarantinePaymentFile).toHaveBeenCalled()
+    expect(quarantineFile).toHaveBeenCalled()
     expect(console.log).toHaveBeenLastCalledWith(`Quarantining ${filename}, unable to get expected sequence id from database`)
   })
 })
