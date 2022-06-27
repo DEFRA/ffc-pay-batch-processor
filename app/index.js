@@ -2,6 +2,6 @@ require('./insights').setup()
 require('log-timestamp')
 const processing = require('./processing')
 
-module.exports = (async function startService () {
+module.exports = (async () => {
   await processing.start()
-}())
+})()
