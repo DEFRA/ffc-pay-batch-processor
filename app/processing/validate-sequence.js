@@ -1,4 +1,4 @@
-const batches = require('./batch')
+const batch = require('./batch')
 const { disableSequenceValidation } = require('../config/processing')
 const { sfi, sfiPilot, lumpSums } = require('../schemes')
 
@@ -20,7 +20,7 @@ const getSequence = (schemeId, filename) => {
 }
 
 const isSequenceValid = async (schemeId, sequence) => {
-  const expectedSequence = await batches.nextSequenceId(schemeId)
+  const expectedSequence = await batch.nextSequenceId(schemeId)
   const currentSequence = sequence
   const success = doesSequenceMatch(expectedSequence, currentSequence)
   return {
@@ -31,6 +31,7 @@ const isSequenceValid = async (schemeId, sequence) => {
 }
 
 const doesSequenceMatch = (expectedSequence, currentSequence) => {
+  console.log(disableSequenceValidation)
   if (disableSequenceValidation) {
     return true
   }
