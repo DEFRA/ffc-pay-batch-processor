@@ -23,7 +23,7 @@ const isValidSchema = (batchHeader) => {
 
 const validateLineTotals = (paymentRequests) => {
   return paymentRequests
-    .every(a => convertToPence(a.value) === getTotalValueInPence(a.invoiceLines, 'value'))
+    .every(x => convertToPence(x.value) === getTotalValueInPence(x.invoiceLines, 'value'))
 }
 
 module.exports = validateBatch

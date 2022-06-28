@@ -27,7 +27,7 @@ describe('Process payment file', () => {
     jest.resetAllMocks()
   })
 
-  test('Should not process file again if previously processed', async () => {
+  test('Should check next sequence Id if file previously processed', async () => {
     reprocessIfNeeded.mockResolvedValue(true)
     await processPaymentFile(filename, sfiPilot)
     expect(batch.nextSequenceId).not.toHaveBeenCalled()
