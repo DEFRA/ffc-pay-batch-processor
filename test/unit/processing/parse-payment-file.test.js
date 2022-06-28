@@ -36,17 +36,17 @@ describe('Parse and send events on success or failure', () => {
     jest.resetAllMocks()
   })
 
-  test('should call getPaymentRequestsFromFile when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile when valid filename, fileBuffer scheme and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
     expect(getPaymentRequestsFromFile).toHaveBeenCalled()
   })
 
-  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when valid filename, fileBuffer scheme and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
     expect(getPaymentRequestsFromFile).toHaveBeenCalledWith(fileBuffer, sfiPilot)
   })
 
-  test('should call getPaymentRequestsFromFile when invalid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile when invalid filename, fileBuffer and scheme sequence are received', async () => {
     filename = ''
     fileBuffer = ''
 
@@ -54,7 +54,7 @@ describe('Parse and send events on success or failure', () => {
     expect(getPaymentRequestsFromFile).toHaveBeenCalled()
   })
 
-  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when invalid filename, fileBuffer and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when invalid filename, fileBuffer scheme and sequence are received', async () => {
     filename = ''
     fileBuffer = ''
     sequence = ''
@@ -68,7 +68,7 @@ describe('Parse and send events on success or failure', () => {
     expect(sendBatchProcessedEvents).toHaveBeenCalled()
   })
 
-  test('should call sendBatchProcessedEvents with filename, paymentRequests and sequence when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call sendBatchProcessedEvents with filename, paymentRequests sequence and batch export date when valid filename, fileBuffer scheme and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
     expect(sendBatchProcessedEvents).toHaveBeenCalledWith(filename, mockPaymentRequests, sequence, '2021-08-12')
   })
