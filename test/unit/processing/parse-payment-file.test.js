@@ -54,7 +54,7 @@ describe('Parse and send events on success or failure', () => {
     expect(getPaymentRequestsFromFile).toHaveBeenCalled()
   })
 
-  test('should call getPaymentRequestsFromFile with fileBuffer and sequence when invalid filename, fileBuffer scheme and sequence are received', async () => {
+  test('should call getPaymentRequestsFromFile with fileBuffer and scheme when invalid filename, fileBuffer scheme and sequence are received', async () => {
     filename = ''
     fileBuffer = ''
     sequence = ''
