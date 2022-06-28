@@ -8,8 +8,7 @@ const validateBatch = (batchHeader, paymentRequests) => {
   const numberOfPaymentRequestsValid = batchHeader[0].numberOfPaymentRequests === paymentRequests.length
   const batchValueTotalsValid = convertToPence(batchHeader[0].batchValue) === getTotalValueInPence(paymentRequests, 'value')
   const invoiceLinesValuesValid = validateLineTotals(paymentRequests)
-  const numberOfBatchHeadersValid = batchHeader.length === 1
-  return validSchema && numberOfPaymentRequestsValid && batchValueTotalsValid && invoiceLinesValuesValid && numberOfBatchHeadersValid
+  return validSchema && numberOfPaymentRequestsValid && batchValueTotalsValid && invoiceLinesValuesValid
 }
 
 const isValidSchema = (batchHeader) => {

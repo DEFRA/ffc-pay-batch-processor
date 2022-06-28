@@ -92,8 +92,8 @@ describe('Validate batch', () => {
     expect(result).toBeFalsy()
   })
 
-  test('returns false if unknown ledger', async () => {
-    batchHeader.ledger = 'unknown'
+  test('returns false if batch contains payment requests with lines that do not match values', async () => {
+    paymentRequest.invoiceLines[0].value = 200
     const result = await validateBatch([batchHeader], [paymentRequest])
     expect(result).toBeFalsy()
   })
