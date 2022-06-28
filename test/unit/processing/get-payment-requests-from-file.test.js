@@ -135,17 +135,17 @@ describe('Get payment request from payment file content', () => {
     expect(buildPaymentRequests).toHaveBeenCalled()
   })
 
-  test('should call buildPaymentRequests with paymentRequests when validate return true and SFI Pilot', async () => {
+  test('should call buildPaymentRequests with paymentRequests and SFI Pilot source system', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and SFI', async () => {
+  test('should call buildPaymentRequests with batchPaymentRequests and SFI source system', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfi)
     expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests when validate return true and Lump Sums', async () => {
+  test('should call buildPaymentRequests with batchPaymentRequests and Lump Sums source system', async () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^LSES^AP\r\nH^LSES0000001^001^L0000001^1000000001^1^100^RP00^GBP\r\nL^LSES0000001^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\nH^LSES0000002^002^L0000002^1000000002^1^100^RP00^GBP\r\nL^LSES0000002^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\n')
 
     await getPaymentRequestsFromFile(fileBuffer, lumpSums)
