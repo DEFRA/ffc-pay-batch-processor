@@ -27,7 +27,7 @@ jest.mock('ffc-pay-event-publisher', () => {
 const pollInbound = require('../../app/processing/poll-inbound')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const db = require('../../app/data')
-const config = require('../../app/config/storage')
+const storageConfig = require('../../app/config/storage')
 const path = require('path')
 let blobServiceClient
 let container
@@ -82,8 +82,8 @@ describe('process batch files', () => {
       status: 'Failed'
     }])
 
-    blobServiceClient = BlobServiceClient.fromConnectionString(config.connectionStr)
-    container = blobServiceClient.getContainerClient(config.container)
+    blobServiceClient = BlobServiceClient.fromConnectionString(storageConfig.connectionStr)
+    container = blobServiceClient.getContainerClient(storageConfig.container)
     await container.deleteIfExists()
     await container.createIfNotExists()
   })
@@ -94,14 +94,14 @@ describe('process batch files', () => {
   })
 
   test('sends all payment requests for SFI Pilot', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI_PILOT)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('sends invoice numbers for SFI Pilot', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI_PILOT)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('SFIP0000001')
@@ -109,7 +109,7 @@ describe('process batch files', () => {
   })
 
   test('sends payment request numbers for SFI Pilot', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI_PILOT)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.paymentRequestNumber).toBe(1)
@@ -117,47 +117,47 @@ describe('process batch files', () => {
   })
 
   test('archives file on success for SFI Pilot', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI_PILOT)
     await pollInbound()
     const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.archiveFolder}/${TEST_FILE_SFI_PILOT}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_SFI_PILOT}`).length).toBe(1)
   })
 
   test('ignores unrelated file', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inbound}/ignore me.dat`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inbound}/ignore me.dat`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI_PILOT)
     await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat()) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.inbound}/ignore me.dat`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.inbound}/ignore me.dat`).length).toBe(1)
   })
 
   test('quarantines invalid file for SFI Pilot', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI_PILOT}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI_PILOT)
     await pollInbound()
     const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.quarantineFolder}/${TEST_INVALID_FILE_SFI_PILOT}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_FILE_SFI_PILOT}`).length).toBe(1)
   })
 
   test('sends all payment requests for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_LUMP_SUMS)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('sends invoice numbers for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_LUMP_SUMS)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('LSES0000001')
@@ -165,7 +165,7 @@ describe('process batch files', () => {
   })
 
   test('sends payment request numbers for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_LUMP_SUMS)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.paymentRequestNumber).toBe(1)
@@ -173,36 +173,36 @@ describe('process batch files', () => {
   })
 
   test('archives file on success for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_LUMP_SUMS)
     await pollInbound()
     const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.archiveFolder}/${TEST_FILE_LUMP_SUMS}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_LUMP_SUMS}`).length).toBe(1)
   })
 
   test('quarantines invalid file for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_LUMP_SUMS)
     await pollInbound()
     const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.quarantineFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`).length).toBe(1)
   })
 
   test('sends all payment requests for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('sends invoice numbers for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('SFIP0000001')
@@ -210,7 +210,7 @@ describe('process batch files', () => {
   })
 
   test('sends payment request numbers for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI)
     await pollInbound()
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.paymentRequestNumber).toBe(1)
@@ -218,29 +218,29 @@ describe('process batch files', () => {
   })
 
   test('archives file on success for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_SFI)
     await pollInbound()
     const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.archiveFolder })) {
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.archiveFolder}/${TEST_FILE_SFI}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_SFI}`).length).toBe(1)
   })
 
   test('quarantines invalid file for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
     await pollInbound()
     const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.quarantineFolder })) {
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${config.quarantineFolder}/${TEST_INVALID_FILE_SFI}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_FILE_SFI}`).length).toBe(1)
   })
 
   test('calls PublishEvent.sendEvent once when an invalid file is given', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
 
     await pollInbound()
@@ -249,7 +249,7 @@ describe('process batch files', () => {
   })
 
   test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid file is given', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
 
     await pollInbound()
@@ -258,7 +258,7 @@ describe('process batch files', () => {
   })
 
   test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid file is given', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
 
     await pollInbound()

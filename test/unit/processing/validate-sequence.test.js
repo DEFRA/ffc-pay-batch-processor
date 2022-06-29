@@ -97,10 +97,22 @@ describe('Validate sequence', () => {
     expect(result.currentSequence).toBe(2)
   })
 
-  test('throws error for invalid scheme', async () => {
+  test('throws error for invalid schemeId', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
     await expect(async () => validateSequence(99, 'SITISFI0001_AP_20220622120000000.dat')).rejects.toThrow()
+  })
+
+  test('throws error for undefined scheme', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    await expect(async () => validateSequence(undefined, 'SITISFI0001_AP_20220622120000000.dat')).rejects.toThrow()
+  })
+
+  test('throws error for null scheme', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    await expect(async () => validateSequence(null, 'SITISFI0001_AP_20220622120000000.dat')).rejects.toThrow()
   })
 
   test('returns success if sequence validation disabled and lower than expected', async () => {
