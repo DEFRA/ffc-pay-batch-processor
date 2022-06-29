@@ -1,9 +1,8 @@
-function createMessage (body, type, correlationId) {
+function createMessage (body, type) {
   return {
     body,
     type,
-    source: 'ffc-pay-batch-processor',
-    correlationId
+    source: 'ffc-pay-batch-processor'
   }
 }
 

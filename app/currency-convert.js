@@ -1,15 +1,24 @@
 const convertToPence = (valueInPounds) => {
-  const currencyArray = valueInPounds.toString().split('.')
-  const pounds = currencyArray[0]
-  const pence = (currencyArray[1] || '00').padEnd(2, '0')
-  return Number(pounds + pence)
+  try {
+    const currencyArray = valueInPounds.toString().split('.').filter(x => x.length > 0)
+    const pounds = currencyArray[0]
+    const pence = (currencyArray[1] ?? '00').padEnd(2, '0')
+    const value = Number(pounds + pence)
+    return Number.isInteger(value) ? value : undefined
+  } catch {
+    return undefined
+  }
 }
 
-const convertToPounds = (valueInPence) => {
-  return (valueInPence / 100).toFixed(2)
+const getTotalValueInPence = (data, key) => {
+  try {
+    return data.reduce((a, b) => { return a + convertToPence(b[key] ?? 0) }, 0)
+  } catch {
+    return undefined
+  }
 }
 
 module.exports = {
   convertToPence,
-  convertToPounds
+  getTotalValueInPence
 }

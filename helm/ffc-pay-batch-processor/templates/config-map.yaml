@@ -2,7 +2,6 @@
 {{- define "ffc-pay-batch-processor.config-map" -}}
 data:
   NODE_ENV: {{ quote .Values.environment }}
-  PORT: {{ quote .Values.container.port }}
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   AZURE_STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
