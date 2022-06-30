@@ -13,7 +13,7 @@ describe('Get scheme', () => {
   })
 
   test('returns Lump Sums for Lump Sums filename', async () => {
-    const result = getSchemeFromFilename('SITILSES_0001_AP_20220317104956617.dat')
+    const result = getSchemeFromFilename('SITILSES0001_AP_20220317104956617.dat')
     expect(result).toMatchObject(lumpSums)
   })
 
