@@ -32,20 +32,41 @@ const path = require('path')
 let blobServiceClient
 let container
 
-const TEST_FILE_SFI_PILOT = 'SITIELM0001_AP_20210812105407541.dat'
+const TEST_FILE_SFI_PILOT = 'SITIELM0001_AP_1.dat'
 const TEST_FILEPATH_SFI_PILOT = path.resolve(__dirname, '../files', TEST_FILE_SFI_PILOT)
-const TEST_INVALID_FILE_SFI_PILOT = 'SITIELM0001_AP_20210812105407542.dat'
-const TEST_INVALID_FILEPATH_SFI_PILOT = path.resolve(__dirname, '../files', TEST_INVALID_FILE_SFI_PILOT)
 
-const TEST_FILE_LUMP_SUMS = 'SITILSES0001_AP_20220624212100913.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT = 'SITIELM0001_AP_2.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT)
+
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT = 'SITIELM0001_AP_3.dat'
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT)
+
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT = 'SITIELM0001_AP_4.dat'
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT)
+
+const TEST_FILE_LUMP_SUMS = 'SITILSES0001_AP_1.dat'
 const TEST_FILEPATH_LUMP_SUMS = path.resolve(__dirname, '../files', TEST_FILE_LUMP_SUMS)
-const TEST_INVALID_FILE_LUMP_SUMS = 'SITILSES0001_AP_20220624212100914.dat'
-const TEST_INVALID_FILEPATH_LUMP_SUMS = path.resolve(__dirname, '../files', TEST_INVALID_FILE_LUMP_SUMS)
 
-const TEST_FILE_SFI = 'SITISFI0001_AP_20210812105407545.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_LUMP_SUMS = 'SITILSES0001_AP_2.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_LUMP_SUMS = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_LUMP_SUMS)
+
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_LUMP_SUMS = 'SITILSES0001_AP_3.dat'
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_LUMP_SUMS = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_LUMP_SUMS)
+
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_LUMP_SUMS = 'SITILSES0001_AP_4.dat'
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_LUMP_SUMS = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_LUMP_SUMS)
+
+const TEST_FILE_SFI = 'SITISFI0001_AP_1.dat'
 const TEST_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_FILE_SFI)
-const TEST_INVALID_FILE_SFI = 'SITISFI0001_AP_20210812105407546.dat'
-const TEST_INVALID_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_INVALID_FILE_SFI)
+
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI = 'SITISFI0001_AP_2.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI)
+
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI = 'SITISFI0001_AP_3.dat'
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI)
+
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI = 'SITISFI0001_AP_4.dat'
+const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI = path.resolve(__dirname, '../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI)
 
 describe('process batch files', () => {
   beforeEach(async () => {
@@ -138,15 +159,49 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.inbound}/ignore me.dat`).length).toBe(1)
   })
 
-  test('quarantines invalid file for SFI Pilot', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI_PILOT}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI_PILOT)
+  test('quarantines invalid batch header number of payment requests to actual number of payment requests for SFI Pilot', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
     await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_FILE_SFI_PILOT}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`).length).toBe(1)
+  })
+
+  // won't work just yet
+  test('quarantines invalid batch header payment amount to header payment amount file for SFI Pilot', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`).length).toBe(1)
+  })
+
+  test('archives invalid batch header payment amount to invoice lines payment amount file for SFI Pilot', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`).length).toBe(1)
+  })
+
+  test('does not quarantine invalid batch header payment amount to invoice lines payment amount file for SFI Pilot', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`).length).toBe(0)
   })
 
   test('sends all payment requests for Lump Sums', async () => {
@@ -183,15 +238,49 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_LUMP_SUMS}`).length).toBe(1)
   })
 
-  test('quarantines invalid file for Lump Sums', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_LUMP_SUMS)
+  test('quarantines invalid batch header number of payment requests to actual number of payment requests for Lump Sums', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_LUMP_SUMS}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_LUMP_SUMS)
     await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_FILE_LUMP_SUMS}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_LUMP_SUMS}`).length).toBe(1)
+  })
+
+  // won't work just yet
+  test('quarantines invalid batch header payment amount to header payment amount file for Lump Sums', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_LUMP_SUMS}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_LUMP_SUMS)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_LUMP_SUMS}`).length).toBe(1)
+  })
+
+  test('archives invalid batch header payment amount to invoice lines payment amount file for Lump Sums', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_LUMP_SUMS}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_LUMP_SUMS)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_LUMP_SUMS}`).length).toBe(1)
+  })
+
+  test('does not quarantine invalid batch header payment amount to invoice lines payment amount file for Lump Sums', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_LUMP_SUMS}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_LUMP_SUMS)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_LUMP_SUMS}`).length).toBe(0)
   })
 
   test('sends all payment requests for SFI', async () => {
@@ -228,41 +317,114 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_SFI}`).length).toBe(1)
   })
 
-  test('quarantines invalid file for SFI', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+  test('quarantines invalid batch header number of payment requests to actual number of payment requests for SFI', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI)
     await pollInbound()
     const fileList = []
     for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
       fileList.push(item.name)
     }
-    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_FILE_SFI}`).length).toBe(1)
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI}`).length).toBe(1)
   })
 
-  test('calls PublishEvent.sendEvent once when an invalid file is given', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+  // won't work just yet
+  test('quarantines invalid batch header payment amount to header payment amount file for SFI', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI}`).length).toBe(1)
+  })
+
+  test('archives invalid batch header payment amount to invoice lines payment amount file for SFI', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI}`).length).toBe(1)
+  })
+
+  test('does not quarantine invalid batch header payment amount to invoice lines payment amount file for SFI', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI)
+    await pollInbound()
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI}`).length).toBe(0)
+  })
+
+  test('calls PublishEvent.sendEvent once when an invalid batch header number of payment requests to actual number of payment requests file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
 
     await pollInbound()
 
     expect(mockSendEvent.mock.calls.length).toBe(1)
   })
 
-  test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid file is given', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+  test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid batch header number of payment requests to actual number of payment requests file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
 
     await pollInbound()
 
     expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing-quarantine-error')
   })
 
-  test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid file is given', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_FILE_SFI}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILEPATH_SFI)
+  test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid batch header number of payment requests to actual number of payment requests file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
 
     await pollInbound()
 
     expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
+  })
+
+  // won't work just yet
+  test('calls PublishEvent.sendEvent once when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockSendEvent.mock.calls.length).toBe(1)
+  })
+
+  // won't work just yet
+  test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing-quarantine-error')
+  })
+
+  // won't work just yet
+  test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
+  })
+
+  test('does not call PublishEvent.sendEvent when an invalid batch header payment amount to invoice lines payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockSendEvent).not.toHaveBeenCalled()
   })
 })

@@ -24,14 +24,14 @@ describe('Build payment requests', () => {
     }]
 
     paymentRequests = [{
-      sourceSystem: sfiPilot.sourceSystem,
+      sourceSystem,
       frn: 1234567890,
       paymentRequestNumber: 1,
       invoiceNumber: 'SITI1234567',
       contractNumber: 'S1234567',
       currency: GBP,
       schedule: Q4,
-      value: 100000,
+      value: 100,
       deliveryBody: 'RP00',
       invoiceLines
     }]
@@ -43,26 +43,21 @@ describe('Build payment requests', () => {
 
   test('build payment requests', async () => {
     const paymentRequestsParse = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    const {
+      dueDate,
+      marketingYear,
+      agreementNumber,
+      ...remainingingInvoiceLines
+    } = invoiceLines[0]
+
     expect(paymentRequestsParse).toMatchObject([{
-      sourceSystem: sfiPilot.sourceSystem,
-      frn: 1234567890,
-      paymentRequestNumber: 1,
-      invoiceNumber: 'SITI1234567',
-      contractNumber: 'S1234567',
-      currency: GBP,
-      schedule: Q4,
-      value: 100000,
-      deliveryBody: 'RP00',
-      agreementNumber: 'SIP123456789012',
-      dueDate: '2022-11-02',
+      ...paymentRequests[0],
       correlationId: paymentRequestsParse[0].correlationId,
-      invoiceLines: [{
-        schemeCode: 'SITIELM',
-        accountCode: 'ABC123',
-        fundCode: 'ABC12',
-        description: 'G00 - Gross value of claim',
-        value: 100
-      }]
+      agreementNumber,
+      dueDate,
+      marketingYear,
+      invoiceLines: [remainingingInvoiceLines]
     }])
   })
 

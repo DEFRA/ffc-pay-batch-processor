@@ -35,6 +35,7 @@ const isPaymentRequestValid = (paymentRequest) => {
 }
 
 const validateLineTotals = (paymentRequest) => {
+  console.log(`original: ${paymentRequest.value} payment request: ${convertToPence(paymentRequest.value)} vs invoice lines: ${getTotalValueInPence(paymentRequest.invoiceLines, 'value')}`)
   return convertToPence(paymentRequest.value) === getTotalValueInPence(paymentRequest.invoiceLines, 'value')
 }
 
