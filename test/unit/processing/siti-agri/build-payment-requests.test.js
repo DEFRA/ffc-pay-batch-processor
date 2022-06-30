@@ -59,6 +59,7 @@ describe('Build payment requests', () => {
     buildInvoiceLines.mockReturnValue(invoiceLines)
     handleKnownDefects.mockImplementation((x) => { return x })
     paymentRequestSchema.validate.mockReturnValue('yeeeesss')
+    isInvoiceLineValid.mockReturnValue(true)
 
     outputPaymentRequest = {
       ...paymentRequest,
@@ -245,4 +246,10 @@ describe('Build payment requests', () => {
   })
 
   // multiple invoice lines within the payment request, does it loop over all of them?
+  test('should call isInvoiceLineValid twice when paymentRequest has two invoiceLines  and valid sourceSystem are given', async () => {
+    invoiceLines.push(invoiceLines[0])
+    console.log(invoiceLines)
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(isInvoiceLineValid).toBeCalledTimes(2)
+  })
 })
