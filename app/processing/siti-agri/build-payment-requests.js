@@ -40,7 +40,7 @@ const validateLineTotals = (paymentRequest) => {
 
 const validatePaymentRequest = (paymentRequest) => {
   const paymentRequestValid = isPaymentRequestValid(paymentRequest)
-  const invoiceLinesValid = paymentRequest.invoiceLines.every(isInvoiceLineValid)
+  const invoiceLinesValid = paymentRequest.invoiceLines.every(x => isInvoiceLineValid(x))
   const lineTotalsValid = validateLineTotals(paymentRequest)
 
   return paymentRequestValid && invoiceLinesValid && lineTotalsValid

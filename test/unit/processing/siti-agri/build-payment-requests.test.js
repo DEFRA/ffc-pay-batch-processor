@@ -16,8 +16,7 @@ jest.mock('../../../../app/processing/siti-agri/handle-known-defects')
 const handleKnownDefects = require('../../../../app/processing/siti-agri/handle-known-defects')
 
 jest.mock('../../../../app/processing/siti-agri/build-invoice-lines')
-// const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
-const { buildInvoiceLines } = require('../../../../app/processing/siti-agri/build-invoice-lines')
+const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
 describe('Build payment requests', () => {
   let sourceSystem
@@ -207,4 +206,43 @@ describe('Build payment requests', () => {
     buildPaymentRequests([], sourceSystem)
     expect(paymentRequestSchema.validate).not.toBeCalled()
   })
+
+  // start here
+  test('should call isInvoiceLineValid when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(isInvoiceLineValid).toBeCalled()
+  })
+
+  test('should call isInvoiceLineValid once when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(isInvoiceLineValid).toBeCalledTimes(1)
+  })
+
+  test('should call isInvoiceLineValid with outputPaymentRequest.invoiceLines[0] when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(isInvoiceLineValid).toBeCalledWith(outputPaymentRequest.invoiceLines[0])
+  })
+
+  test('should call isInvoiceLineValid twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(isInvoiceLineValid).toBeCalledTimes(2)
+  })
+
+  test('should call isInvoiceLineValid with each outputPaymentRequests.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    outputPaymentRequests = [outputPaymentRequest, outputPaymentRequest]
+
+    buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(1, outputPaymentRequests[0].invoiceLines[0])
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, outputPaymentRequests[1].invoiceLines[0])
+  })
+
+  test('should not call isInvoiceLineValid when an empty paymentRequests array and valid sourceSystem are given', async () => {
+    buildPaymentRequests([], sourceSystem)
+    expect(isInvoiceLineValid).not.toBeCalled()
+  })
+
+  // multiple invoice lines within the payment request, does it loop over all of them?
 })
