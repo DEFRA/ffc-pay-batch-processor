@@ -9,8 +9,8 @@ const parsePaymentFile = async (filename, fileBuffer, scheme, sequence) => {
     await sendPaymentBatchMessage(paymentRequests)
     return true
   } catch {
+    return false
   }
-  return false
 }
 
 module.exports = parsePaymentFile

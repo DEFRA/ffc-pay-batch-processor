@@ -57,7 +57,7 @@ describe('Build payment requests', () => {
       contractNumber: 'S1234567',
       currency: GBP,
       schedule: Q4,
-      value: 100000,
+      value: 100,
       deliveryBody: 'RP00',
       invoiceLines
     }

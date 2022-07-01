@@ -1,5 +1,4 @@
 const mockSendBatchMessages = jest.fn()
-const mockSendEvent = jest.fn()
 jest.mock('ffc-messaging', () => {
   return {
     MessageBatchSender: jest.fn().mockImplementation(() => {
@@ -10,6 +9,8 @@ jest.mock('ffc-messaging', () => {
     })
   }
 })
+
+const mockSendEvent = jest.fn()
 jest.mock('ffc-pay-event-publisher', () => {
   return {
     PublishEvent: jest.fn().mockImplementation(() => {
@@ -24,11 +25,15 @@ jest.mock('ffc-pay-event-publisher', () => {
     })
   }
 })
-const pollInbound = require('../../app/processing/poll-inbound')
+
+const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
+
 const db = require('../../app/data')
 const storageConfig = require('../../app/config/storage')
-const path = require('path')
+
+const pollInbound = require('../../app/processing/poll-inbound')
+
 let blobServiceClient
 let container
 
@@ -170,7 +175,6 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`).length).toBe(1)
   })
 
-  // won't work just yet
   test('quarantines invalid batch header payment amount to header payment amount file for SFI Pilot', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
@@ -249,7 +253,6 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_LUMP_SUMS}`).length).toBe(1)
   })
 
-  // won't work just yet
   test('quarantines invalid batch header payment amount to header payment amount file for Lump Sums', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_LUMP_SUMS}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_LUMP_SUMS)
@@ -328,7 +331,6 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI}`).length).toBe(1)
   })
 
-  // won't work just yet
   test('quarantines invalid batch header payment amount to header payment amount file for SFI', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI)
@@ -389,7 +391,6 @@ describe('process batch files', () => {
     expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 
-  // won't work just yet
   test('calls PublishEvent.sendEvent once when an invalid batch header payment amount to header payment amount file is given', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
@@ -399,7 +400,6 @@ describe('process batch files', () => {
     expect(mockSendEvent.mock.calls.length).toBe(1)
   })
 
-  // won't work just yet
   test('calls PublishEvent.sendEvent with event.name "batch-processing-quarantine-error" when an invalid batch header payment amount to header payment amount file is given', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
@@ -409,7 +409,6 @@ describe('process batch files', () => {
     expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing-quarantine-error')
   })
 
-  // won't work just yet
   test('calls PublishEvent.sendEvent with event.properties.status "error" when an invalid batch header payment amount to header payment amount file is given', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)

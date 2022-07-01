@@ -22,7 +22,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     value: paymentRequest.value,
     correlationId: uuidv4(),
     invoiceLines: buildInvoiceLines(paymentRequest.invoiceLines)
-  })).map(x => handleKnownDefects(x)).filter(validatePaymentRequest)
+  })).map(x => handleKnownDefects(x)).map(x => handlePaymentRequest(x))
 }
 
 const isPaymentRequestValid = (paymentRequest) => {
@@ -44,6 +44,11 @@ const validatePaymentRequest = (paymentRequest) => {
   const lineTotalsValid = validateLineTotals(paymentRequest)
 
   return paymentRequestValid && invoiceLinesValid && lineTotalsValid
+}
+
+const handlePaymentRequest = (paymentRequest) => {
+  if (validatePaymentRequest(paymentRequest)) { return paymentRequest }
+  return undefined
 }
 
 module.exports = buildPaymentRequests

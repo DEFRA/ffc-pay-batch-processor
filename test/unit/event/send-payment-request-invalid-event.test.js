@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid')
 jest.mock('../../../app/event/raise-event')
 const raiseEvent = require('../../../app/event/raise-event')
 
-const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-request-invalid-event')
+const { sendPaymentRequestInvalidEvent } = require('../../../app/event')
 
 let paymentRequest
 let event
