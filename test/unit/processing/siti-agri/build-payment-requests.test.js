@@ -21,7 +21,9 @@ const buildPaymentRequests = require('../../../../app/processing/siti-agri/build
 
 describe('Build payment requests', () => {
   let sourceSystem
+
   let invoiceLines
+  let mappedInvoiceLines
 
   let paymentRequest
   let paymentRequests
@@ -32,12 +34,19 @@ describe('Build payment requests', () => {
   beforeEach(() => {
     sourceSystem = sfiPilot.sourceSystem
 
-    invoiceLines = [{
+    mappedInvoiceLines = [{
       schemeCode: 'SITIELM',
       accountCode: 'ABC123',
       fundCode: 'ABC12',
       description: 'G00 - Gross value of claim',
       value: 100
+    }]
+
+    invoiceLines = [{
+      ...mappedInvoiceLines[0],
+      marketingYear: 2022,
+      dueDate: '2022-11-02',
+      agreementNumber: 'SIP123456789012'
     }]
 
     paymentRequest = {
@@ -57,16 +66,17 @@ describe('Build payment requests', () => {
 
     mappedPaymentRequest = {
       ...paymentRequest,
-      marketingYear: paymentRequest.invoiceLines[0].marketingYear,
-      agreementNumber: paymentRequest.invoiceLines[0].agreementNumber,
-      dueDate: paymentRequest.invoiceLines[0].dueDate,
+      invoiceLines: mappedInvoiceLines,
+      marketingYear: invoiceLines[0].marketingYear,
+      agreementNumber: invoiceLines[0].agreementNumber,
+      dueDate: invoiceLines[0].dueDate,
       correlationId: '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c'
     }
 
     mappedPaymentRequests = [mappedPaymentRequest]
 
     uuidv4.mockReturnValue('70cb0f07-e0cf-449c-86e8-0344f2c6cc6c')
-    buildInvoiceLines.mockReturnValue(invoiceLines)
+    buildInvoiceLines.mockReturnValue(mappedInvoiceLines)
     handleKnownDefects.mockImplementation((x) => { return x })
     paymentRequestSchema.validate.mockReturnValue({ value: mappedPaymentRequest })
     isInvoiceLineValid.mockReturnValue(true)
@@ -241,17 +251,21 @@ describe('Build payment requests', () => {
 
   test('should call isInvoiceLineValid twice when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
     invoiceLines.push(invoiceLines[0])
+    buildInvoiceLines.mockReturnValue([mappedInvoiceLines, mappedInvoiceLines])
+
     buildPaymentRequests(paymentRequests, sourceSystem)
+
     expect(isInvoiceLineValid).toBeCalledTimes(2)
   })
 
-  test('should call isInvoiceLineValid with each paymentRequest.invoiceLines when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+  test('should call isInvoiceLineValid with mappedInvoiceLines both times when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
     invoiceLines.push(invoiceLines[0])
+    buildInvoiceLines.mockReturnValue([mappedInvoiceLines, mappedInvoiceLines])
 
     buildPaymentRequests(paymentRequests, sourceSystem)
 
-    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(1, paymentRequest.invoiceLines[0])
-    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, paymentRequest.invoiceLines[1])
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(1, mappedInvoiceLines)
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, mappedInvoiceLines)
   })
 
   test('should not call isInvoiceLineValid when an empty paymentRequests array and valid sourceSystem are given', async () => {
@@ -327,18 +341,133 @@ describe('Build payment requests', () => {
 
   test('should call getTotalValueInPence once when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
     invoiceLines.push(invoiceLines[0])
+    buildInvoiceLines.mockReturnValue([mappedInvoiceLines, mappedInvoiceLines])
+
     buildPaymentRequests(paymentRequests, sourceSystem)
+
     expect(getTotalValueInPence).toBeCalledTimes(1)
   })
 
-  test('should call getTotalValueInPence with paymentRequest.invoiceLines and "value" when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+  test('should call getTotalValueInPence with [mappedInvoiceLines, mappedInvoiceLines] and "value" when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
     invoiceLines.push(invoiceLines[0])
+    buildInvoiceLines.mockReturnValue([mappedInvoiceLines, mappedInvoiceLines])
+
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(getTotalValueInPence).toHaveBeenCalledWith(paymentRequest.invoiceLines, 'value')
+
+    expect(getTotalValueInPence).toHaveBeenCalledWith([mappedInvoiceLines, mappedInvoiceLines], 'value')
   })
 
   test('should not call getTotalValueInPence when an empty paymentRequests array and valid sourceSystem are given', async () => {
     buildPaymentRequests([], sourceSystem)
     expect(getTotalValueInPence).not.toBeCalled()
+  })
+
+  test('should return mappedPaymentRequests when valid paymentRequests and sourceSystem are given', async () => {
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(result).toMatchObject(mappedPaymentRequests)
+  })
+
+  test('should return mappedDefunctParticipationDefectPaymentRequests when defunctParticipationDefectPaymentRequest and sourceSystem are given', async () => {
+    const participationInvoiceLines = [{
+      ...invoiceLines[0],
+      schemeCode: '80009',
+      description: 'G00 - Gross value of claim'
+    }]
+
+    const mappedParticipationInvoiceLines = [{
+      ...mappedInvoiceLines[0],
+      schemeCode: '80009',
+      description: 'G00 - Gross value of claim'
+    }]
+
+    const defunctParticipationDefectPaymentRequest = {
+      ...paymentRequest,
+      invoiceLines: participationInvoiceLines
+    }
+
+    const defunctParticipationDefectPaymentRequests = [defunctParticipationDefectPaymentRequest]
+
+    const mappedDefunctParticipationDefectPaymentRequest = {
+      ...defunctParticipationDefectPaymentRequest,
+      invoiceLines: [{
+        ...mappedParticipationInvoiceLines[0],
+        value: 0
+      }]
+    }
+
+    const mappedDefunctParticipationDefectPaymentRequests = [{
+      ...mappedDefunctParticipationDefectPaymentRequest,
+      value: 0
+    }]
+
+    buildInvoiceLines.mockReturnValue(mappedParticipationInvoiceLines)
+    handleKnownDefects.mockImplementation((x) => { x.value = 0; x.invoiceLines[0].value = 0; return x })
+    paymentRequestSchema.validate.mockReturnValue({ value: mappedDefunctParticipationDefectPaymentRequest })
+
+    const result = buildPaymentRequests(defunctParticipationDefectPaymentRequests, sourceSystem)
+
+    expect(result).toMatchObject(mappedDefunctParticipationDefectPaymentRequests)
+  })
+
+  test('should return empty array when paymentRequestSchema.validate returns error key', async () => {
+    paymentRequestSchema.validate.mockReturnValue({ value: mappedPaymentRequest, error: 'mock validation error' })
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
+  })
+
+  test('should return empty array when isInvoiceLineValid returns false', async () => {
+    isInvoiceLineValid.mockReturnValue(false)
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
+  })
+
+  test('should return empty array when isInvoiceLineValid returns true then false', async () => {
+    invoiceLines.push(invoiceLines[0])
+    buildInvoiceLines.mockReturnValue([mappedInvoiceLines, mappedInvoiceLines])
+    isInvoiceLineValid.mockReturnValueOnce(true).mockReturnValueOnce(false)
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
+  })
+
+  test('should return empty array when convertToPence returns value more than getTotalValueInPence', async () => {
+    convertToPence.mockReturnValue(100)
+    getTotalValueInPence.mockReturnValue(50)
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
+  })
+
+  test('should return empty array when convertToPence returns value less than getTotalValueInPence', async () => {
+    convertToPence.mockReturnValue(50)
+    getTotalValueInPence.mockReturnValue(100)
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
+  })
+
+  test('should return empty array when getTotalValueInPence returns value more than convertToPence', async () => {
+    convertToPence.mockReturnValue(50)
+    getTotalValueInPence.mockReturnValue(100)
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
+  })
+
+  test('should return empty array when getTotalValueInPence returns value less than convertToPence', async () => {
+    convertToPence.mockReturnValue(100)
+    getTotalValueInPence.mockReturnValue(50)
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(result).toEqual([])
   })
 })
