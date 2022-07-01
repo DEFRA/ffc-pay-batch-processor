@@ -6,8 +6,8 @@ const { sfiPilot } = require('../../../../app/schemes')
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
-// jest.mock('../../../../app/currency-convert')
-// const { convertToPence, getTotalValueInPence } = require('../../../../app/currency-convert')
+jest.mock('../../../../app/currency-convert')
+const { convertToPence, getTotalValueInPence } = require('../../../../app/currency-convert')
 
 jest.mock('../../../../app/processing/siti-agri/schemas/payment-request')
 const paymentRequestSchema = require('../../../../app/processing/siti-agri/schemas/payment-request')
@@ -254,5 +254,41 @@ describe('Build payment requests', () => {
   test('should not call isInvoiceLineValid when an empty paymentRequests array and valid sourceSystem are given', async () => {
     buildPaymentRequests([], sourceSystem)
     expect(isInvoiceLineValid).not.toBeCalled()
+  })
+
+  test('should call convertToPence when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(convertToPence).toBeCalled()
+  })
+
+  test('should call convertToPence once when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(convertToPence).toBeCalledTimes(1)
+  })
+
+  test('should call convertToPence with paymentRequest.value when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(convertToPence).toBeCalledWith(paymentRequests[0].value)
+  })
+
+  test('should call convertToPence twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(convertToPence).toBeCalledTimes(2)
+  })
+
+  test('should call convertToPence with each paymentRequests.value when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    outputPaymentRequests = [outputPaymentRequest, outputPaymentRequest]
+
+    buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(convertToPence).toHaveBeenNthCalledWith(1, paymentRequests[0].value)
+    expect(convertToPence).toHaveBeenNthCalledWith(2, paymentRequests[1].value)
+  })
+
+  test('should not call convertToPence when an empty paymentRequests array and valid sourceSystem are given', async () => {
+    buildPaymentRequests([], sourceSystem)
+    expect(convertToPence).not.toBeCalled()
   })
 })
