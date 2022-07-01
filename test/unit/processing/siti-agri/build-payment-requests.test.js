@@ -21,9 +21,10 @@ const buildPaymentRequests = require('../../../../app/processing/siti-agri/build
 
 describe('Build payment requests', () => {
   let sourceSystem
+  let invoiceLines
+
   let paymentRequest
   let paymentRequests
-  let invoiceLines
 
   let mappedPaymentRequest
   let mappedPaymentRequests
@@ -108,7 +109,7 @@ describe('Build payment requests', () => {
 
   test('should call buildInvoiceLines with paymentRequest.invoiceLines when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(buildInvoiceLines).toBeCalledWith(paymentRequests[0].invoiceLines)
+    expect(buildInvoiceLines).toBeCalledWith(paymentRequest.invoiceLines)
   })
 
   test('should call buildInvoiceLines twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
@@ -117,7 +118,7 @@ describe('Build payment requests', () => {
     expect(buildInvoiceLines).toBeCalledTimes(2)
   })
 
-  test('should call buildInvoiceLines with paymentRequest.invoiceLines and paymentRequest.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+  test('should call buildInvoiceLines with each paymentRequests.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
     buildPaymentRequests(paymentRequests, sourceSystem)
     expect(buildInvoiceLines).toHaveBeenNthCalledWith(1, paymentRequests[0].invoiceLines)
@@ -139,7 +140,7 @@ describe('Build payment requests', () => {
     expect(handleKnownDefects).toBeCalledTimes(1)
   })
 
-  test('should call handleKnownDefects with mappedPaymentRequests when valid paymentRequests and sourceSystem are given', async () => {
+  test('should call handleKnownDefects with mappedPaymentRequest when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
     expect(handleKnownDefects).toBeCalledWith(mappedPaymentRequest)
   })
@@ -153,7 +154,7 @@ describe('Build payment requests', () => {
     expect(handleKnownDefects).toBeCalledTimes(2)
   })
 
-  test('should call handleKnownDefects with paymentRequest.invoiceLines and paymentRequest.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+  test('should call handleKnownDefects with each mappedPaymentRequests when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
     mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
 
@@ -192,7 +193,7 @@ describe('Build payment requests', () => {
     expect(paymentRequestSchema.validate).toBeCalledTimes(2)
   })
 
-  test('should call paymentRequestSchema.validate with each mappedPaymentRequests.invoiceLines and { abortEarly: false } when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+  test('should call paymentRequestSchema.validate with each mappedPaymentRequests and { abortEarly: false } when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
     mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
 
@@ -228,7 +229,7 @@ describe('Build payment requests', () => {
     expect(isInvoiceLineValid).toBeCalledTimes(2)
   })
 
-  test('should call isInvoiceLineValid with each mappedPaymentRequests.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+  test('should call isInvoiceLineValid with each mappedPaymentRequests.invoiceLines[0] when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
     mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
 
@@ -244,13 +245,13 @@ describe('Build payment requests', () => {
     expect(isInvoiceLineValid).toBeCalledTimes(2)
   })
 
-  test('should call isInvoiceLineValid with each paymentRequests.invoiceLines when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+  test('should call isInvoiceLineValid with each paymentRequest.invoiceLines when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
     invoiceLines.push(invoiceLines[0])
 
     buildPaymentRequests(paymentRequests, sourceSystem)
 
-    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(1, paymentRequests[0].invoiceLines[0])
-    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, paymentRequests[0].invoiceLines[1])
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(1, paymentRequest.invoiceLines[0])
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, paymentRequest.invoiceLines[1])
   })
 
   test('should not call isInvoiceLineValid when an empty paymentRequests array and valid sourceSystem are given', async () => {
@@ -270,7 +271,7 @@ describe('Build payment requests', () => {
 
   test('should call convertToPence with paymentRequest.value when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(convertToPence).toBeCalledWith(paymentRequests[0].value)
+    expect(convertToPence).toBeCalledWith(paymentRequest.value)
   })
 
   test('should call convertToPence twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
@@ -281,7 +282,6 @@ describe('Build payment requests', () => {
 
   test('should call convertToPence with each paymentRequests.value when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
 
     buildPaymentRequests(paymentRequests, sourceSystem)
 
@@ -315,7 +315,7 @@ describe('Build payment requests', () => {
     expect(getTotalValueInPence).toBeCalledTimes(2)
   })
 
-  test('should call getTotalValueInPence with mappedPaymentRequests.invoiceLines and "value" when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+  test('should call getTotalValueInPence with each mappedPaymentRequests.invoiceLines and "value" when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
     mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
 
@@ -331,10 +331,10 @@ describe('Build payment requests', () => {
     expect(getTotalValueInPence).toBeCalledTimes(1)
   })
 
-  test('should call getTotalValueInPence with paymentRequests.invoiceLines and "value" when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+  test('should call getTotalValueInPence with paymentRequest.invoiceLines and "value" when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
     invoiceLines.push(invoiceLines[0])
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(getTotalValueInPence).toHaveBeenCalledWith(paymentRequests[0].invoiceLines, 'value')
+    expect(getTotalValueInPence).toHaveBeenCalledWith(paymentRequest.invoiceLines, 'value')
   })
 
   test('should not call getTotalValueInPence when an empty paymentRequests array and valid sourceSystem are given', async () => {
