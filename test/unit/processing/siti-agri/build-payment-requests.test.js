@@ -291,4 +291,55 @@ describe('Build payment requests', () => {
     buildPaymentRequests([], sourceSystem)
     expect(convertToPence).not.toBeCalled()
   })
+
+  test('should call getTotalValueInPence when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(getTotalValueInPence).toBeCalled()
+  })
+
+  test('should call getTotalValueInPence once when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(getTotalValueInPence).toBeCalledTimes(1)
+  })
+
+  test('should call getTotalValueInPence with outputPaymentRequest.invoiceLines[0] when valid paymentRequests and sourceSystem are given', async () => {
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(getTotalValueInPence).toBeCalledWith(outputPaymentRequest.invoiceLines[0])
+  })
+
+  test('should call getTotalValueInPence twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(getTotalValueInPence).toBeCalledTimes(2)
+  })
+
+  test('should call getTotalValueInPence with each outputPaymentRequests.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    outputPaymentRequests = [outputPaymentRequest, outputPaymentRequest]
+
+    buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(getTotalValueInPence).toHaveBeenNthCalledWith(1, outputPaymentRequests[0].invoiceLines[0])
+    expect(getTotalValueInPence).toHaveBeenNthCalledWith(2, outputPaymentRequests[1].invoiceLines[0])
+  })
+
+  test('should call getTotalValueInPence twice when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+    invoiceLines.push(invoiceLines[0])
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(getTotalValueInPence).toBeCalledTimes(2)
+  })
+
+  test('should call getTotalValueInPence with each paymentRequests.invoiceLines when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+    invoiceLines.push(invoiceLines[0])
+
+    buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(getTotalValueInPence).toHaveBeenNthCalledWith(1, paymentRequests[0].invoiceLines[0])
+    expect(getTotalValueInPence).toHaveBeenNthCalledWith(2, paymentRequests[0].invoiceLines[1])
+  })
+
+  test('should not call getTotalValueInPence when an empty paymentRequests array and valid sourceSystem are given', async () => {
+    buildPaymentRequests([], sourceSystem)
+    expect(getTotalValueInPence).not.toBeCalled()
+  })
 })
