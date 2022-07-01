@@ -205,7 +205,6 @@ describe('Build payment requests', () => {
     expect(paymentRequestSchema.validate).not.toBeCalled()
   })
 
-  // start here
   test('should call isInvoiceLineValid when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
     expect(isInvoiceLineValid).toBeCalled()
@@ -237,16 +236,23 @@ describe('Build payment requests', () => {
     expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, outputPaymentRequests[1].invoiceLines[0])
   })
 
+  test('should call isInvoiceLineValid twice when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+    invoiceLines.push(invoiceLines[0])
+    buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(isInvoiceLineValid).toBeCalledTimes(2)
+  })
+
+  test('should call isInvoiceLineValid with each paymentRequests.invoiceLines when paymentRequest has 2 invoiceLines and valid sourceSystem are given', async () => {
+    invoiceLines.push(invoiceLines[0])
+
+    buildPaymentRequests(paymentRequests, sourceSystem)
+
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(1, paymentRequests[0].invoiceLines[0])
+    expect(isInvoiceLineValid).toHaveBeenNthCalledWith(2, paymentRequests[0].invoiceLines[1])
+  })
+
   test('should not call isInvoiceLineValid when an empty paymentRequests array and valid sourceSystem are given', async () => {
     buildPaymentRequests([], sourceSystem)
     expect(isInvoiceLineValid).not.toBeCalled()
-  })
-
-  // multiple invoice lines within the payment request, does it loop over all of them?
-  test('should call isInvoiceLineValid twice when paymentRequest has two invoiceLines  and valid sourceSystem are given', async () => {
-    invoiceLines.push(invoiceLines[0])
-    console.log(invoiceLines)
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(isInvoiceLineValid).toBeCalledTimes(2)
   })
 })
