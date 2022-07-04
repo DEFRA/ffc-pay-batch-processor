@@ -3,15 +3,17 @@ const raiseEventBatch = require('./raise-event-batch')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
   if (paymentRequests?.length) {
-    const events = paymentRequests?.map(paymentRequest => ({
-      id: uuidv4(),
-      name: 'batch-processing-payment-request-invalid',
-      type: 'error',
-      message: 'Payment request could not be processed',
-      data: { paymentRequest }
-    }))
+    try {
+      const events = paymentRequests?.map(paymentRequest => ({
+        id: uuidv4(),
+        name: 'batch-processing-payment-request-invalid',
+        type: 'error',
+        message: 'Payment request could not be processed',
+        data: { paymentRequest }
+      }))
 
-    await raiseEventBatch(events, 'error')
+      await raiseEventBatch(events, 'error')
+    } catch {}
   }
 }
 
