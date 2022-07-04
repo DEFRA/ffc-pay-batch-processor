@@ -168,10 +168,10 @@ describe('Build mappedPaymentRequests', () => {
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
-  test('should return an empty array when paymentRequests with no invoiceLines and valid sourceSystem are given', async () => {
+  test('should return paymentRequest when paymentRequests with no invoiceLines and valid sourceSystem are given', async () => {
     delete paymentRequest.invoiceLines
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(result).toMatchObject([])
+    expect(result).toMatchObject(paymentRequests)
   })
 
   test('should return mappedDefunctParticipationDefectPaymentRequests when defunctParticipationDefectPaymentRequest and sourceSystem are given', async () => {

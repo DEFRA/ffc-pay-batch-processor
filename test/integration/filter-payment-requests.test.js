@@ -14,6 +14,7 @@ describe('Filter payment requests', () => {
   let paymentRequests
 
   let mappedPaymentRequest
+  let mappedPaymentRequests
 
   let paymentRequestCollection
 
@@ -58,6 +59,8 @@ describe('Filter payment requests', () => {
       dueDate: invoiceLines[0].dueDate
     }
 
+    mappedPaymentRequests = [mappedPaymentRequest]
+
     paymentRequestCollection = { successfulPaymentRequests: [], unsuccessfulPaymentRequests: [] }
   })
 
@@ -65,7 +68,14 @@ describe('Filter payment requests', () => {
     jest.resetAllMocks()
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has undefined sourceSystem', async () => {
+  test('should return mappedPaymentRequest as successfulPaymentRequests when valid payment request and sourceSystem are given', async () => {
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+
+    paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
+    expect(result).toMatchObject(paymentRequestCollection)
+  })
+
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when valid payment request and undefined sourceSystem are given', async () => {
     sourceSystem = undefined
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -77,7 +87,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no invoiceNumber', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no invoiceNumber and sourceSystem are given', async () => {
     delete paymentRequest.invoiceNumber
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -87,7 +97,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no contractNumber', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no contractNumber and sourceSystem are given', async () => {
     delete paymentRequest.contractNumber
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -97,7 +107,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no value', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no value and sourceSystem are given', async () => {
     delete paymentRequest.value
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -107,7 +117,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid frn', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid frn and sourceSystem are given', async () => {
     paymentRequest.frn = 1
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -117,7 +127,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid marketingYear', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid marketingYear and sourceSystem are given', async () => {
     paymentRequest.invoiceLines[0].marketingYear = 2014
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -127,7 +137,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid currency', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid currency and sourceSystem are given', async () => {
     paymentRequest.currency = 'USD'
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -137,7 +147,7 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid schedule', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid schedule and sourceSystem are given', async () => {
     paymentRequest.schedule = '4'
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
@@ -147,13 +157,69 @@ describe('Filter payment requests', () => {
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
-  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid dueDae', async () => {
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid dueDate and sourceSystem are given', async () => {
     paymentRequest.invoiceLines[0].dueDate = '01/11/2022'
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
     mappedPaymentRequest.dueDate = '01/11/2022'
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
+    expect(result).toMatchObject(paymentRequestCollection)
+  })
+
+  test('should return both mappedPaymentRequests as successfulPaymentRequests when 2 valid payment requests and sourceSystem are given', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+
+    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.map(x => paymentRequestCollection.successfulPaymentRequests.push(x))
+    expect(result).toMatchObject(paymentRequestCollection)
+  })
+
+  test('should return both mappedPaymentRequests as unsuccessfulPaymentRequests when 2 invalid payment requests and sourceSystem are given', async () => {
+    delete paymentRequest.paymentRequestNumber
+    paymentRequests = [paymentRequest, paymentRequest]
+
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+
+    delete mappedPaymentRequest.paymentRequestNumber
+    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.map(x => paymentRequestCollection.unsuccessfulPaymentRequests.push(x))
+    expect(result).toMatchObject(paymentRequestCollection)
+  })
+
+  test('should return 1 mappedPaymentRequests as successfulPaymentRequest and 1 mappedPaymentRequests as unsuccessfulPaymentRequest when first payment request is valid and second is invalid and sourceSystem are given', async () => {
+    const invalidPaymentRequest = JSON.parse(JSON.stringify(paymentRequest))
+    delete invalidPaymentRequest.paymentRequestNumber
+    paymentRequests = [paymentRequest, invalidPaymentRequest]
+
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+
+    const invalidMappedPaymentRequest = JSON.parse(JSON.stringify(mappedPaymentRequest))
+    delete invalidMappedPaymentRequest.paymentRequestNumber
+    mappedPaymentRequests = [mappedPaymentRequest, invalidMappedPaymentRequest]
+
+    paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
+    paymentRequestCollection.unsuccessfulPaymentRequests.push(invalidMappedPaymentRequest)
+
+    expect(result).toMatchObject(paymentRequestCollection)
+  })
+
+  test('should return 1 mappedPaymentRequests as successfulPaymentRequest and 1 mappedPaymentRequests as unsuccessfulPaymentRequest when first payment request is invalid and second is valid and sourceSystem are given', async () => {
+    const invalidPaymentRequest = JSON.parse(JSON.stringify(paymentRequest))
+    delete invalidPaymentRequest.paymentRequestNumber
+    paymentRequests = [invalidPaymentRequest, paymentRequest]
+
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+
+    const invalidMappedPaymentRequest = JSON.parse(JSON.stringify(mappedPaymentRequest))
+    delete invalidMappedPaymentRequest.paymentRequestNumber
+    mappedPaymentRequests = [invalidMappedPaymentRequest, mappedPaymentRequest]
+
+    paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
+    paymentRequestCollection.unsuccessfulPaymentRequests.push(invalidMappedPaymentRequest)
+
     expect(result).toMatchObject(paymentRequestCollection)
   })
 })
