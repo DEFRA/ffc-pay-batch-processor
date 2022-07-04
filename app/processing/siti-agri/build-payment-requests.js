@@ -1,10 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
-
-const { convertToPence, getTotalValueInPence } = require('../../currency-convert')
-
-const paymentRequestSchema = require('./schemas/payment-request')
 const handleKnownDefects = require('./handle-known-defects')
-const { buildInvoiceLines, isInvoiceLineValid } = require('./build-invoice-lines')
+const { buildInvoiceLines } = require('./build-invoice-lines')
 
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   return paymentRequests.map(paymentRequest => ({
@@ -22,33 +18,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     value: paymentRequest.value,
     correlationId: uuidv4(),
     invoiceLines: buildInvoiceLines(paymentRequest.invoiceLines)
-  })).map(x => handleKnownDefects(x)).map(x => handlePaymentRequest(x))
-}
-
-const isPaymentRequestValid = (paymentRequest) => {
-  const validationResult = paymentRequestSchema.validate(paymentRequest, { abortEarly: false })
-  if (validationResult.error) {
-    console.error(`Payment request is invalid. ${validationResult.error.message}`)
-    return false
-  }
-  return true
-}
-
-const validateLineTotals = (paymentRequest) => {
-  return convertToPence(paymentRequest.value) === getTotalValueInPence(paymentRequest.invoiceLines, 'value')
-}
-
-const validatePaymentRequest = (paymentRequest) => {
-  const paymentRequestValid = isPaymentRequestValid(paymentRequest)
-  const invoiceLinesValid = paymentRequest.invoiceLines.every(x => isInvoiceLineValid(x))
-  const lineTotalsValid = validateLineTotals(paymentRequest)
-
-  return paymentRequestValid && invoiceLinesValid && lineTotalsValid
-}
-
-const handlePaymentRequest = (paymentRequest) => {
-  if (validatePaymentRequest(paymentRequest)) { return paymentRequest }
-  return undefined
+  })).map(x => handleKnownDefects(x))
 }
 
 module.exports = buildPaymentRequests

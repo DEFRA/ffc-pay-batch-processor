@@ -1,9 +1,8 @@
 const { GBP } = require('../../app/currency')
-const buildPaymentRequests = require('../../app/processing/siti-agri/build-payment-requests')
 const { Q4 } = require('../../app/schedules')
 const { sfiPilot } = require('../../app/schemes')
 
-global.console.error = jest.fn()
+const buildPaymentRequests = require('../../app/processing/siti-agri/build-payment-requests')
 
 describe('Build payment requests', () => {
   let sourceSystem
@@ -59,59 +58,5 @@ describe('Build payment requests', () => {
       marketingYear,
       invoiceLines: [remainingingInvoiceLines]
     }])
-  })
-
-  test('Validation error in payment requests with no sourceSystem', async () => {
-    sourceSystem = undefined
-    buildPaymentRequests(paymentRequests)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "sourceSystem" is required')
-  })
-
-  test('Validation error in payment requests with no invoiceNumber', async () => {
-    delete paymentRequests[0].invoiceNumber
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "invoiceNumber" is required')
-  })
-
-  test('Validation error in payment requests with no contractNumber', async () => {
-    delete paymentRequests[0].contractNumber
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "contractNumber" is required')
-  })
-
-  test('Validation error in payment requests with no value', async () => {
-    delete paymentRequests[0].value
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "value" is required')
-  })
-
-  test('Validation error in payment requests with invalid frn', async () => {
-    paymentRequests[0].frn = 1
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "frn" must be greater than or equal to 1000000000')
-  })
-
-  test('Validation error in payment requests with invalid marketingYear', async () => {
-    paymentRequests[0].invoiceLines[0].marketingYear = 2014
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "marketingYear" must be greater than 2015')
-  })
-
-  test('Validation error in payment requests with invalid currency', async () => {
-    paymentRequests[0].currency = 'USD'
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "currency" must be one of [GBP, EUR]')
-  })
-
-  test('Validation error in payment requests with invalid schedule', async () => {
-    paymentRequests[0].schedule = '4'
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "schedule" must be one of [Q4, M12, T4]')
-  })
-
-  test('Validation error in payment requests with invalid dueDate', async () => {
-    paymentRequests[0].invoiceLines[0].dueDate = '01/11/2022'
-    buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(console.error).toHaveBeenLastCalledWith('Payment request is invalid. "dueDate" must be in YYYY-MM-DD format')
   })
 })
