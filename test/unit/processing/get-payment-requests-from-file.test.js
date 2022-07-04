@@ -1,5 +1,5 @@
-jest.mock('../../../app/processing/siti-agri/build-payment-requests')
-const buildPaymentRequests = require('../../../app/processing/siti-agri/build-payment-requests')
+jest.mock('../../../app/processing/siti-agri/filter-payment-requests')
+const filterPaymentRequests = require('../../../app/processing/siti-agri/filter-payment-requests')
 
 jest.mock('../../../app/processing/siti-agri/validate-batch')
 const validateBatch = require('../../../app/processing/siti-agri/validate-batch')
@@ -130,26 +130,26 @@ describe('Get payment request from payment file content', () => {
     expect(validateBatch).toHaveBeenCalledWith(batchHeaders, batchPaymentRequestsSFI)
   })
 
-  test('should call buildPaymentRequests when valid fileBuffer and scheme are received', async () => {
+  test('should call filterPaymentRequests when valid fileBuffer and scheme are received', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
-    expect(buildPaymentRequests).toHaveBeenCalled()
+    expect(filterPaymentRequests).toHaveBeenCalled()
   })
 
-  test('should call buildPaymentRequests with paymentRequests and SFI Pilot source system', async () => {
+  test('should call filterPaymentRequests with paymentRequests and SFI Pilot source system', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
+    expect(filterPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests and SFI source system', async () => {
+  test('should call filterPaymentRequests with batchPaymentRequests and SFI source system', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfi)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
+    expect(filterPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
   })
 
-  test('should call buildPaymentRequests with batchPaymentRequests and Lump Sums source system', async () => {
+  test('should call filterPaymentRequests with batchPaymentRequests and Lump Sums source system', async () => {
     fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^LSES^AP\r\nH^LSES0000001^001^L0000001^1000000001^1^100^RP00^GBP\r\nL^LSES0000001^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\nH^LSES0000002^002^L0000002^1000000002^1^100^RP00^GBP\r\nL^LSES0000002^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\n')
 
     await getPaymentRequestsFromFile(fileBuffer, lumpSums)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, lumpSums.sourceSystem)
+    expect(filterPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, lumpSums.sourceSystem)
   })
 
   test('should reject when any line in fileBuffer starts with a character other than "B", "H" or "L"', async () => {
@@ -212,13 +212,13 @@ describe('Get payment request from payment file content', () => {
     await expect(wrapper).rejects.toThrowError('Invalid file')
   })
 
-  test('should not call buildPaymentRequests when validate returns false', async () => {
+  test('should not call filterPaymentRequests when validate returns false', async () => {
     validateBatch.mockReturnValue(false)
 
     try {
       await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     } catch (err) { }
 
-    expect(buildPaymentRequests).not.toHaveBeenCalled()
+    expect(filterPaymentRequests).not.toHaveBeenCalled()
   })
 })
