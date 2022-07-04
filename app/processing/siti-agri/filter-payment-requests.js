@@ -6,8 +6,8 @@ const { isInvoiceLineValid } = require('./build-invoice-lines')
 
 const filterPaymentRequest = (paymentRequests, sourceSystem) => {
   const paymentRequestCollection = { successfulPaymentRequests: [], unsuccessfulPaymentRequests: [] }
-  const a = buildPaymentRequests(paymentRequests, sourceSystem)
-  a.map(x => handlePaymentRequest(x, paymentRequestCollection))
+  buildPaymentRequests(paymentRequests, sourceSystem)
+    .map(x => handlePaymentRequest(x, paymentRequestCollection))
   return paymentRequestCollection
 }
 
