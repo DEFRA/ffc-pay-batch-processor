@@ -6,23 +6,35 @@ const buildPaymentRequests = require('../../app/processing/siti-agri/build-payme
 
 describe('Build payment requests', () => {
   let sourceSystem
-  let paymentRequests
+
   let invoiceLines
+  let mappedInvoiceLines
+
+  let paymentRequest
+  let paymentRequests
+
+  let mappedPaymentRequest
+  let mappedPaymentRequests
 
   beforeEach(() => {
     sourceSystem = sfiPilot.sourceSystem
-    invoiceLines = [{
+
+    mappedInvoiceLines = [{
       schemeCode: 'SITIELM',
       accountCode: 'ABC123',
       fundCode: 'ABC12',
       description: 'G00 - Gross value of claim',
-      value: 100,
-      dueDate: '2022-11-02',
+      value: 100
+    }]
+
+    invoiceLines = [{
+      ...mappedInvoiceLines[0],
       marketingYear: 2022,
+      dueDate: '2022-11-02',
       agreementNumber: 'SIP123456789012'
     }]
 
-    paymentRequests = [{
+    paymentRequest = {
       sourceSystem,
       frn: 1234567890,
       paymentRequestNumber: 1,
@@ -33,30 +45,118 @@ describe('Build payment requests', () => {
       value: 100,
       deliveryBody: 'RP00',
       invoiceLines
-    }]
+    }
+
+    paymentRequests = [paymentRequest]
+
+    mappedPaymentRequest = {
+      ...paymentRequest,
+      invoiceLines: mappedInvoiceLines,
+      marketingYear: invoiceLines[0].marketingYear,
+      agreementNumber: invoiceLines[0].agreementNumber,
+      dueDate: invoiceLines[0].dueDate
+    }
+
+    mappedPaymentRequests = [mappedPaymentRequest]
   })
 
   afterEach(async () => {
     jest.resetAllMocks()
   })
 
-  test('build payment requests', async () => {
-    const paymentRequestsParse = buildPaymentRequests(paymentRequests, sourceSystem)
+  test('should return built payment requests when valid paymentRequests and sourceSystem are given', async () => {
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(result).toMatchObject(mappedPaymentRequests)
+  })
 
-    const {
-      dueDate,
-      marketingYear,
-      agreementNumber,
-      ...remainingingInvoiceLines
-    } = invoiceLines[0]
+  test('should return built payment requests with undefined sourceSystem when valid paymentRequests and undefined sourceSystem are given', async () => {
+    sourceSystem = undefined
 
-    expect(paymentRequestsParse).toMatchObject([{
-      ...paymentRequests[0],
-      correlationId: paymentRequestsParse[0].correlationId,
-      agreementNumber,
-      dueDate,
-      marketingYear,
-      invoiceLines: [remainingingInvoiceLines]
-    }])
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      sourceSystem
+    }
+
+    expect(result).toMatchObject([mappedPaymentRequest])
+  })
+
+  test('should return empty array when no paymentRequests and valid sourceSystem are given', async () => {
+    paymentRequests = []
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+    expect(result).toStrictEqual([])
+  })
+
+  test('should return built payment requests with no invoiceNumber when paymentRequests with no invoiceNumber and valid sourceSystem are given', async () => {
+    delete paymentRequest.invoiceNumber
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    delete mappedPaymentRequest.invoiceNumber
+    expect(result).toMatchObject([mappedPaymentRequest])
+  })
+
+  test('should return built payment requests with no contractNumber when paymentRequests with no contractNumber and valid sourceSystem are given', async () => {
+    delete paymentRequest.contractNumber
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    delete mappedPaymentRequest.contractNumber
+    expect(result).toMatchObject(result)
+  })
+
+  test('should return built payment requests with no value when paymentRequests with no value and valid sourceSystem are given', async () => {
+    delete paymentRequest.value
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    delete mappedPaymentRequest.value
+    expect(result).toMatchObject(result)
+  })
+
+  test('should return built payment requests with an invalid frn when paymentRequests with an invalid frn and valid sourceSystem are given', async () => {
+    paymentRequest.frn = 1
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest.frn = 1
+    expect(result).toMatchObject(result)
+  })
+
+  test('should return built payment requests with an invalid marketingYear when paymentRequests with an invalid marketingYear and valid sourceSystem are given', async () => {
+    paymentRequest.invoiceLines[0].marketingYear = 2014
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest.marketingYear = 2014
+    expect(result).toMatchObject(result)
+  })
+
+  test('should return built payment requests with an invalid currency when paymentRequests with an invalid currency and valid sourceSystem are given', async () => {
+    paymentRequest.currency = 'USD'
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest.currency = 'USD'
+    expect(result).toMatchObject(result)
+  })
+
+  test('should return built payment requests with an invalid schedule when paymentRequests with an invalid schedule and valid sourceSystem are given', async () => {
+    paymentRequest.schedule = '4'
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest.schedule = '4'
+    expect(result).toMatchObject(result)
+  })
+
+  test('should return built payment requests with an invalid dueDate when paymentRequests with an invalid dueDate and valid sourceSystem are given', async () => {
+    paymentRequest.invoiceLines[0].dueDate = '01/11/2022'
+
+    const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest.dueDate = '01/11/2022'
+    expect(result).toMatchObject(result)
   })
 })
