@@ -11,6 +11,7 @@ jest.mock('ffc-messaging', () => {
 })
 
 const mockSendEvent = jest.fn()
+const mockSendEventBatch = jest.fn()
 jest.mock('ffc-pay-event-publisher', () => {
   return {
     PublishEvent: jest.fn().mockImplementation(() => {
@@ -20,7 +21,7 @@ jest.mock('ffc-pay-event-publisher', () => {
     }),
     PublishEventBatch: jest.fn().mockImplementation(() => {
       return {
-        sendEvents: jest.fn()
+        sendEvents: mockSendEventBatch
       }
     })
   }
@@ -418,12 +419,12 @@ describe('process batch files', () => {
     expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 
-  test('does not call PublishEvent.sendEvent when an invalid batch header payment amount to invoice lines payment amount file is given', async () => {
+  test('calls PublishEventBatch.sendEvents when an invalid batch header payment amount to invoice lines payment amount file is given', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
 
     await pollInbound()
 
-    expect(mockSendEvent).not.toHaveBeenCalled()
+    expect(mockSendEventBatch).toHaveBeenCalledTimes(1)
   })
 })
