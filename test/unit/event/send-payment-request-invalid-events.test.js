@@ -85,23 +85,23 @@ describe('Sending events for unprocessable payment requests', () => {
     expect(uuidv4).not.toHaveBeenCalled()
   })
 
-  test('should call raiseEventBatch when paymentRequests has 1 payment request are received', async () => {
+  test('should call raiseEventBatch when paymentRequests has 1 payment request is received', async () => {
     await sendPaymentRequestInvalidEvents(paymentRequests)
     expect(raiseEventBatch).toHaveBeenCalled()
   })
 
-  test('should call raiseEventBatch once when paymentRequests has 1 payment request are received', async () => {
+  test('should call raiseEventBatch once when paymentRequests has 1 payment request is received', async () => {
     await sendPaymentRequestInvalidEvents(paymentRequests)
     expect(raiseEventBatch).toHaveBeenCalledTimes(1)
   })
 
-  test('should call raiseEventBatch with events and "error" when paymentRequests has 1 payment request are received', async () => {
+  test('should call raiseEventBatch with events and "error" when paymentRequests has 1 payment request is received', async () => {
     await sendPaymentRequestInvalidEvents(paymentRequests)
 
     event = {
       ...event,
       id: uuidv4(),
-      data: { paymentRequest: paymentRequests[0] }
+      data: { paymentRequest }
     }
     const events = [event]
     expect(raiseEventBatch).toHaveBeenCalledWith(events, 'error')

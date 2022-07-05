@@ -15,7 +15,7 @@ const readSitiAgriFile = async (readBatchLines, scheme, input) => {
 
     readBatchLines.on('close', () => {
       validateBatch(batch.batchHeaders, batch.paymentRequests)
-        ? resolve({ paymentRequests: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
+        ? resolve({ paymentRequestsCollection: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()

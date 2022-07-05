@@ -5,10 +5,10 @@ const paymentRequestSchema = require('./schemas/payment-request')
 const { isInvoiceLineValid } = require('./build-invoice-lines')
 
 const filterPaymentRequest = (paymentRequests, sourceSystem) => {
-  const paymentRequestCollection = { successfulPaymentRequests: [], unsuccessfulPaymentRequests: [] }
+  const paymentRequestsCollection = { successfulPaymentRequests: [], unsuccessfulPaymentRequests: [] }
   buildPaymentRequests(paymentRequests, sourceSystem)
-    .map(x => handlePaymentRequest(x, paymentRequestCollection))
-  return paymentRequestCollection
+    .map(x => handlePaymentRequest(x, paymentRequestsCollection))
+  return paymentRequestsCollection
 }
 
 const isPaymentRequestValid = (paymentRequest) => {
@@ -32,10 +32,10 @@ const validatePaymentRequest = (paymentRequest) => {
   return paymentRequestValid && invoiceLinesValid && lineTotalsValid
 }
 
-const handlePaymentRequest = (paymentRequest, paymentRequestCollection) => {
+const handlePaymentRequest = (paymentRequest, paymentRequestsCollection) => {
   validatePaymentRequest(paymentRequest)
-    ? paymentRequestCollection.successfulPaymentRequests.push(paymentRequest)
-    : paymentRequestCollection.unsuccessfulPaymentRequests.push(paymentRequest)
+    ? paymentRequestsCollection.successfulPaymentRequests.push(paymentRequest)
+    : paymentRequestsCollection.unsuccessfulPaymentRequests.push(paymentRequest)
 }
 
 module.exports = filterPaymentRequest
