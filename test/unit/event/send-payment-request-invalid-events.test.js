@@ -1,7 +1,3 @@
-const { GBP } = require('../../../app/currency')
-const { Q4 } = require('../../../app/schedules')
-const { sfiPilot } = require('../../../app/schemes')
-
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
@@ -13,37 +9,22 @@ const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
 let paymentRequest
 let paymentRequests
 let event
+let events
 
 describe('Sending events for unprocessable payment requests', () => {
   beforeEach(async () => {
-    uuidv4.mockReturnValue('70cb0f07-e0cf-449c-86e8-0344f2c6cc6c')
+    uuidv4.mockReturnValue(require('../../mockCorrelationId'))
 
-    paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      frn: 1234567890,
-      paymentRequestsNumber: 1,
-      invoiceNumber: 'SITI1234567',
-      contractNumber: 'S1234567',
-      currency: GBP,
-      schedule: Q4,
-      value: 100,
-      deliveryBody: 'RP00',
-      invoiceLines: [{
-        schemeCode: 'SITIELM',
-        accountCode: 'ABC123',
-        fundCode: 'ABC12',
-        description: 'G00 - Gross value of claim',
-        value: 100
-      }]
-    }
-
-    paymentRequests = [paymentRequest]
+    paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
 
     event = {
       name: 'batch-processing-payment-request-invalid',
       type: 'error',
       message: 'Payment request could not be processed'
     }
+
+    events = [event]
   })
 
   afterEach(async () => {
@@ -103,7 +84,7 @@ describe('Sending events for unprocessable payment requests', () => {
       id: uuidv4(),
       data: { paymentRequest }
     }
-    const events = [event]
+    events = [event]
     expect(raiseEventBatch).toHaveBeenCalledWith(events, 'error')
   })
 
@@ -128,7 +109,7 @@ describe('Sending events for unprocessable payment requests', () => {
       ...event,
       id: uuidv4()
     }
-    const events = [{
+    events = [{
       ...event,
       data: { paymentRequest: paymentRequests[0] }
     },
