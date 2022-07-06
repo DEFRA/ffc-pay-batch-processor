@@ -427,4 +427,22 @@ describe('process batch files', () => {
 
     expect(mockSendEventBatch).toHaveBeenCalledTimes(1)
   })
+
+  test('calls PublishEventBatch.sendEvents with event.name "batch-processing-payment-request-invalid" when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockSendEventBatch.mock.calls[0][0][0].name).toBe('batch-processing-payment-request-invalid')
+  })
+
+  test('calls PublishEventBatch.sendEvents with event.properties.status "error" when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockSendEventBatch.mock.calls[0][0][0].properties.status).toBe('error')
+  })
 })
