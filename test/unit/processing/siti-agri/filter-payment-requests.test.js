@@ -1,7 +1,3 @@
-const { GBP } = require('../../../../app/currency')
-const { Q4 } = require('../../../../app/schedules')
-const { sfiPilot } = require('../../../../app/schemes')
-
 jest.mock('../../../../app/currency-convert')
 const { convertToPence, getTotalValueInPence } = require('../../../../app/currency-convert')
 
@@ -19,58 +15,23 @@ const filterPaymentRequest = require('../../../../app/processing/siti-agri/filte
 describe('Filter payment requests', () => {
   let sourceSystem
 
-  let invoiceLines
-  let mappedInvoiceLines
-
   let paymentRequest
   let paymentRequests
 
   let mappedPaymentRequest
   let mappedPaymentRequests
 
+  let mappedInvoiceLines
+
   beforeEach(() => {
-    sourceSystem = sfiPilot.sourceSystem
+    paymentRequest = require('../../../mockPaymentRequest').paymentRequest
+    paymentRequests = require('../../../mockPaymentRequest').paymentRequests
+    mappedPaymentRequest = require('../../../mockPaymentRequest').mappedPaymentRequest
+    mappedPaymentRequests = require('../../../mockPaymentRequest').mappedPaymentRequests
 
-    mappedInvoiceLines = [{
-      schemeCode: 'SITIELM',
-      accountCode: 'ABC123',
-      fundCode: 'ABC12',
-      description: 'G00 - Gross value of claim',
-      value: 100
-    }]
+    mappedInvoiceLines = require('../../../mockInvoiceLines').mappedInvoiceLines
 
-    invoiceLines = [{
-      ...mappedInvoiceLines[0],
-      marketingYear: 2022,
-      dueDate: '2022-11-02',
-      agreementNumber: 'SIP123456789012'
-    }]
-
-    paymentRequest = {
-      sourceSystem,
-      frn: 1234567890,
-      paymentRequestNumber: 1,
-      invoiceNumber: 'SITI1234567',
-      contractNumber: 'S1234567',
-      currency: GBP,
-      schedule: Q4,
-      value: 100,
-      deliveryBody: 'RP00',
-      invoiceLines
-    }
-
-    paymentRequests = [paymentRequest]
-
-    mappedPaymentRequest = {
-      ...paymentRequest,
-      invoiceLines: mappedInvoiceLines,
-      marketingYear: invoiceLines[0].marketingYear,
-      agreementNumber: invoiceLines[0].agreementNumber,
-      dueDate: invoiceLines[0].dueDate,
-      correlationId: '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c'
-    }
-
-    mappedPaymentRequests = [mappedPaymentRequest]
+    sourceSystem = paymentRequest.sourceSystem
 
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
     paymentRequestSchema.validate.mockReturnValue({ value: mappedPaymentRequest })
