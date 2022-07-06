@@ -130,7 +130,6 @@ describe('Get payment request from payment file content', () => {
     expect(validateBatch).toHaveBeenCalledWith(batchHeaders, batchPaymentRequestsSFI)
   })
 
-<<<<<<< HEAD
   test('should call filterPaymentRequests when valid fileBuffer and scheme are received', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     expect(filterPaymentRequests).toHaveBeenCalled()
@@ -151,28 +150,6 @@ describe('Get payment request from payment file content', () => {
 
     await getPaymentRequestsFromFile(fileBuffer, lumpSums)
     expect(filterPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, lumpSums.sourceSystem)
-=======
-  test('should call buildPaymentRequests when valid fileBuffer and scheme are received', async () => {
-    await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
-    expect(buildPaymentRequests).toHaveBeenCalled()
-  })
-
-  test('should call buildPaymentRequests with paymentRequests and SFI Pilot source system', async () => {
-    await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
-  })
-
-  test('should call buildPaymentRequests with batchPaymentRequests and SFI source system', async () => {
-    await getPaymentRequestsFromFile(fileBuffer, sfi)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfi.sourceSystem)
-  })
-
-  test('should call buildPaymentRequests with batchPaymentRequests and Lump Sums source system', async () => {
-    fileBuffer = Buffer.from('B^2021-08-12^2^200^0001^LSES^AP\r\nH^LSES0000001^001^L0000001^1000000001^1^100^RP00^GBP\r\nL^LSES0000001^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\nH^LSES0000002^002^L0000002^1000000002^1^100^RP00^GBP\r\nL^LSES0000002^100^2022^10570^DOM10^RP00^1^G00 - Gross value of claim^2022-12-01\r\n')
-
-    await getPaymentRequestsFromFile(fileBuffer, lumpSums)
-    expect(buildPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsLumpSums, lumpSums.sourceSystem)
->>>>>>> main
   })
 
   test('should reject when any line in fileBuffer starts with a character other than "B", "H" or "L"', async () => {
@@ -235,21 +212,13 @@ describe('Get payment request from payment file content', () => {
     await expect(wrapper).rejects.toThrowError('Invalid file')
   })
 
-<<<<<<< HEAD
   test('should not call filterPaymentRequests when validate returns false', async () => {
-=======
-  test('should not call buildPaymentRequests when validate returns false', async () => {
->>>>>>> main
     validateBatch.mockReturnValue(false)
 
     try {
       await getPaymentRequestsFromFile(fileBuffer, sfiPilot)
     } catch (err) { }
 
-<<<<<<< HEAD
     expect(filterPaymentRequests).not.toHaveBeenCalled()
-=======
-    expect(buildPaymentRequests).not.toHaveBeenCalled()
->>>>>>> main
   })
 })
