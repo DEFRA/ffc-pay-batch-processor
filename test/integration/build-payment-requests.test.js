@@ -1,7 +1,3 @@
-const { GBP } = require('../../app/currency')
-const { Q4 } = require('../../app/schedules')
-const { sfiPilot } = require('../../app/schemes')
-
 const buildPaymentRequests = require('../../app/processing/siti-agri/build-payment-requests')
 
 describe('Build mappedPaymentRequests', () => {
@@ -17,47 +13,15 @@ describe('Build mappedPaymentRequests', () => {
   let mappedPaymentRequests
 
   beforeEach(() => {
-    sourceSystem = sfiPilot.sourceSystem
+    paymentRequest = JSON.parse(JSON.stringify(require('../mockPaymentRequest').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../mockPaymentRequest').paymentRequests))
+    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../mockPaymentRequest').mappedPaymentRequest))
+    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../mockPaymentRequest').mappedPaymentRequests))
 
-    mappedInvoiceLines = [{
-      schemeCode: 'SITIELM',
-      accountCode: 'ABC123',
-      fundCode: 'ABC12',
-      description: 'G00 - Gross value of claim',
-      value: 100
-    }]
+    invoiceLines = JSON.parse(JSON.stringify(require('../mockInvoiceLines').invoiceLines))
+    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../mockInvoiceLines').mappedInvoiceLines))
 
-    invoiceLines = [{
-      ...mappedInvoiceLines[0],
-      marketingYear: 2022,
-      dueDate: '2022-11-02',
-      agreementNumber: 'SIP123456789012'
-    }]
-
-    paymentRequest = {
-      sourceSystem,
-      frn: 1234567890,
-      paymentRequestNumber: 1,
-      invoiceNumber: 'SITI1234567',
-      contractNumber: 'S1234567',
-      currency: GBP,
-      schedule: Q4,
-      value: 100,
-      deliveryBody: 'RP00',
-      invoiceLines
-    }
-
-    paymentRequests = [paymentRequest]
-
-    mappedPaymentRequest = {
-      ...paymentRequest,
-      invoiceLines: mappedInvoiceLines,
-      marketingYear: invoiceLines[0].marketingYear,
-      agreementNumber: invoiceLines[0].agreementNumber,
-      dueDate: invoiceLines[0].dueDate
-    }
-
-    mappedPaymentRequests = [mappedPaymentRequest]
+    sourceSystem = paymentRequest.sourceSystem
   })
 
   afterEach(async () => {
@@ -66,6 +30,12 @@ describe('Build mappedPaymentRequests', () => {
 
   test('should return mappedPaymentRequests when valid paymentRequests and sourceSystem are given', async () => {
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
@@ -74,7 +44,12 @@ describe('Build mappedPaymentRequests', () => {
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.sourceSystem = sourceSystem
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      sourceSystem: undefined,
+      correlationId: result[0].correlationId
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
@@ -86,91 +61,148 @@ describe('Build mappedPaymentRequests', () => {
 
   test('should return mappedPaymentRequests with no invoiceNumber when paymentRequests with no invoiceNumber and valid sourceSystem are given', async () => {
     delete paymentRequest.invoiceNumber
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.invoiceNumber
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with no contractNumber when paymentRequests with no contractNumber and valid sourceSystem are given', async () => {
     delete paymentRequest.contractNumber
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.contractNumber
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with no value when paymentRequests with no value and valid sourceSystem are given', async () => {
     delete paymentRequest.value
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.value
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with an invalid frn when paymentRequests with an invalid frn and valid sourceSystem are given', async () => {
     paymentRequest.frn = 1
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.frn = 1
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId,
+      frn: 1
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with an invalid marketingYear when paymentRequests with an invalid marketingYear and valid sourceSystem are given', async () => {
     paymentRequest.invoiceLines[0].marketingYear = 2014
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.marketingYear = 2014
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId,
+      marketingYear: 2014
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with an invalid currency when paymentRequests with an invalid currency and valid sourceSystem are given', async () => {
     paymentRequest.currency = 'USD'
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.currency = 'USD'
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId,
+      currency: 'USD'
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with an invalid schedule when paymentRequests with an invalid schedule and valid sourceSystem are given', async () => {
     paymentRequest.schedule = '4'
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.schedule = '4'
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId,
+      schedule: '4'
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with an invalid dueDate when paymentRequests with an invalid dueDate and valid sourceSystem are given', async () => {
     paymentRequest.invoiceLines[0].dueDate = '01/11/2022'
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.dueDate = '01/11/2022'
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId,
+      dueDate: '01/11/2022'
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
   test('should return mappedPaymentRequests with an empty array for invoiceLines and undefined agreeementNumber, dueDate and marketingYear when paymentRequests with an empty array for invoiceLines and valid sourceSystem are given', async () => {
     paymentRequest.invoiceLines = []
+    paymentRequests = [paymentRequest]
 
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.invoiceLines = []
-    mappedPaymentRequest.agreementNumber = undefined
-    mappedPaymentRequest.dueDate = undefined
-    mappedPaymentRequest.marketingYear = undefined
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result[0].correlationId,
+      invoiceLines: [],
+      agreementNumber: undefined,
+      dueDate: undefined,
+      marketingYear: undefined
+    }
+    mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
-  test('should return paymentRequest when paymentRequests with no invoiceLines and valid sourceSystem are given', async () => {
+  test('should return paymentRequests when paymentRequests with no invoiceLines and valid sourceSystem are given', async () => {
     delete paymentRequest.invoiceLines
+    paymentRequests = [paymentRequest]
+
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
+
     expect(result).toMatchObject(paymentRequests)
   })
 
