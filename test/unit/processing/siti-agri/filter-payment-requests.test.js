@@ -24,13 +24,13 @@ describe('Filter payment requests', () => {
   let mappedInvoiceLines
 
   beforeEach(() => {
-    paymentRequest = require('../../../mockPaymentRequest').paymentRequest
-    paymentRequests = require('../../../mockPaymentRequest').paymentRequests
+    paymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequests))
 
-    mappedPaymentRequest = require('../../../mockPaymentRequest').mappedPaymentRequest
-    mappedPaymentRequests = require('../../../mockPaymentRequest').mappedPaymentRequests
+    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequest))
+    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequests))
 
-    mappedInvoiceLines = require('../../../mockInvoiceLines').mappedInvoiceLines
+    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../../../mockInvoiceLines').mappedInvoiceLines))
 
     sourceSystem = paymentRequest.sourceSystem
 
@@ -59,13 +59,13 @@ describe('Filter payment requests', () => {
   })
 
   test('should call buildPaymentRequests once when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
-    paymentRequests = [paymentRequest, paymentRequest]
+    paymentRequests.push(paymentRequest)
     filterPaymentRequest(paymentRequests, sourceSystem)
     expect(buildPaymentRequests).toBeCalledTimes(1)
   })
 
   test('should call buildPaymentRequests with each mappedPaymentRequests and sourceSystem when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
-    paymentRequests = [paymentRequest, paymentRequest]
+    paymentRequests.push(paymentRequest)
     filterPaymentRequest(paymentRequests, sourceSystem)
     expect(buildPaymentRequests).toHaveBeenCalledWith(paymentRequests, sourceSystem)
   })
@@ -101,7 +101,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call paymentRequestSchema.validate twice when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -110,7 +110,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call paymentRequestSchema.validate with each mappedPaymentRequests and { abortEarly: false } when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -141,7 +141,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call isInvoiceLineValid twice when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -150,7 +150,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call isInvoiceLineValid with each mappedPaymentRequests.invoiceLines[0] when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -160,10 +160,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call isInvoiceLineValid twice when buildPaymentRequests returns a mappedPaymentRequest with 2 invoiceLines', async () => {
-    mappedPaymentRequest = {
-      ...mappedPaymentRequest,
-      invoiceLines: [mappedInvoiceLines[0], mappedInvoiceLines[0]]
-    }
+    mappedPaymentRequest.invoiceLines = [mappedInvoiceLines[0], mappedInvoiceLines[0]]
     mappedPaymentRequests = [mappedPaymentRequest]
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
@@ -173,10 +170,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call isInvoiceLineValid with each mappedPaymentRequest.invoiceLines when buildPaymentRequests returns a mappedPaymentRequest with 2 invoiceLines', async () => {
-    mappedPaymentRequest = {
-      ...mappedPaymentRequest,
-      invoiceLines: [mappedInvoiceLines[0], mappedInvoiceLines[0]]
-    }
+    mappedPaymentRequest.invoiceLines = [mappedInvoiceLines[0], mappedInvoiceLines[0]]
     mappedPaymentRequests = [mappedPaymentRequest]
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
@@ -208,7 +202,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call convertToPence twice when buildPaymentRequests returns 2 mappedPaymentRequests paymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -217,7 +211,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call convertToPence with each mappedPaymentRequests.value when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -248,7 +242,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call getTotalValueInPence twice when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -257,7 +251,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should call getTotalValueInPence with each mappedPaymentRequests.invoiceLines and "value" when buildPaymentRequests returns 2 mappedPaymentRequests', async () => {
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
+    mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
 
     filterPaymentRequest(paymentRequests, sourceSystem)
@@ -267,15 +261,23 @@ describe('Filter payment requests', () => {
   })
 
   test('should call getTotalValueInPence once when buildPaymentRequests returns a mappedPaymentRequests with 2 invoiceLines', async () => {
-    mappedInvoiceLines.push(mappedInvoiceLines[0])
+    mappedPaymentRequest.invoiceLines.push(mappedInvoiceLines[0])
+    mappedPaymentRequests = [mappedPaymentRequest]
+    buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
+
     filterPaymentRequest(paymentRequests, sourceSystem)
+
     expect(getTotalValueInPence).toBeCalledTimes(1)
   })
 
-  test('should call getTotalValueInPence with mappedInvoiceLines and "value" when buildPaymentRequests returns a mappedPaymentRequests with 2 invoiceLines', async () => {
-    mappedInvoiceLines.push(mappedInvoiceLines[0])
+  test('should call getTotalValueInPence with mappedPaymentRequest.invoiceLines and "value" when buildPaymentRequests returns a mappedPaymentRequests with 2 invoiceLines', async () => {
+    mappedPaymentRequest.invoiceLines.push(mappedInvoiceLines[0])
+    mappedPaymentRequests = [mappedPaymentRequest]
+    buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
+
     filterPaymentRequest(paymentRequests, sourceSystem)
-    expect(getTotalValueInPence).toHaveBeenCalledWith(mappedInvoiceLines, 'value')
+
+    expect(getTotalValueInPence).toHaveBeenCalledWith(mappedPaymentRequest.invoiceLines, 'value')
   })
 
   test('should not call getTotalValueInPence when buildPaymentRequests returns an empty array', async () => {

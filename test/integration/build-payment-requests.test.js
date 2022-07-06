@@ -31,10 +31,7 @@ describe('Build mappedPaymentRequests', () => {
   test('should return mappedPaymentRequests when valid paymentRequests and sourceSystem are given', async () => {
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest = {
-      ...mappedPaymentRequest,
-      correlationId: result[0].correlationId
-    }
+    mappedPaymentRequest.correlationId = result[0].correlationId
     mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
@@ -66,10 +63,7 @@ describe('Build mappedPaymentRequests', () => {
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.invoiceNumber
-    mappedPaymentRequest = {
-      ...mappedPaymentRequest,
-      correlationId: result[0].correlationId
-    }
+    mappedPaymentRequest.correlationId = result[0].correlationId
     mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
@@ -81,10 +75,7 @@ describe('Build mappedPaymentRequests', () => {
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.contractNumber
-    mappedPaymentRequest = {
-      ...mappedPaymentRequest,
-      correlationId: result[0].correlationId
-    }
+    mappedPaymentRequest.correlationId = result[0].correlationId
     mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })
@@ -96,10 +87,7 @@ describe('Build mappedPaymentRequests', () => {
     const result = buildPaymentRequests(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.value
-    mappedPaymentRequest = {
-      ...mappedPaymentRequest,
-      correlationId: result[0].correlationId
-    }
+    mappedPaymentRequest.correlationId = result[0].correlationId
     mappedPaymentRequests = [mappedPaymentRequest]
     expect(result).toMatchObject(mappedPaymentRequests)
   })

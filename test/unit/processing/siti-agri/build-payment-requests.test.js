@@ -24,13 +24,13 @@ describe('Build payment requests', () => {
   let mappedInvoiceLines
 
   beforeEach(() => {
-    paymentRequest = require('../../../mockPaymentRequest').paymentRequest
-    paymentRequests = require('../../../mockPaymentRequest').paymentRequests
-    mappedPaymentRequest = require('../../../mockPaymentRequest').mappedPaymentRequest
-    mappedPaymentRequests = require('../../../mockPaymentRequest').mappedPaymentRequests
+    paymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequests))
+    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequest))
+    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequests))
 
-    invoiceLines = require('../../../mockInvoiceLines').invoiceLines
-    mappedInvoiceLines = require('../../../mockInvoiceLines').mappedInvoiceLines
+    invoiceLines = JSON.parse(JSON.stringify(require('../../../mockInvoiceLines').invoiceLines))
+    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../../../mockInvoiceLines').mappedInvoiceLines))
 
     sourceSystem = paymentRequest.sourceSystem
 
