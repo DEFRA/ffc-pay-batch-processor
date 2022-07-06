@@ -1,6 +1,4 @@
-const { GBP } = require('../../../../app/currency')
-const { Q4 } = require('../../../../app/schedules')
-const { sfiPilot } = require('../../../../app/schemes')
+const correlationId = require('../../../mockCorrelationId')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
@@ -16,60 +14,27 @@ const buildPaymentRequests = require('../../../../app/processing/siti-agri/build
 describe('Build payment requests', () => {
   let sourceSystem
 
-  let invoiceLines
-  let mappedInvoiceLines
-
   let paymentRequest
   let paymentRequests
 
   let mappedPaymentRequest
   let mappedPaymentRequests
 
+  let invoiceLines
+  let mappedInvoiceLines
+
   beforeEach(() => {
-    sourceSystem = sfiPilot.sourceSystem
+    paymentRequest = require('../../../mockPaymentRequest').paymentRequest
+    paymentRequests = require('../../../mockPaymentRequest').paymentRequests
+    mappedPaymentRequest = require('../../../mockPaymentRequest').mappedPaymentRequest
+    mappedPaymentRequests = require('../../../mockPaymentRequest').mappedPaymentRequests
 
-    mappedInvoiceLines = [{
-      schemeCode: 'SITIELM',
-      accountCode: 'ABC123',
-      fundCode: 'ABC12',
-      description: 'G00 - Gross value of claim',
-      value: 100
-    }]
+    invoiceLines = require('../../../mockInvoiceLines').invoiceLines
+    mappedInvoiceLines = require('../../../mockInvoiceLines').mappedInvoiceLines
 
-    invoiceLines = [{
-      ...mappedInvoiceLines[0],
-      marketingYear: 2022,
-      dueDate: '2022-11-02',
-      agreementNumber: 'SIP123456789012'
-    }]
+    sourceSystem = paymentRequest.sourceSystem
 
-    paymentRequest = {
-      sourceSystem,
-      frn: 1234567890,
-      paymentRequestNumber: 1,
-      invoiceNumber: 'SITI1234567',
-      contractNumber: 'S1234567',
-      currency: GBP,
-      schedule: Q4,
-      value: 100,
-      deliveryBody: 'RP00',
-      invoiceLines
-    }
-
-    paymentRequests = [paymentRequest]
-
-    mappedPaymentRequest = {
-      ...paymentRequest,
-      invoiceLines: mappedInvoiceLines,
-      marketingYear: invoiceLines[0].marketingYear,
-      agreementNumber: invoiceLines[0].agreementNumber,
-      dueDate: invoiceLines[0].dueDate,
-      correlationId: '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c'
-    }
-
-    mappedPaymentRequests = [mappedPaymentRequest]
-
-    uuidv4.mockReturnValue('70cb0f07-e0cf-449c-86e8-0344f2c6cc6c')
+    uuidv4.mockReturnValue(correlationId)
     buildInvoiceLines.mockReturnValue(mappedInvoiceLines)
     handleKnownDefects.mockImplementation((x) => { return x })
   })
@@ -122,7 +87,9 @@ describe('Build payment requests', () => {
 
   test('should call buildInvoiceLines with each paymentRequests.invoiceLines when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
+
     buildPaymentRequests(paymentRequests, sourceSystem)
+
     expect(buildInvoiceLines).toHaveBeenNthCalledWith(1, paymentRequests[0].invoiceLines)
     expect(buildInvoiceLines).toHaveBeenNthCalledWith(2, paymentRequests[1].invoiceLines)
   })
