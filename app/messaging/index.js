@@ -1,10 +1,10 @@
 const sendBatchMessage = require('./send-batch-message')
-const config = require('../config/mq-config')
+const config = require('../config/message')
 const util = require('util')
 
-async function sendPaymentBatchMessage (payload) {
-  await sendBatchMessage(payload, 'uk.gov.pay.send', config.paymentBatchTopic)
-  console.info('Payment requests sent', util.inspect(payload, false, null, true))
+const sendPaymentBatchMessage = async (messages) => {
+  await sendBatchMessage(messages, 'uk.gov.pay.request', config.paymentBatchTopic)
+  console.info('Payment requests sent', util.inspect(messages, false, null, true))
 }
 
 module.exports = {

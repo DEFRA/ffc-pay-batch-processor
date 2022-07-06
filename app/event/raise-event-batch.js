@@ -1,5 +1,5 @@
 const { PublishEventBatch } = require('ffc-pay-event-publisher')
-const { eventTopic } = require('../config/mq-config')
+const { eventTopic } = require('../config/message')
 
 const raiseEventBatch = async (events, status = 'success') => {
   const eventPublisher = new PublishEventBatch(eventTopic)
