@@ -19,7 +19,6 @@ describe('Validate batch', () => {
       sourceSystem: sfi.sourceSystem,
       ledger: AP
     }
-
     paymentRequest = {
       value: 100,
       invoiceLines: [{
