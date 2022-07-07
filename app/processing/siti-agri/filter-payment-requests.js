@@ -11,6 +11,20 @@ const filterPaymentRequest = (paymentRequests, sourceSystem) => {
   return paymentRequestsCollection
 }
 
+const handlePaymentRequest = (paymentRequest, paymentRequestsCollection) => {
+  validatePaymentRequest(paymentRequest)
+    ? paymentRequestsCollection.successfulPaymentRequests.push(paymentRequest)
+    : paymentRequestsCollection.unsuccessfulPaymentRequests.push(paymentRequest)
+}
+
+const validatePaymentRequest = (paymentRequest) => {
+  const paymentRequestValid = isPaymentRequestValid(paymentRequest)
+  const invoiceLinesValid = paymentRequest.invoiceLines.every(x => isInvoiceLineValid(x))
+  const lineTotalsValid = validateLineTotals(paymentRequest)
+
+  return paymentRequestValid && invoiceLinesValid && lineTotalsValid
+}
+
 const isPaymentRequestValid = (paymentRequest) => {
   const validationResult = paymentRequestSchema.validate(paymentRequest, { abortEarly: false })
   if (validationResult.error) {
@@ -22,20 +36,6 @@ const isPaymentRequestValid = (paymentRequest) => {
 
 const validateLineTotals = (paymentRequest) => {
   return convertToPence(paymentRequest.value) === getTotalValueInPence(paymentRequest.invoiceLines, 'value')
-}
-
-const validatePaymentRequest = (paymentRequest) => {
-  const paymentRequestValid = isPaymentRequestValid(paymentRequest)
-  const invoiceLinesValid = paymentRequest.invoiceLines.every(x => isInvoiceLineValid(x))
-  const lineTotalsValid = validateLineTotals(paymentRequest)
-
-  return paymentRequestValid && invoiceLinesValid && lineTotalsValid
-}
-
-const handlePaymentRequest = (paymentRequest, paymentRequestsCollection) => {
-  validatePaymentRequest(paymentRequest)
-    ? paymentRequestsCollection.successfulPaymentRequests.push(paymentRequest)
-    : paymentRequestsCollection.unsuccessfulPaymentRequests.push(paymentRequest)
 }
 
 module.exports = filterPaymentRequest
