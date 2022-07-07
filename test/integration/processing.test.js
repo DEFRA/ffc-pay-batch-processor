@@ -469,7 +469,7 @@ describe('process batch files', () => {
     expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 
-  test('calls PublishEventBatch.sendEvents when an invalid batch header payment amount to invoice lines payment amount file is given', async () => {
+  test('calls PublishEventBatch.sendEvents once when an invalid batch header payment amount to invoice lines payment amount file is given', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
 
