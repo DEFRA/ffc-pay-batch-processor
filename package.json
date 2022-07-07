@@ -40,7 +40,7 @@
   "devDependencies": {
     "jest": "28.1.1",
     "jest-junit": "13.2.0",
-    "nodemon": "2.0.18",
+    "nodemon": "2.0.19",
     "standard": "17.0.0"
   },
   "standard": {
