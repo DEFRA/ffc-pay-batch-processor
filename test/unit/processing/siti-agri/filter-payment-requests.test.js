@@ -37,6 +37,8 @@ describe('Filter payment requests', () => {
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
     paymentRequestSchema.validate.mockReturnValue({ value: mappedPaymentRequest })
     isInvoiceLineValid.mockReturnValue(true)
+    convertToPence.mockReturnValue(10000)
+    getTotalValueInPence.mockReturnValue(10000)
   })
 
   afterEach(async () => {
@@ -123,6 +125,36 @@ describe('Filter payment requests', () => {
     buildPaymentRequests.mockReturnValue([])
     filterPaymentRequest([], sourceSystem)
     expect(paymentRequestSchema.validate).not.toBeCalled()
+  })
+
+  test('should call paymentRequestSchema.validate when buildPaymentRequests returns mappedPaymentRequests with empty invoiceLines', async () => {
+    mappedPaymentRequest.invoiceLines = []
+    mappedPaymentRequests = [mappedPaymentRequest]
+    buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
+
+    filterPaymentRequest(paymentRequests, sourceSystem)
+
+    expect(paymentRequestSchema.validate).toBeCalled()
+  })
+
+  test('should call paymentRequestSchema.validate once when buildPaymentRequests returns mappedPaymentRequests with empty invoiceLines', async () => {
+    mappedPaymentRequest.invoiceLines = []
+    mappedPaymentRequests = [mappedPaymentRequest]
+    buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
+
+    filterPaymentRequest(paymentRequests, sourceSystem)
+
+    expect(paymentRequestSchema.validate).toBeCalledTimes(1)
+  })
+
+  test('should call paymentRequestSchema.validate with mappedPaymentRequest and { abortEarly: false } when buildPaymentRequests returns mappedPaymentRequests with empty invoiceLines', async () => {
+    mappedPaymentRequest.invoiceLines = []
+    mappedPaymentRequests = [mappedPaymentRequest]
+    buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
+
+    filterPaymentRequest(paymentRequests, sourceSystem)
+
+    expect(paymentRequestSchema.validate).toBeCalledWith(mappedPaymentRequest, { abortEarly: false })
   })
 
   test('should call isInvoiceLineValid when buildPaymentRequests returns mappedPaymentRequests', async () => {
@@ -284,5 +316,87 @@ describe('Filter payment requests', () => {
     buildPaymentRequests.mockReturnValue([])
     filterPaymentRequest([], sourceSystem)
     expect(getTotalValueInPence).not.toBeCalled()
+  })
+
+  test('should return mappedPaymentRequest under successfulPaymentRequests when buildPaymentRequests returns mappedPaymentRequests', async () => {
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under unsuccessfulPaymentRequests when buildPaymentRequests returns mappedPaymentRequests', async () => {
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under successfulPaymentRequests when paymentRequestSchema.validate returns with an error key', async () => {
+    paymentRequestSchema.validate.mockReturnValue({ ...paymentRequestSchema.validate(), error: { message: 'Example error' } })
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should return mappedPaymentRequest under unsuccessfulPaymentRequests when paymentRequestSchema.validate returns with an error key', async () => {
+    paymentRequestSchema.validate.mockReturnValue({ ...paymentRequestSchema.validate(), error: { message: 'Example error' } })
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under successfulPaymentRequests when isInvoiceLineValid returns false', async () => {
+    isInvoiceLineValid.mockReturnValue(false)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should return mappedPaymentRequest under unsuccessfulPaymentRequests when isInvoiceLineValid returns false', async () => {
+    isInvoiceLineValid.mockReturnValue(false)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under successfulPaymentRequests when convertToPence returns a larger value than getTotalValueInPence', async () => {
+    convertToPence.mockReturnValue(getTotalValueInPence() + 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should return mappedPaymentRequest under unsuccessfulPaymentRequests when convertToPence returns a larger value than getTotalValueInPence', async () => {
+    convertToPence.mockReturnValue(getTotalValueInPence() + 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under successfulPaymentRequests when convertToPence returns a smaller value than getTotalValueInPence', async () => {
+    convertToPence.mockReturnValue(getTotalValueInPence() - 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should return mappedPaymentRequest under unsuccessfulPaymentRequests when convertToPence returns a smaller value than getTotalValueInPence', async () => {
+    convertToPence.mockReturnValue(getTotalValueInPence() - 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under successfulPaymentRequests when getTotalValueInPence returns a larger value than convertToPence', async () => {
+    getTotalValueInPence.mockReturnValue(convertToPence() + 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should return mappedPaymentRequest under unsuccessfulPaymentRequests when getTotalValueInPence returns a larger value than convertToPence', async () => {
+    getTotalValueInPence.mockReturnValue(convertToPence() + 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should not return mappedPaymentRequest under successfulPaymentRequests when getTotalValueInPence returns a smaller value than convertToPence', async () => {
+    getTotalValueInPence.mockReturnValue(convertToPence() - 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
+  })
+
+  test('should return mappedPaymentRequest under unsuccessfulPaymentRequests when getTotalValueInPence returns a smaller value than convertToPence', async () => {
+    getTotalValueInPence.mockReturnValue(convertToPence() - 50)
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    expect(result.unsuccessfulPaymentRequests).toContainEqual(mappedPaymentRequest)
   })
 })

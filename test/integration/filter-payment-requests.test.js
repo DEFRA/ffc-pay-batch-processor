@@ -1,65 +1,22 @@
-const { GBP } = require('../../app/currency')
-const { Q4 } = require('../../app/schedules')
-const { sfiPilot } = require('../../app/schemes')
-
 const filterPaymentRequest = require('../../app/processing/siti-agri/filter-payment-requests')
 
 describe('Filter payment requests', () => {
   let sourceSystem
 
-  let invoiceLines
-  let mappedInvoiceLines
-
   let paymentRequest
   let paymentRequests
 
   let mappedPaymentRequest
-  let mappedPaymentRequests
 
   let paymentRequestCollection
 
   beforeEach(() => {
-    sourceSystem = sfiPilot.sourceSystem
+    paymentRequest = JSON.parse(JSON.stringify(require('../mockPaymentRequest').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../mockPaymentRequest').paymentRequests))
 
-    mappedInvoiceLines = [{
-      schemeCode: 'SITIELM',
-      accountCode: 'ABC123',
-      fundCode: 'ABC12',
-      description: 'G00 - Gross value of claim',
-      value: 100
-    }]
+    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../mockPaymentRequest').mappedPaymentRequest))
 
-    invoiceLines = [{
-      ...mappedInvoiceLines[0],
-      marketingYear: 2022,
-      dueDate: '2022-11-02',
-      agreementNumber: 'SIP123456789012'
-    }]
-
-    paymentRequest = {
-      sourceSystem,
-      frn: 1234567890,
-      paymentRequestNumber: 1,
-      invoiceNumber: 'SITI1234567',
-      contractNumber: 'S1234567',
-      currency: GBP,
-      schedule: Q4,
-      value: 100,
-      deliveryBody: 'RP00',
-      invoiceLines
-    }
-
-    paymentRequests = [paymentRequest]
-
-    mappedPaymentRequest = {
-      ...paymentRequest,
-      invoiceLines: mappedInvoiceLines,
-      marketingYear: invoiceLines[0].marketingYear,
-      agreementNumber: invoiceLines[0].agreementNumber,
-      dueDate: invoiceLines[0].dueDate
-    }
-
-    mappedPaymentRequests = [mappedPaymentRequest]
+    sourceSystem = paymentRequest.sourceSystem
 
     paymentRequestCollection = { successfulPaymentRequests: [], unsuccessfulPaymentRequests: [] }
   })
@@ -71,6 +28,7 @@ describe('Filter payment requests', () => {
   test('should return mappedPaymentRequest as successfulPaymentRequests when valid payment request and sourceSystem are given', async () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
+    mappedPaymentRequest.correlationId = result.successfulPaymentRequests[0].correlationId
     paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
@@ -80,89 +38,140 @@ describe('Filter payment requests', () => {
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    paymentRequestCollection.unsuccessfulPaymentRequests.push({
+    mappedPaymentRequest = {
       ...mappedPaymentRequest,
-      sourceSystem
-    })
+      sourceSystem: undefined,
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
+    paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no invoiceNumber and sourceSystem are given', async () => {
     delete paymentRequest.invoiceNumber
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.invoiceNumber
+    mappedPaymentRequest.correlationId = result.unsuccessfulPaymentRequests[0].correlationId
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no contractNumber and sourceSystem are given', async () => {
     delete paymentRequest.contractNumber
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.contractNumber
+    mappedPaymentRequest.correlationId = result.unsuccessfulPaymentRequests[0].correlationId
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has no value and sourceSystem are given', async () => {
     delete paymentRequest.value
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.value
+    mappedPaymentRequest.correlationId = result.unsuccessfulPaymentRequests[0].correlationId
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid frn and sourceSystem are given', async () => {
     paymentRequest.frn = 1
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.frn = 1
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      frn: 1,
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid marketingYear and sourceSystem are given', async () => {
     paymentRequest.invoiceLines[0].marketingYear = 2014
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.marketingYear = 2014
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      marketingYear: 2014,
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid currency and sourceSystem are given', async () => {
     paymentRequest.currency = 'USD'
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.currency = 'USD'
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      currency: 'USD',
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid schedule and sourceSystem are given', async () => {
     paymentRequest.schedule = '4'
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.schedule = '4'
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      schedule: '4',
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
   test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid dueDate and sourceSystem are given', async () => {
     paymentRequest.invoiceLines[0].dueDate = '01/11/2022'
+    paymentRequests = [paymentRequest]
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    mappedPaymentRequest.dueDate = '01/11/2022'
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      dueDate: '01/11/2022',
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
+    paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
+    expect(result).toMatchObject(paymentRequestCollection)
+  })
+
+  test('should return mappedPaymentRequest as unsuccessfulPaymentRequests when payment request has an invalid empty invoiceLines and sourceSystem are given', async () => {
+    paymentRequest.invoiceLines = []
+    paymentRequests = [paymentRequest]
+
+    const result = filterPaymentRequest(paymentRequests, sourceSystem)
+
+    mappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId,
+      invoiceLines: [],
+      agreementNumber: undefined,
+      dueDate: undefined,
+      marketingYear: undefined
+    }
     paymentRequestCollection.unsuccessfulPaymentRequests.push(mappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
@@ -172,8 +181,15 @@ describe('Filter payment requests', () => {
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
-    mappedPaymentRequests.map(x => paymentRequestCollection.successfulPaymentRequests.push(x))
+    const firstMappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result.successfulPaymentRequests[0].correlationId
+    }
+    const secondMappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result.successfulPaymentRequests[1].correlationId
+    }
+    paymentRequestCollection.successfulPaymentRequests.push(firstMappedPaymentRequest, secondMappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
@@ -184,8 +200,15 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
     delete mappedPaymentRequest.paymentRequestNumber
-    mappedPaymentRequests = [mappedPaymentRequest, mappedPaymentRequest]
-    mappedPaymentRequests.map(x => paymentRequestCollection.unsuccessfulPaymentRequests.push(x))
+    const firstMappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result.unsuccessfulPaymentRequests[0].correlationId
+    }
+    const secondMappedPaymentRequest = {
+      ...mappedPaymentRequest,
+      correlationId: result.unsuccessfulPaymentRequests[1].correlationId
+    }
+    paymentRequestCollection.unsuccessfulPaymentRequests.push(firstMappedPaymentRequest, secondMappedPaymentRequest)
     expect(result).toMatchObject(paymentRequestCollection)
   })
 
@@ -196,9 +219,11 @@ describe('Filter payment requests', () => {
 
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
 
+    mappedPaymentRequest.correlationId = result.successfulPaymentRequests[0].correlationId
+
     const invalidMappedPaymentRequest = JSON.parse(JSON.stringify(mappedPaymentRequest))
     delete invalidMappedPaymentRequest.paymentRequestNumber
-    mappedPaymentRequests = [mappedPaymentRequest, invalidMappedPaymentRequest]
+    invalidMappedPaymentRequest.correlationId = result.unsuccessfulPaymentRequests[0].correlationId
 
     paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
     paymentRequestCollection.unsuccessfulPaymentRequests.push(invalidMappedPaymentRequest)
@@ -215,10 +240,12 @@ describe('Filter payment requests', () => {
 
     const invalidMappedPaymentRequest = JSON.parse(JSON.stringify(mappedPaymentRequest))
     delete invalidMappedPaymentRequest.paymentRequestNumber
-    mappedPaymentRequests = [invalidMappedPaymentRequest, mappedPaymentRequest]
+    invalidMappedPaymentRequest.correlationId = result.unsuccessfulPaymentRequests[0].correlationId
 
-    paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
+    mappedPaymentRequest.correlationId = result.successfulPaymentRequests[0].correlationId
+
     paymentRequestCollection.unsuccessfulPaymentRequests.push(invalidMappedPaymentRequest)
+    paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)
 
     expect(result).toMatchObject(paymentRequestCollection)
   })
