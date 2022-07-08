@@ -3,16 +3,16 @@ const { sendBatchProcessedEvents, sendPaymentRequestInvalidEvents } = require('.
 const { sendPaymentBatchMessage } = require('../messaging')
 
 const parsePaymentFile = async (filename, fileBuffer, scheme, sequence) => {
-  let paymentRequestsCollection, batchExportDate
-
   try {
-    const parsedPaymentFile = await getPaymentRequestsFromFile(fileBuffer, scheme)
-    paymentRequestsCollection = parsedPaymentFile.paymentRequestsCollection
-    batchExportDate = parsedPaymentFile.batchExportDate
+    const { paymentRequestsCollection, batchExportDate } = await getPaymentRequestsFromFile(fileBuffer, scheme)
+    await sendParsedPaymentRequests(paymentRequestsCollection, filename, sequence, batchExportDate)
+    return true
   } catch {
     return false
   }
+}
 
+const sendParsedPaymentRequests = async (paymentRequestsCollection, filename, sequence, batchExportDate) => {
   try {
     await sendBatchProcessedEvents(paymentRequestsCollection.successfulPaymentRequests, filename, sequence, batchExportDate)
     await sendPaymentBatchMessage(paymentRequestsCollection.successfulPaymentRequests)
