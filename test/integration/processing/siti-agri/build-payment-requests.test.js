@@ -1,4 +1,4 @@
-const buildPaymentRequests = require('../../app/processing/siti-agri/build-payment-requests')
+const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
 
 describe('Build mappedPaymentRequests', () => {
   let sourceSystem
@@ -13,13 +13,13 @@ describe('Build mappedPaymentRequests', () => {
   let mappedPaymentRequests
 
   beforeEach(() => {
-    paymentRequest = JSON.parse(JSON.stringify(require('../mockPaymentRequest').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../mockPaymentRequest').paymentRequests))
-    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../mockPaymentRequest').mappedPaymentRequest))
-    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../mockPaymentRequest').mappedPaymentRequests))
+    paymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequests))
+    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequest))
+    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequests))
 
-    invoiceLines = JSON.parse(JSON.stringify(require('../mockInvoiceLines').invoiceLines))
-    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../mockInvoiceLines').mappedInvoiceLines))
+    invoiceLines = JSON.parse(JSON.stringify(require('../../../mockInvoiceLines').invoiceLines))
+    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../../../mockInvoiceLines').mappedInvoiceLines))
 
     sourceSystem = paymentRequest.sourceSystem
   })

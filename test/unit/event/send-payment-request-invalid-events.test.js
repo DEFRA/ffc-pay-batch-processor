@@ -1,8 +1,8 @@
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
-jest.mock('../../../app/event/raise-event-batch')
-const raiseEventBatch = require('../../../app/event/raise-event-batch')
+jest.mock('../../../app/event/send-payment-request-invalid-event')
+const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-request-invalid-event')
 
 const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
 
@@ -31,117 +31,148 @@ describe('Sending events for unprocessable payment requests', () => {
     jest.resetAllMocks()
   })
 
-  test('should call uuidv4 when paymentRequests are received', async () => {
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(uuidv4).toHaveBeenCalled()
-  })
+  // test('should call uuidv4 when paymentRequests are received', async () => {
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   expect(uuidv4).toHaveBeenCalled()
+  // })
 
-  test('should call uuidv4 once when paymentRequests are received', async () => {
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(uuidv4).toHaveBeenCalledTimes(1)
-  })
+  // test('should call uuidv4 once when paymentRequests are received', async () => {
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   expect(uuidv4).toHaveBeenCalledTimes(1)
+  // })
 
-  test('should not call uuidv4 when an empty array is received', async () => {
-    await sendPaymentRequestInvalidEvents([])
-    expect(uuidv4).not.toHaveBeenCalled()
-  })
+  // test('should not call uuidv4 when an empty array is received', async () => {
+  //   await sendPaymentRequestInvalidEvents([])
+  //   expect(uuidv4).not.toHaveBeenCalled()
+  // })
 
-  test('should not call uuidv4 when an empty string is received', async () => {
-    await sendPaymentRequestInvalidEvents('')
-    expect(uuidv4).not.toHaveBeenCalled()
-  })
+  // test('should not call uuidv4 when an empty string is received', async () => {
+  //   await sendPaymentRequestInvalidEvents('')
+  //   expect(uuidv4).not.toHaveBeenCalled()
+  // })
 
-  test('should not call uuidv4 when an object is received', async () => {
-    await sendPaymentRequestInvalidEvents({})
-    expect(uuidv4).not.toHaveBeenCalled()
-  })
+  // test('should not call uuidv4 when an object is received', async () => {
+  //   await sendPaymentRequestInvalidEvents({})
+  //   expect(uuidv4).not.toHaveBeenCalled()
+  // })
 
-  test('should not call uuidv4 when undefined is received', async () => {
-    await sendPaymentRequestInvalidEvents(undefined)
-    expect(uuidv4).not.toHaveBeenCalled()
-  })
+  // test('should not call uuidv4 when undefined is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(undefined)
+  //   expect(uuidv4).not.toHaveBeenCalled()
+  // })
 
-  test('should not call uuidv4 when null is received', async () => {
-    await sendPaymentRequestInvalidEvents(null)
-    expect(uuidv4).not.toHaveBeenCalled()
-  })
+  // test('should not call uuidv4 when null is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(null)
+  //   expect(uuidv4).not.toHaveBeenCalled()
+  // })
 
-  test('should call raiseEventBatch when paymentRequests has 1 payment request is received', async () => {
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(raiseEventBatch).toHaveBeenCalled()
-  })
+  // test('should call sendPaymentRequestInvalidEvent when paymentRequests has 1 payment request is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenCalled()
+  // })
 
-  test('should call raiseEventBatch once when paymentRequests has 1 payment request is received', async () => {
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(raiseEventBatch).toHaveBeenCalledTimes(1)
-  })
+  // test('should call sendPaymentRequestInvalidEvent once when paymentRequests has 1 payment request is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenCalledTimes(1)
+  // })
 
-  test('should call raiseEventBatch with events and "error" when paymentRequests has 1 payment request is received', async () => {
-    await sendPaymentRequestInvalidEvents(paymentRequests)
+  // test('should call sendPaymentRequestInvalidEvent with event when paymentRequests has 1 payment request is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
 
-    event = {
-      ...event,
-      id: uuidv4(),
-      data: { paymentRequest }
+  //   event = {
+  //     ...event,
+  //     id: uuidv4(),
+  //     data: { paymentRequest }
+  //   }
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenCalledWith(event)
+  // })
+
+  // test('should call sendPaymentRequestInvalidEvent when paymentRequests with 2 payment requests are received', async () => {
+  //   paymentRequests.push(paymentRequest)
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenCalled()
+  // })
+
+  // test('should call sendPaymentRequestInvalidEvent twice when paymentRequests with 2 payment requests are received', async () => {
+  //   paymentRequests.push(paymentRequest)
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenCalledTimes(2)
+  // })
+
+  // test('should call sendPaymentRequestInvalidEvent with each event including each payment request in data when paymentRequests with 2 payment requests are received', async () => {
+  //   paymentRequests.push(paymentRequest)
+
+  //   await sendPaymentRequestInvalidEvents(paymentRequests)
+
+  //   event = {
+  //     ...event,
+  //     id: uuidv4()
+  //   }
+  //   events = [{
+  //     ...event,
+  //     data: { paymentRequest: paymentRequests[0] }
+  //   },
+  //   {
+  //     ...event,
+  //     data: { paymentRequest: paymentRequests[1] }
+  //   }]
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenNthCalledWith(1, events[0])
+  //   expect(sendPaymentRequestInvalidEvent).toHaveBeenNthCalledWith(2, events[1])
+  // })
+
+  // test('should not call sendPaymentRequestInvalidEvent when an empty array is received', async () => {
+  //   await sendPaymentRequestInvalidEvents([])
+  //   expect(sendPaymentRequestInvalidEvent).not.toHaveBeenCalled()
+  // })
+
+  // test('should not call sendPaymentRequestInvalidEvent when an empty string is received', async () => {
+  //   await sendPaymentRequestInvalidEvents('')
+  //   expect(sendPaymentRequestInvalidEvent).not.toHaveBeenCalled()
+  // })
+
+  // test('should not call sendPaymentRequestInvalidEvent when an object is received', async () => {
+  //   await sendPaymentRequestInvalidEvents({})
+  //   expect(sendPaymentRequestInvalidEvent).not.toHaveBeenCalled()
+  // })
+
+  // test('should not call sendPaymentRequestInvalidEvent when undefined is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(undefined)
+  //   expect(sendPaymentRequestInvalidEvent).not.toHaveBeenCalled()
+  // })
+
+  // test('should not call sendPaymentRequestInvalidEvent when null is received', async () => {
+  //   await sendPaymentRequestInvalidEvents(null)
+  //   expect(sendPaymentRequestInvalidEvent).not.toHaveBeenCalled()
+  // })
+
+  // test('should uuidv4 errors out', async () => {
+  //   uuidv4.mockImplementation(() => new Error('fefeka '))
+  //   const r = await sendPaymentRequestInvalidEvents([undefined])
+  //   console.error(r)
+  //   expect(r).toBe('ds')
+  // })
+
+  // test('should call sendPaymentRequestInvalidEvent when sendPaymentRequestInvalidEvent errors out', async () => {
+  //   sendPaymentRequestInvalidEvent.mockRejectedValue(new Error('Ccsdfsdr '))
+  //   const wrapper = async () => {
+  //     await sendPaymentRequestInvalidEvents(paymentRequests)
+  //   }
+
+  //   await expect(wrapper).rejects.toThrow()
+  // })
+
+  test('should call sendPaymentRequestInvalidEvent when sendPaymentRequestInvalidEvent errors out', async () => {
+    paymentRequests.push(undefined)
+    sendPaymentRequestInvalidEvent.mockRejectedValue(new Error('Ccsdfsdr '))
+    const wrapper = async () => {
+      await sendPaymentRequestInvalidEvents(paymentRequests)
     }
-    events = [event]
-    expect(raiseEventBatch).toHaveBeenCalledWith(events, 'error')
-  })
 
-  test('should call raiseEventBatch when paymentRequests with 2 payment requests are received', async () => {
-    paymentRequests.push(paymentRequest)
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(raiseEventBatch).toHaveBeenCalled()
-  })
+    const r = await wrapper()
 
-  test('should call raiseEventBatch once when paymentRequests with 2 payment requests are received', async () => {
-    paymentRequests.push(paymentRequest)
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(raiseEventBatch).toHaveBeenCalledTimes(1)
-  })
+    console.log('whats this', r)
+    expect(r).toBe('ds')
 
-  test('should call raiseEventBatch with event including each payment request in data and "error" when paymentRequests with 2 payment requests are received', async () => {
-    paymentRequests.push(paymentRequest)
-
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-
-    event = {
-      ...event,
-      id: uuidv4()
-    }
-    events = [{
-      ...event,
-      data: { paymentRequest: paymentRequests[0] }
-    },
-    {
-      ...event,
-      data: { paymentRequest: paymentRequests[1] }
-    }]
-    expect(raiseEventBatch).toHaveBeenCalledWith(events, 'error')
-  })
-
-  test('should not call raiseEventBatch when an empty array is received', async () => {
-    await sendPaymentRequestInvalidEvents([])
-    expect(raiseEventBatch).not.toHaveBeenCalled()
-  })
-
-  test('should not call raiseEventBatch when an empty string is received', async () => {
-    await sendPaymentRequestInvalidEvents('')
-    expect(raiseEventBatch).not.toHaveBeenCalled()
-  })
-
-  test('should not call raiseEventBatch when an object is received', async () => {
-    await sendPaymentRequestInvalidEvents({})
-    expect(raiseEventBatch).not.toHaveBeenCalled()
-  })
-
-  test('should not call raiseEventBatch when undefined is received', async () => {
-    await sendPaymentRequestInvalidEvents(undefined)
-    expect(raiseEventBatch).not.toHaveBeenCalled()
-  })
-
-  test('should not call raiseEventBatch when null is received', async () => {
-    await sendPaymentRequestInvalidEvents(null)
-    expect(raiseEventBatch).not.toHaveBeenCalled()
+    await expect(wrapper).rejects.toThrow()
   })
 })
