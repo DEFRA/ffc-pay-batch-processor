@@ -6,25 +6,25 @@ const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-
 
 const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
 
-let paymentRequest
+// let paymentRequest
 let paymentRequests
-let event
-let events
+// let event
+// let events
 
 describe('Sending events for unprocessable payment requests', () => {
   beforeEach(async () => {
     uuidv4.mockReturnValue(require('../../mockCorrelationId'))
 
-    paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
+    // paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
     paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
 
-    event = {
-      name: 'batch-processing-payment-request-invalid',
-      type: 'error',
-      message: 'Payment request could not be processed'
-    }
+    // event = {
+    //   name: 'batch-processing-payment-request-invalid',
+    //   type: 'error',
+    //   message: 'Payment request could not be processed'
+    // }
 
-    events = [event]
+    // events = [event]
   })
 
   afterEach(async () => {
@@ -163,16 +163,23 @@ describe('Sending events for unprocessable payment requests', () => {
 
   test('should call sendPaymentRequestInvalidEvent when sendPaymentRequestInvalidEvent errors out', async () => {
     paymentRequests.push(undefined)
-    sendPaymentRequestInvalidEvent.mockRejectedValue(new Error('Ccsdfsdr '))
+    paymentRequests.push(paymentRequests[0])
+    sendPaymentRequestInvalidEvent
+      .mockResolvedValueOnce('first call')
+      .mockRejectedValueOnce(new Error('Async error message'))
     const wrapper = async () => {
       await sendPaymentRequestInvalidEvents(paymentRequests)
     }
 
     const r = await wrapper()
 
-    console.log('whats this', r)
-    expect(r).toBe('ds')
-
     await expect(wrapper).rejects.toThrow()
+
+    // console.log('len', sendPaymentRequestInvalidEvent.mock.calls.length)
+
+    // console.log('whats this', r)
+    // expect(r).toBe('ds')
+
+    // await expect(wrapper).rejects.toThrow()
   })
 })

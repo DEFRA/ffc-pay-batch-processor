@@ -14,15 +14,15 @@ const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
           data: { paymentRequest: paymentRequest.a }
         })
       } catch {
-        throw (new Error('Could not generate batch-processing-payment-request-invalid event for ', paymentRequest))
+        console.error('Could not generate batch-processing-payment-request-invalid event for', paymentRequest)
       }
     }
-
-    console.log(events.length)
 
     for (const x of events) {
       await sendPaymentRequestInvalidEvent(x)
     }
+
+    console.log('done')
   }
 }
 
