@@ -172,10 +172,13 @@ describe('Sending events for unprocessable payment requests', () => {
   })
 
   test('should not reject when sendPaymentRequestInvalidEvent rejects', async () => {
-    sendPaymentRequestInvalidEvent.mockRejectedValue(new Error('Mocking sendPaymentRequestInvalidEvent error'))
+    // await sendPaymentRequestInvalidEvent.mockRejectedValue(new Error('Mocking sendPaymentRequestInvalidEvent error'))
+    await sendPaymentRequestInvalidEvent.mockRejectedValue('fdsfs')
+
     const wrapper = async () => {
       await sendPaymentRequestInvalidEvents(paymentRequests)
     }
+
     expect(wrapper).not.toThrow()
   })
 })

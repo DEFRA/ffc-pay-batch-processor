@@ -117,10 +117,12 @@ describe('Sending event for unprocessable payment request', () => {
   })
 
   test('should not reject when raiseEvent rejects', async () => {
-    raiseEvent.mockRejectedValue(new Error('Mocking raiseEvent error'))
+    await raiseEvent.mockRejectedValue(new Error('Mocking raiseEvent error'))
+
     const wrapper = async () => {
       await sendPaymentRequestInvalidEvent(event)
     }
+
     expect(wrapper).not.toThrow()
   })
 })
