@@ -23,10 +23,10 @@ const validatePaymentRequest = (paymentRequest) => {
 
   const invoiceLinesValid = paymentRequest.invoiceLines.map(x => isInvoiceLineValid(x))
   const invoiceLinesError = invoiceLinesValid.map(x => x.result === false ? x.errorMessage : '').filter(x => x !== '').join(' ')
-  const invoiceLinesErrorObject = { result: invoiceLinesError === '', invoiceLinesError }
+  const invoiceLinesErrorObject = { result: invoiceLinesError === '', errorMessage: invoiceLinesError }
 
   const validationArray = [paymentRequestValid, lineTotalsValid, invoiceLinesErrorObject]
-  validationArray.filter(x => x.result === false).forEach(x => addErrorMessage(x.paymentRequest, x.errorMessage))
+  validationArray.filter(x => x.result === false).forEach(x => addErrorMessage(paymentRequest, x.errorMessage))
 
   return paymentRequestValid.result && lineTotalsValid.result && invoiceLinesErrorObject.result
 }
@@ -35,7 +35,7 @@ const isPaymentRequestValid = (paymentRequest) => {
   const validationResult = paymentRequestSchema.validate(paymentRequest, { abortEarly: false })
   if (validationResult.error) {
     console.error(`Payment request is invalid. ${validationResult.error.message} `)
-    return { result: false, errorMessage: `${validationResult.error.message}. `, paymentRequest }
+    return { result: false, errorMessage: `${validationResult.error.message}. ` }
   }
   return { result: true }
 }
@@ -45,7 +45,7 @@ const validateLineTotals = (paymentRequest) => {
   if (!validationResult) {
     const errorMessage = 'Payment request total value does not match invoice line total value. '
     console.error(`Payment request is invalid. ${errorMessage}`)
-    return { result: false, errorMessage, paymentRequest }
+    return { result: false, errorMessage }
   }
   return { result: true }
 }
