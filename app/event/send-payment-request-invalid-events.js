@@ -8,7 +8,7 @@ const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
         id: uuidv4(),
         name: 'batch-processing-payment-request-invalid',
         type: 'error',
-        message: 'Payment request could not be processed',
+        message: `Payment request could not be processed. Error(s): ${paymentRequest.errorMessage}`,
         data: { paymentRequest }
       }))
 

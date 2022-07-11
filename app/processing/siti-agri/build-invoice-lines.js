@@ -18,10 +18,11 @@ const buildInvoiceLines = (invoiceLines) => {
 const isInvoiceLineValid = (invoiceLine) => {
   const validationResult = invoiceLineSchema.validate(invoiceLine, { abortEarly: false })
   if (validationResult.error) {
-    console.error(`Invoice line is invalid. ${validationResult.error.message}`)
-    return false
+    const errorMessage = `Invoice line is invalid. ${validationResult.error.message}`
+    console.error(errorMessage)
+    return { result: false, errorMessage }
   }
-  return true
+  return { result: true }
 }
 
 module.exports = {
