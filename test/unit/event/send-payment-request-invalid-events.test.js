@@ -170,4 +170,12 @@ describe('Sending events for unprocessable payment requests', () => {
     await sendPaymentRequestInvalidEvents(null)
     expect(sendPaymentRequestInvalidEvent).not.toHaveBeenCalled()
   })
+
+  test('should not reject when sendPaymentRequestInvalidEvent rejects', async () => {
+    sendPaymentRequestInvalidEvent.mockRejectedValue(new Error('Mocking sendPaymentRequestInvalidEvent error'))
+    const wrapper = async () => {
+      await sendPaymentRequestInvalidEvents(paymentRequests)
+    }
+    expect(wrapper).not.toThrow()
+  })
 })
