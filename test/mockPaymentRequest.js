@@ -28,11 +28,17 @@ const mappedPaymentRequest = {
   correlationId
 }
 
+const unsuccessfulMappedPaymentRequest = {
+  ...mappedPaymentRequest,
+  errorMessage: 'Example error. '
+}
+
 const mappedPaymentRequests = [mappedPaymentRequest]
 
 module.exports = {
   paymentRequest,
   paymentRequests,
   mappedPaymentRequest,
+  unsuccessfulMappedPaymentRequest,
   mappedPaymentRequests
 }
