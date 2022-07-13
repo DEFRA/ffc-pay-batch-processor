@@ -34,8 +34,9 @@ const validatePaymentRequest = (paymentRequest) => {
 const isPaymentRequestValid = (paymentRequest) => {
   const validationResult = paymentRequestSchema.validate(paymentRequest, { abortEarly: false })
   if (validationResult.error) {
-    console.error(`Payment request is invalid. ${validationResult.error.message} `)
-    return { result: false, errorMessage: `${validationResult.error.message}. ` }
+    const errorMessage = `Payment request is invalid, ${validationResult.error.message} `
+    console.error(errorMessage)
+    return { result: false, errorMessage }
   }
   return { result: true }
 }
@@ -43,8 +44,8 @@ const isPaymentRequestValid = (paymentRequest) => {
 const validateLineTotals = (paymentRequest) => {
   const validationResult = convertToPence(paymentRequest.value) === getTotalValueInPence(paymentRequest.invoiceLines, 'value')
   if (!validationResult) {
-    const errorMessage = 'Payment request total value does not match invoice line total value. '
-    console.error(`Payment request is invalid. ${errorMessage}`)
+    const errorMessage = 'Payment request is invalid, invalid line total '
+    console.error(errorMessage)
     return { result: false, errorMessage }
   }
   return { result: true }

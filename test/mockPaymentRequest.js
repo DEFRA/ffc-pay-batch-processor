@@ -30,7 +30,7 @@ const mappedPaymentRequest = {
 
 const unsuccessfulMappedPaymentRequest = {
   ...mappedPaymentRequest,
-  errorMessage: 'Example error. '
+  errorMessage: 'Payment request is invalid, Example error '
 }
 
 const mappedPaymentRequests = [mappedPaymentRequest]

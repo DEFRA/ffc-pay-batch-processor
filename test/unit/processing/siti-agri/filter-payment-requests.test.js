@@ -349,7 +349,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should return unsucessfulMappedPaymentRequest under unsuccessfulPaymentRequests when isInvoiceLineValid returns false', async () => {
-    isInvoiceLineValid.mockReturnValue({ result: false, errorMessage: 'Example error. ' })
+    isInvoiceLineValid.mockReturnValue({ result: false, errorMessage: unsuccessfulMappedPaymentRequest.errorMessage })
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     expect(result.unsuccessfulPaymentRequests).toContainEqual(unsuccessfulMappedPaymentRequest)
   })
@@ -361,7 +361,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should return unsuccessfulMappedPaymentRequest under unsuccessfulPaymentRequests with correct errorMessage when convertToPence returns a larger value than getTotalValueInPence', async () => {
-    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request total value does not match invoice line total value. '
+    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request is invalid, invalid line total '
     convertToPence.mockReturnValue(getTotalValueInPence() + 50)
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     expect(result.unsuccessfulPaymentRequests).toContainEqual(unsuccessfulMappedPaymentRequest)
@@ -374,7 +374,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should return unsuccessfulMappedPaymentRequest with correct errorMessage under unsuccessfulPaymentRequests when convertToPence returns a smaller value than getTotalValueInPence', async () => {
-    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request total value does not match invoice line total value. '
+    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request is invalid, invalid line total '
     convertToPence.mockReturnValue(getTotalValueInPence() - 50)
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     expect(result.unsuccessfulPaymentRequests).toContainEqual(unsuccessfulMappedPaymentRequest)
@@ -387,7 +387,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should return unsuccessfulMappedPaymentRequest with correct errorMessage under unsuccessfulPaymentRequests when getTotalValueInPence returns a larger value than convertToPence', async () => {
-    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request total value does not match invoice line total value. '
+    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request is invalid, invalid line total '
     getTotalValueInPence.mockReturnValue(convertToPence() + 50)
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     expect(result.unsuccessfulPaymentRequests).toContainEqual(unsuccessfulMappedPaymentRequest)
@@ -400,7 +400,7 @@ describe('Filter payment requests', () => {
   })
 
   test('should return unsuccessfulMappedPaymentRequest with correct errorMessage under unsuccessfulPaymentRequests when getTotalValueInPence returns a smaller value than convertToPence', async () => {
-    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request total value does not match invoice line total value. '
+    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request is invalid, invalid line total '
     getTotalValueInPence.mockReturnValue(convertToPence() - 50)
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     expect(result.unsuccessfulPaymentRequests).toContainEqual(unsuccessfulMappedPaymentRequest)
