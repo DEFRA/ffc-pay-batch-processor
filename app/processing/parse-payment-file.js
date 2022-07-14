@@ -17,11 +17,10 @@ const sendParsedPaymentRequests = async (paymentRequestsCollection, filename, se
     await sendBatchProcessedEvents(paymentRequestsCollection.successfulPaymentRequests, filename, sequence, batchExportDate)
     await sendPaymentBatchMessage(paymentRequestsCollection.successfulPaymentRequests)
     await sendPaymentRequestInvalidEvents(paymentRequestsCollection.unsuccessfulPaymentRequests)
-    return true
   } catch (err) {
     console.error(`One or more payment requests could not be sent: ${err}`)
-    return true
   }
+  return true
 }
 
 module.exports = parsePaymentFile
