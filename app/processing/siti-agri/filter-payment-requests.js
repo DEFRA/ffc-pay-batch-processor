@@ -53,7 +53,6 @@ const validateLineTotals = (paymentRequest) => {
 
 const addErrorMessage = (paymentRequest, errorMessage) => {
   paymentRequest.errorMessage ? paymentRequest.errorMessage += errorMessage : paymentRequest.errorMessage = errorMessage
-  return paymentRequest
 }
 
 module.exports = filterPaymentRequest
