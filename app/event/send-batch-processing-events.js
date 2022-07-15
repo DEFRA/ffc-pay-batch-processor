@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-const raiseEventBatch = require('./raise-event-batch')
+const sendBatchProcessedEvent = require('./send-batch-processing-event')
 
 const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
   if (paymentRequests?.length) {
@@ -10,7 +10,7 @@ const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, bat
           id: uuidv4(),
           name: 'batch-processing',
           type: 'info',
-          message: 'Payment request created from batch file',
+          message: `Payment request could not be processed. Error(s): ${paymentRequest.errorMessage}`,
           data: {
             filename,
             sequence,
@@ -19,10 +19,13 @@ const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, bat
           }
         })
       } catch {
-        throw (new Error(`Payment request could not be processed: ${paymentRequest}`))
+        console.error('Could not generate batch-processing event for', paymentRequest)
       }
     }
-    await raiseEventBatch(events)
+
+    for (const x of events) {
+      await sendBatchProcessedEvent(x)
+    }
   }
 }
 
