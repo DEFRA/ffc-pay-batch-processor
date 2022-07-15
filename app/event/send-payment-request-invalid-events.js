@@ -1,3 +1,4 @@
+const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
 const sendPaymentRequestInvalidEvent = require('./send-payment-request-invalid-event')
 
@@ -6,6 +7,9 @@ const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
     const events = []
     for (const paymentRequest of paymentRequests) {
       try {
+        const isObject = Joi.object().required().validate(paymentRequest)
+        if (isObject.error) { throw (new Error()) }
+
         events.push({
           id: uuidv4(),
           name: 'batch-processing-payment-request-invalid',
