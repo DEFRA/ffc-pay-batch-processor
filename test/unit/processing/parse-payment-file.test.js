@@ -2,7 +2,7 @@ jest.mock('../../../app/event')
 const { sendBatchProcessedEvents, sendPaymentRequestInvalidEvents } = require('../../../app/event')
 
 jest.mock('../../../app/messaging')
-const { sendPaymentBatchMessage } = require('../../../app/messaging')
+const { sendPaymentBatchMessages } = require('../../../app/messaging')
 
 jest.mock('../../../app/processing/get-payment-requests-from-file')
 const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
@@ -148,55 +148,55 @@ describe('Parse and send events on success or failure', () => {
     expect(sendBatchProcessedEvents).toHaveBeenCalledWith([], filename, sequence, batchExportDate)
   })
 
-  test('should call sendPaymentBatchMessage when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call sendPaymentBatchMessages when valid filename, fileBuffer and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalled()
+    expect(sendPaymentBatchMessages).toHaveBeenCalled()
   })
 
-  test('should call sendPaymentBatchMessage once when getPaymentRequestsFromFile.paymentRequests returns 1 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages once when getPaymentRequestsFromFile.paymentRequests returns 1 successfulPaymentRequests', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalledTimes(1)
+    expect(sendPaymentBatchMessages).toHaveBeenCalledTimes(1)
   })
 
-  test('should call sendPaymentBatchMessage with paymentRequestsCollection.successfulPaymentRequests when valid filename, fileBuffer and sequence are received', async () => {
+  test('should call sendPaymentBatchMessages with paymentRequestsCollection.successfulPaymentRequests when valid filename, fileBuffer and sequence are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests)
+    expect(sendPaymentBatchMessages).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests)
   })
 
-  test('should call sendPaymentBatchMessage when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests.push(successfulPaymentRequest)
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalled()
+    expect(sendPaymentBatchMessages).toHaveBeenCalled()
   })
 
-  test('should call sendPaymentBatchMessage once when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages once when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests.push(successfulPaymentRequest)
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalledTimes(1)
+    expect(sendPaymentBatchMessages).toHaveBeenCalledTimes(1)
   })
 
-  test('should call sendPaymentBatchMessage with paymentRequestsCollection.successfulPaymentRequests when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages with paymentRequestsCollection.successfulPaymentRequests when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests.push(successfulPaymentRequest)
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests)
+    expect(sendPaymentBatchMessages).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests)
   })
 
-  test('should call sendPaymentBatchMessage when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests = []
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalled()
+    expect(sendPaymentBatchMessages).toHaveBeenCalled()
   })
 
-  test('should call sendPaymentBatchMessage once when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages once when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests = []
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalledTimes(1)
+    expect(sendPaymentBatchMessages).toHaveBeenCalledTimes(1)
   })
 
-  test('should call sendPaymentBatchMessage with an empty array when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
+  test('should call sendPaymentBatchMessages with an empty array when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests = []
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendPaymentBatchMessage).toHaveBeenCalledWith([])
+    expect(sendPaymentBatchMessages).toHaveBeenCalledWith([])
   })
 
   test('should call sendPaymentRequestInvalidEvents when valid filename, fileBuffer and sequence are received', async () => {
