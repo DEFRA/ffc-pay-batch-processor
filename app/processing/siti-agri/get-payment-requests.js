@@ -1,7 +1,7 @@
 const transformBatch = require('./transform-batch')
 const transformHeader = require('./transform-header')
 const transformInvoiceLine = require('./transform-invoice-line')
-const buildPaymentRequests = require('./build-payment-requests')
+const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
 
 const readSitiAgriFile = async (readBatchLines, scheme, input) => {
@@ -15,7 +15,7 @@ const readSitiAgriFile = async (readBatchLines, scheme, input) => {
 
     readBatchLines.on('close', () => {
       validateBatch(batch.batchHeaders, batch.paymentRequests)
-        ? resolve({ paymentRequests: buildPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
+        ? resolve({ paymentRequestsCollection: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()
