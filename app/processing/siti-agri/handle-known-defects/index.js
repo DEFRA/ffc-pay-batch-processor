@@ -1,4 +1,4 @@
-const correctInvalidDueDate = require('./correct-invalid-due-date')
+const correctInvalidDueDate = require('./correct-invalid-due-dates')
 const removeDefunctParticipationPayment = require('./remove-defunct-participation-fund')
 
 const handleKnownDefects = (paymentRequest) => {
