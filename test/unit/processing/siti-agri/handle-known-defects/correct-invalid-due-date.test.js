@@ -15,10 +15,10 @@ describe('Correct invalid due date', () => {
   test('does not correct due date if not on invalid list', () => {
     const paymentRequest = {
       sourceSystem: sfi.sourceSystem,
-      dueDate: '2022-10-05'
+      dueDate: '2022-10-01'
     }
     const updatedPaymentRequest = correctInvalidDueDate(paymentRequest)
-    expect(updatedPaymentRequest.dueDate).toBe('2022-10-05')
+    expect(updatedPaymentRequest.dueDate).toBe('2022-10-01')
   })
 
   test.each(invalidDueDates, 'does not correct invalid due date if not SFI', (invalidDueDate) => {
