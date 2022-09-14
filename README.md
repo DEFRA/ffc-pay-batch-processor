@@ -1,19 +1,28 @@
-# FFC Payment Batch Processor
+# FFC Pay Batch Processor
 
-FFC service to process Siti Agri batch files and send individual transactions as messages.
+## Description
 
-## Prerequisites
+FFC microservice acting as a Siti Agri adaptor to process batch files and send individual transactions as messages to an Azure Service Bus topic.
 
-- Access to an instance of an
-[Azure Service Bus](https://docs.microsoft.com/en-us/azure/service-bus-messaging/)(ASB).
-- Docker
-- Docker Compose
+For how the repo fits into the architecture and what components or dependencies it interacts with please refer to the following diagram: [ffc-pay.drawio](https://github.com/DEFRA/ffc-diagrams/blob/main/Payments/ffc-pay.drawio)
+
+# Prerequisites
+
+## Software required
+
+- Access to an instance of
+[Azure Service Bus](https://docs.microsoft.com/en-us/azure/service-bus-messaging/)
+- Access to an instance of [Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/)
+- [Docker](https://docs.docker.com)
+- [Docker Compose](https://docs.docker.com/compose/)
 
 Optional:
-- Kubernetes
-- Helm
+- [Kubernetes](https://kubernetes.io/docs/home/)
+- [Helm](https://helm.sh/docs/)
 
-## Azure Service Bus
+## Configuration
+
+### Azure Service Bus
 
 This service depends on a valid Azure Service Bus connection string for
 asynchronous communication.  The following environment variables need to be set
@@ -35,33 +44,9 @@ and
 | MESSAGE_QUEUE_USER     | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey` |
 | MESSAGE_QUEUE_SUFFIX | Developer initials |
 
-### Example output message
 
-```
-{
-  "sourceSystem": "SFIP",
-  "frn": 1234567890,
-  "marketingYear": 2022,
-  "paymentRequestNumber": 1,
-  "correlationId":"9e016c50-046b-4597-b79a-ebe4f0bf8505",
-  "invoiceNumber": "SFI12345678",
-  "agreementNumber": "SFI12345",
-  "contractNumber": "SFI12345",
-  "currency": "GBP",
-  "schedule": "Q4",
-  "dueDate": "09/11/2022",
-  "value": 1000.00,
-  "invoiceLines": [{
-    "schemeCode": "80001",
-    "accountCode": "SOS100",
-    "fundCode": "DRD10",
-    "description": "G00 - Gross value of claim",
-    "value": 1000.00
-  }]
-}
-```
 
-## Azure Storage
+### Azure Blob Storage
 
 This repository polls for files from Azure Blob Storage within a `batch` container.
 
@@ -71,9 +56,9 @@ The following directories are automatically created within this container:
 - `archive` - successfully processed files
 - `quarantine` - unsuccessfully processed files
 
-## Payment batch file specification
-### SFI Pilot
-#### Example file
+### Payment batch file specification
+#### SFI Pilot
+##### Example file
 Filename: `SITIELM0001_AP_20210812105404541.dat`
 ```
 B^2021-08-12^2^200^0001^SFIP^AP
@@ -154,6 +139,8 @@ A batch file comprises three different line types which exist on a one : many : 
 
 ##### Scheme codes
 
+###### SFI Pilot
+
 | Scheme | Code |
 | ---- | ---- |
 | Arable and Horticultural Land | 80001 |
@@ -166,19 +153,42 @@ A batch file comprises three different line types which exist on a one : many : 
 | Water body Buffering | 80008 |
 | Pilot Participation Payment | 80009 |
 
-## Running the application
+###### SFI
+
+| Name | Code |
+| ---- | ---- |
+ | Arable and horticultural soils: Introductory | 80101 |
+ | Arable and horticultural soils: Intermediate | 80102 |
+ | Improved grassland soils: Introductory | 80111 |
+ | Improved grassland soils: Intermediate | 80112 |
+ | Moorland: Introductory | 80121 |
+ | Moorland: Additional | 80190 |
+ | Common land: Additional | 80195 |
+
+ ###### Lump sums
+
+ | Name | Code |
+ | ---- | ---- |
+ | Lump sum exit scheme | 10570 |
+
+###### Vet Visits
+
+| Name | Code |
+ | ---- | ---- |
+ | Sheep | 18001 |
+ | Beef cattle | 18002 |
+ | Dairy cattle | 18003 |
+ | Pigs | 18004 |
+
+# Setup
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
-- A Helm chart is provided for production deployments to Kubernetes.
+- A Helm chart is provided for deployments to Kubernetes.
+
+## Configuration
 
 ### Build container image
-
-Container images are built using Docker Compose, with the same images used to run the service with either Docker Compose or Kubernetes.
-
-When using the Docker Compose files in development the local `app` folder will
-be mounted on top of the `app` folder within the Docker container, hiding the CSS files that were generated during the Docker build.  For the site to render correctly locally `npm run build` must be run on the host system.
-
 
 By default, the start script will build (or rebuild) images so there will
 rarely be a need to build images manually. However, this can be achieved
@@ -186,59 +196,81 @@ through the Docker Compose
 [build](https://docs.docker.com/compose/reference/build/) command:
 
 ```
-# Build container images
 docker-compose build
 ```
 
-### Start
+# How to start the Batch Processor
 
-Use Docker Compose to run service locally.
-
-The service uses [Liquibase](https://www.liquibase.org/) to manage database migrations. To ensure the appropriate migrations have been run the utility script `scripts/start` may be run to execute the migrations, then the application.
-
-Alternatively the steps can be run manually:
-* run migrations
-  * `docker-compose -f docker-compose.migrate.yaml run --rm database-up`
-* start
-  * `docker-compose up`
-* stop
-  * `docker-compose down` or CTRL-C
-
-Additional Docker Compose files are provided for scenarios such as linking to other running services.
-
-Link to other services:
+The service can be run using the convenience script:
 ```
-docker-compose -f docker-compose.yaml -f docker-compose.link.yaml up
+./scripts/start
 ```
 
-## Test structure
+# How to get an output
 
-The tests have been structured into subfolders of `./test` as per the
-[Microservice test approach and repository structure](https://eaflood.atlassian.net/wiki/spaces/FPS/pages/1845396477/Microservice+test+approach+and+repository+structure)
+There are several different possible outcomes depending on the input:
 
-### Running tests
+1. **Processing a valid payment file**  
+**Input:** A valid payment file.  
+**Output:** The transactions are logged, the payment file is moved from `inbound` to `archive`, and each valid [payment request](./docs/asyncapi.yaml) is sent to the Topic `PAYMENT_TOPIC_REQUEST`.  
 
-A convenience script is provided to run automated tests in a containerised
-environment. This will rebuild images before running tests via docker-compose,
-using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
-The command given to `docker-compose run` may be customised by passing
-arguments to the test script.
+2. **Processing a payment file with the wrong amount of requests**  
+**Input:** A payment file where the amount of payment requests does not match the batch header.  
+**Output:** An error message is logged and the payment file is moved from `inbound` to `quarantine`.  
 
-Examples:
+3. **Processing a payment file with an invalid batch header**  
+**Input:** A payment file with an invalid batch header (e.g. wrong date format)  
+**Output:** An error message is logged and the payment file is moved from `inbound` to `quarantine`.  
 
+4. **Processing a payment file with an invalid invoice line total**  
+**Input:** A payment file where the batch header value matches the payment line values but one or more payment line does not match the corresponding invoice line total.  
+**Output:** The valid payment requests are logged and error messages are logged for each invalid request, the payment file is moved from `inbound` to `archive`, each valid [payment request](./docs/asyncapi.yaml) is sent to Topic `PAYMENT_TOPIC_ADDRESS`, and an invalid event is sent to `EVENT_TOPIC_ADDRESS` for each invalid payment request.  
+
+5. **Processing a payment file with an unexpected sequence number**  
+**Input:** A payment file where the batch header sequence number is different from the expected value.  
+**Output:** If the sequence number is lower than the expected value the payment file is ignored. If the sequence number is higher than the expected value the payment file is quarantined. A message is logged stating that the payment file has been ignored or quarentined accordingly.  
+
+# How to stop the Batch Processor
+
+This serivice can be stopped in different ways:
+- [Bring the service down](#bring-the-service-down)
+- [Bring the service down and clear its data](#bring-the-service-down-and-clear-its-data)
+
+### Bring the service down  
+`docker-compose down`  
+
+### Bring the service down and clear its data  
+`docker-compose down -v`  
+
+# How to test the Batch Processor
+
+## Running tests
+
+Tests can be run in several modes:
+- [Run tests and exit](#run-tests-and-exit)
+- [Run tests with file watch](#run-tests-with-file-watch)
+- [Run tests with debug](#run-tests-with-debug)
+
+### Run tests and exit
 ```
-# Run all tests
 scripts/test
+```
 
-# Run tests with file watch
+### Run tests with file watch
+```
 scripts/test -w
+```
+
+### Run tests with debug
+```
+scripts/test -d
 ```
 
 ## CI pipeline
 
 This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
 
-## Licence
+# Licence
 
 THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:
 
