@@ -1,9 +1,9 @@
-const handleKnownDefects = require('../../../../app/processing/siti-agri/handle-known-defects')
-const { sfiPilot } = require('../../../../app/schemes')
+const removeDefunctParticipationFund = require('../../../../../app/processing/siti-agri/handle-known-defects/remove-defunct-participation-fund')
+const { sfiPilot } = require('../../../../../app/schemes')
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 
-describe('Handle known defects', () => {
+describe('Remove defunct participation fund', () => {
   test('removes defunct participation fund if no other gross values', () => {
     const paymentRequest = {
       sourceSystem: sfiPilot.sourceSystem,
@@ -18,7 +18,7 @@ describe('Handle known defects', () => {
         value: 0
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(0)
     updatedPaymentRequest.invoiceLines.forEach(invoiceLine => {
       expect(invoiceLine.value).toBe(0)
@@ -35,7 +35,7 @@ describe('Handle known defects', () => {
         value: 5000
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(0)
     updatedPaymentRequest.invoiceLines.forEach(invoiceLine => {
       expect(invoiceLine.value).toBe(0)
@@ -56,7 +56,7 @@ describe('Handle known defects', () => {
         value: 1000
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(6000)
   })
 
@@ -78,7 +78,7 @@ describe('Handle known defects', () => {
         value: -1000
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[1].value).toBe(1000)
@@ -111,7 +111,7 @@ describe('Handle known defects', () => {
         value: -2000
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[1].value).toBe(1000)
@@ -142,7 +142,7 @@ describe('Handle known defects', () => {
         value: -500
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[1].value).toBe(1000)
@@ -172,7 +172,7 @@ describe('Handle known defects', () => {
         value: -0.20
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
     expect(updatedPaymentRequest.invoiceLines[1].value).toBe(0.30)
@@ -194,7 +194,7 @@ describe('Handle known defects', () => {
         value: 0
       }]
     }
-    const updatedPaymentRequest = handleKnownDefects(paymentRequest)
+    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
     expect(updatedPaymentRequest.value).toBe(paymentRequest.value)
     expect(updatedPaymentRequest.invoiceLines[0].value).toBe(5000)
     expect(updatedPaymentRequest.invoiceLines[1].value).toBe(0)
