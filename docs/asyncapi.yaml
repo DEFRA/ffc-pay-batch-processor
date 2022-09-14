@@ -7,6 +7,10 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/PaymentRequest'
+  error/event:
+    publish:
+      message:
+        $ref: '#/components/messages/ErrorEvent'
 
 components:
   messages:
@@ -69,3 +73,5 @@ components:
                 value:
                   type: string
                   description: Decimal value of invoice line
+    ErrorEvent:
+          contentType: application/json
