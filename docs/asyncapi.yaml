@@ -13,12 +13,71 @@ components:
     PaymentRequest:
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/PaymentRequest'
+        oneOf:
+        - $ref: '#/components/schemas/PaymentRequestSitiAgri'
+        - $ref: '#/components/schemas/PaymentRequestAHWR'
   schemas:
-    PaymentRequest:
+    PaymentRequestAHWR:
       type: object
       required:
       - agreementNumber
+      - frn
+      - invoiceLines
+      - invoiceNumber
+      - marketingYear
+      - paymentRequestNumber
+      - sbi
+      - sourceSystem
+      - value
+      properties:
+        agreementNumber:
+          $ref: '#/components/schemas/AgreementNumber'
+        contractNumber:
+          $ref: '#/components/schemas/ContractNumber'
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        dueDate:
+          $ref: '#/components/schemas/DueDate'
+        frn:
+          $ref: '#/components/schemas/FRN'
+        invoiceLines:
+          type: array
+          description: List of Invoice lines that make up request
+          items:
+            type: object
+            required:
+            - schemeCode
+            - accountCode
+            - description
+            - value
+            properties:
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
+              accountCode:
+                $ref: '#/components/schemas/AccountCode'
+              description:
+                $ref: '#/components/schemas/Description'
+              value:
+                $ref: '#/components/schemas/ValueDecimal'
+        invoiceNumber:
+          $ref: '#/components/schemas/InvoiceNumber'
+        marketingYear:
+              $ref: '#/components/schemas/MarketingYear'
+        paymentRequestNumber:
+          $ref: '#/components/schemas/PaymentRequestNumber'
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        value:
+          $ref: '#/components/schemas/ValueDecimal'
+    PaymentRequestSitiAgri:
+      type: object
+      required:
+      - agreementNumber
+      - frn
       - invoiceLines
       - invoiceNumber
       - marketingYear
@@ -97,6 +156,9 @@ components:
       default: GBP
     Description:
       type: string
+      pattern: ^\w$
+      minLength: 3
+      maxLength: 99
       description: Description of what line relates to, eg gross or penalty
       example: G00 - Gross value of claim
     FRN:
