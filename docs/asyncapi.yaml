@@ -51,7 +51,7 @@ components:
             sequence:
               $ref: '#/components/schemas/Sequence'
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: '#/components/schemas/CorrelationId'
         message:
           $ref: '#/components/schemas/Message'
         name:
@@ -74,7 +74,7 @@ components:
             filename:
               $ref: '#/components/schemas/Filename'
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: '#/components/schemas/CorrelationId'
         message:
           $ref: '#/components/schemas/Message'
         name:
@@ -97,7 +97,7 @@ components:
             paymentRequest:
               $ref: '#/components/schemas/PaymentRequestSitiAgri'
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: '#/components/schemas/CorrelationId'
         message:
           $ref: '#/components/schemas/Message'
         name:
@@ -120,7 +120,7 @@ components:
             filename:
               $ref: '#/components/schemas/Filename'
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: '#/components/schemas/CorrelationId'
         message:
           $ref: '#/components/schemas/Message'
         name:
@@ -298,11 +298,6 @@ components:
       type: string
       description: Unique identifier for payment request
       example: SFIP0000001
-    Id:
-      type: string
-      format: uuid
-      description: GUID for event correlation
-      example: ce6ec916-bebe-4bc0-bad1-255298c82845
     MarketingYear:
       type: number
       description: Scheme year for request
