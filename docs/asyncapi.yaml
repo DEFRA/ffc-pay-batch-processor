@@ -33,31 +33,49 @@ components:
       type: object
       description: Info event raised when a payment request is created from a batch file
       required:
-        - id
-        - message
         - name
-        - type_
+        - properties_
       properties:
-        data:
-          type: object
-          description: Further information for the event
-          properties:
-            batchExportDate:
-              $ref: '#/components/schemas/BatchExportDate'
-            filename:
-              $ref: '#/components/schemas/Filename'
-            paymentRequest:
-              $ref: '#/components/schemas/PaymentRequestSitiAgri'
-            sequence:
-              $ref: '#/components/schemas/Sequence'
-        id:
-          $ref: '#/components/schemas/CorrelationId'
-        message:
-          $ref: '#/components/schemas/Message'
         name:
           $ref: '#/components/schemas/Name'
-        type_:
-          $ref: '#/components/schemas/Type'
+        properties_:
+          type: object
+          description: Event properties
+          properties:
+            checkpoint:
+              $ref: '#/components/schemas/Checkpoint'
+            id:
+              $ref: '#/components/schemas/CorrelationId'
+            status:
+              $ref: '#/components/schemas/Status'
+            action:
+              type: object
+              description: Event properties
+              properties:
+                message:
+                  $ref: '#/components/schemas/Message'
+                type_:
+                 $ref: '#/components/schemas/Type'
+                data:
+                  type: object
+                  description: Further information for the event
+                  properties:
+                    batchExportDate:
+                      $ref: '#/components/schemas/BatchExportDate'
+                    filename:
+                      $ref: '#/components/schemas/Filename'
+                    sequence:
+                      $ref: '#/components/schemas/Sequence'
+                    paymentRequest:
+                      $ref: '#/components/schemas/PaymentRequestSitiAgri'
+          batchExportDate:
+              $ref: '#/components/schemas/BatchExportDate'
+          filename:
+            $ref: '#/components/schemas/Filename'
+          paymentRequest:
+            $ref: '#/components/schemas/PaymentRequestSitiAgri'
+          sequence:
+            $ref: '#/components/schemas/Sequence'
     BatchProcessedErrorEvent:
       type: object
       description: Error event raised when a payment request cannot be created from a batch file
@@ -254,6 +272,13 @@ components:
       format: DD-MM-YYYY
       description: Date SITI Agri exported payment file
       example: "2022-12-01"
+    Checkpoint:
+      type: string
+      description: Service whcih raised the event, differs per environment
+      enum:
+        - ffc-pay-batch-processor-local
+        - ffc-pay-batch-processor
+      example: ffc-pay-batch-processor-local
     ContractNumber:
       type: string
       description: Contract reference number of agreement
@@ -354,6 +379,13 @@ components:
       type: string
       description: System identifier request originates from
       example: SFIP
+    Status:
+      type: string
+      description: Event status
+      enum:
+        - error
+        - success
+      example: success
     Type:
       type: string
       description: Type of the event
