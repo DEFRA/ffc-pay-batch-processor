@@ -7,9 +7,17 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/PaymentRequest'
+  ffc-pay-event:
+    publish:
+      message:
+        $ref: '#/components/messages/Event'
 
 components:
   messages:
+    Event:
+      contentType: application/json
+      payload: 
+        $ref: '#/components/schemas/BatchProcessedEvent'
     PaymentRequest:
       contentType: application/json
       payload:
@@ -17,8 +25,40 @@ components:
         - $ref: '#/components/schemas/PaymentRequestSitiAgri'
         - $ref: '#/components/schemas/PaymentRequestAHWR'
   schemas:
+    BatchProcessedEvent:
+      type: object
+      description: Info event raised when a payment request is created from a batch file
+      required:
+      - id
+      - name
+      - type_
+      properties:
+        data:
+          type: object
+          description: Further information for the event
+          required:
+          - batchExportDate
+          - filename
+          - paymentRequest
+          - sequence
+          properties:
+            batchExportDate:
+              $ref: '#/components/schemas/BatchExportDate'
+            filename:
+              $ref: '#/components/schemas/Filename'
+            paymentRequest:
+              $ref: '#/components/schemas/PaymentRequestSitiAgri'
+            sequence:
+              $ref: '#/components/schemas/Sequence'
+        id:
+          $ref: '#/components/schemas/Id'
+        name:
+          $ref: '#/components/schemas/Name'
+        type_:
+          $ref: '#/components/schemas/Type'
     PaymentRequestAHWR:
       type: object
+      description: Vet Visit payment object
       required:
       - agreementNumber
       - frn
@@ -75,6 +115,7 @@ components:
           $ref: '#/components/schemas/ValueDecimal'
     PaymentRequestSitiAgri:
       type: object
+      description: SITI Agri payment object
       required:
       - agreementNumber
       - frn
@@ -137,6 +178,11 @@ components:
       type: string
       description: Unique reference number for agreement/application
       example: SIP001000000001
+    BatchExportDate:
+      type: string
+      format: DD-MM-YYYY
+      description: Date SITI Agri exported payment file
+      example: "2022-12-01"
     ContractNumber:
       type: string
       description: Contract reference number of agreement
@@ -149,10 +195,10 @@ components:
     Currency:
       type: string
       description: Currency of values in request. If not supplied will default to GBP.
-      example: GBP
       enum:
       - GBP
       - EUR
+      example: GBP
       default: GBP
     Description:
       type: string
@@ -161,6 +207,10 @@ components:
       maxLength: 99
       description: Description of what line relates to, eg gross or penalty
       example: G00 - Gross value of claim
+    Filename:
+      type: string
+      description: Name of the payment file
+      example: "80001"
     FRN:
       type: number
       description: Firm Reference Number
@@ -177,12 +227,24 @@ components:
       type: string
       description: Unique identifier for payment request
       example: SFIP0000001
+    Id:
+      type: string
+      format: uuid
+      description: GUID for event correlation
+      example: ce6ec916-bebe-4bc0-bad1-255298c82845
     MarketingYear:
       type: number
       description: Scheme year for request
       minimum: 2021
       maximum: 2099
       example: 2022
+    Name:
+      type: string
+      description: Name of the event
+      enum:
+      - batch-processing
+      - EUR
+      example: batch-processing
     PaymentRequestNumber:
       type: number
       description: Version of payment request starting with 1, anything greater than 1 is an adjustment
@@ -207,10 +269,21 @@ components:
       type: string
       description: Unique funding option code
       example: "80001"
+    Sequence:
+      type: string
+      description: Sequence number
+      example: "0001"
     SourceSystem:
       type: string
       description: System identifier request originates from
       example: SFIP
+    Type:
+      type: string
+      description: Type of the event
+      enum:
+      - info
+      - EUR
+      example: info
     ValueDecimal:
       type: number
       format: decimal
