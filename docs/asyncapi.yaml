@@ -20,6 +20,7 @@ components:
         oneOf:
           - $ref: '#/components/schemas/BatchProcessedEvent'
           - $ref: '#/components/schemas/BatchProcessedErrorEvent'
+          - $ref: '#/components/schemas/BatchProcessedQuarantineErrorEvent'
     PaymentRequest:
       contentType: application/json
       payload:
@@ -39,11 +40,6 @@ components:
         data:
           type: object
           description: Further information for the event
-          required:
-            - batchExportDate
-            - filename
-            - paymentRequest
-            - sequence
           properties:
             batchExportDate:
               $ref: '#/components/schemas/BatchExportDate'
@@ -73,20 +69,32 @@ components:
         data:
           type: object
           description: Further information for the event
-          required:
-            - batchExportDate
-            - filename
-            - paymentRequest
-            - sequence
           properties:
-            batchExportDate:
-              $ref: '#/components/schemas/BatchExportDate'
             filename:
               $ref: '#/components/schemas/Filename'
-            paymentRequest:
-              $ref: '#/components/schemas/PaymentRequestSitiAgri'
-            sequence:
-              $ref: '#/components/schemas/Sequence'
+        id:
+          $ref: '#/components/schemas/Id'
+        message:
+          $ref: '#/components/schemas/Message'
+        name:
+          $ref: '#/components/schemas/Name'
+        type_:
+          $ref: '#/components/schemas/Type'
+    BatchProcessedQuarantineErrorEvent:
+      type: object
+      description: Error event raised when a payment file cannot be processed and is moved into quarantine location
+      required:
+        - id
+        - message
+        - name
+        - type_
+      properties:
+        data:
+          type: object
+          description: Further information for the event
+          properties:
+            filename:
+              $ref: '#/components/schemas/Filename'
         id:
           $ref: '#/components/schemas/Id'
         message:
@@ -283,6 +291,7 @@ components:
       enum:
         - others from error.message
         - Payment request created from batch file
+        - Quarantined {filename}
       example: Payment request created from batch file
     Name:
       type: string
@@ -290,6 +299,7 @@ components:
       enum:
         - batch-processing
         - batch-processing-error
+        - batch-processing-quarantine-error
       example: batch-processing
     PaymentRequestNumber:
       type: number
