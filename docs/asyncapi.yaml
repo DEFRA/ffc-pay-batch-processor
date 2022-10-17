@@ -292,6 +292,8 @@ components:
     AccountCode:
       type: string
       description: Unique account code for budgeting
+      enum:
+        - SOS273
       example: SOS273
     AgreementNumber:
       type: string
@@ -301,10 +303,10 @@ components:
       type: string
       format: DD-MM-YYYY
       description: Date SITI Agri exported payment file
-      example: "2022-12-01"
+      example: "2022-06-28"
     Checkpoint:
       type: string
-      description: Service whcih raised the event, differs per environment
+      description: Service which raised the event, differs per environment
       enum:
         - ffc-pay-batch-processor-local
         - ffc-pay-batch-processor
@@ -316,11 +318,11 @@ components:
     CorrelationId:
       type: string
       format: uuid
-      description: GUID for event correlation, optional
+      description: GUID for event correlation
       example: ce6ec916-bebe-4bc0-bad1-255298c82845
     Currency:
       type: string
-      description: Currency of values in request. If not supplied will default to GBP.
+      description: Currency of values in request
       enum:
         - GBP
         - EUR
@@ -328,27 +330,33 @@ components:
       default: GBP
     Description:
       type: string
-      pattern: ^\w$
-      minLength: 3
-      maxLength: 99
-      description: Description of what line relates to, eg gross or penalty
+      description: Description of what line relates to
+      enum:
+        - G00 - Gross value of claim
+        - P02 - Over declaration penalty
+        - P05 - Late claim submission penalty
+        - P06 - Late change penalty
+        - P08 - Non declaration of land penalty
+        - P22 - Rural Development refusals
+        - P23 - Rural Development withdrawals
+        - P24 - Over Declaration reduction
       example: G00 - Gross value of claim
-    Filename:
-      type: string
-      description: Name of the payment file
-      example: "80001"
-    FRN:
-      type: number
-      description: Firm Reference Number
-      minimum: 1000000000
-      maximum: 9999999999
-      example: "1000000001"
     DueDate:
       type: string
       format: DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD
       description: Date request should be issued from.  If not supplied will default to current date.
       example: "2022-12-01"
       default: Current date
+    Filename:
+      type: string
+      description: Name of the payment file
+      example: SITIELM0001_AP_1.dat
+    FRN:
+      type: number
+      description: Firm Reference Number
+      minimum: 1000000000
+      maximum: 9999999999
+      example: "1000000001"
     InvoiceNumber:
       type: string
       description: Unique identifier for payment request
@@ -391,7 +399,7 @@ components:
       example: 123456789
     Schedule:
       type: string
-      description: Payment frequency instruction for DAX, eg Q4 for quarterly payments, optional.
+      description: Payment frequency instruction for DAX
       enum:
         - Q4
         - M12
@@ -400,6 +408,28 @@ components:
     SchemeCode:
       type: string
       description: Unique funding option code
+      enum:
+        - "80001"
+        - "80002"
+        - "80003"
+        - "80004"
+        - "80005"
+        - "80006"
+        - "80007"
+        - "80008"
+        - "80009"
+        - "80101"
+        - "80102"
+        - "80111"
+        - "80112"
+        - "80121"
+        - "80190"
+        - "80195"
+        - "10570"
+        - "18001"
+        - "18002"
+        - "18003"
+        - "18004"
       example: "80001"
     Sequence:
       type: string
@@ -426,7 +456,7 @@ components:
     ValueDecimal:
       type: number
       format: decimal
-      description: Decimal net value of request before enrichment, ie decimal value in specified currency
+      description: Decimal net value of request before enrichment
       minimum: 0.00
       maximum: 999999999999.99
       example: 500.99
