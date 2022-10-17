@@ -18,8 +18,8 @@ components:
       contentType: application/json
       payload:
         oneOf:
-          - $ref: '#/components/schemas/BatchProcessedEvent'
           - $ref: '#/components/schemas/BatchProcessedErrorEvent'
+          - $ref: '#/components/schemas/BatchProcessedEvent'
           - $ref: '#/components/schemas/BatchProcessedPaymentRequestInvalidEvent'
           - $ref: '#/components/schemas/BatchProcessedQuarantineErrorEvent'
     PaymentRequest:
@@ -55,7 +55,7 @@ components:
                 message:
                   $ref: '#/components/schemas/Message'
                 type_:
-                 $ref: '#/components/schemas/Type'
+                  $ref: '#/components/schemas/Type'
                 data:
                   type: object
                   description: Further information for the event
@@ -80,25 +80,35 @@ components:
       type: object
       description: Error event raised when a payment request cannot be created from a batch file
       required:
-        - id
-        - message
         - name
-        - type_
+        - properties_
       properties:
-        data:
-          type: object
-          description: Further information for the event
-          properties:
-            filename:
-              $ref: '#/components/schemas/Filename'
-        id:
-          $ref: '#/components/schemas/CorrelationId'
-        message:
-          $ref: '#/components/schemas/Message'
         name:
           $ref: '#/components/schemas/Name'
-        type_:
-          $ref: '#/components/schemas/Type'
+        properties_:
+          type: object
+          description: Event properties
+          properties:
+            checkpoint:
+              $ref: '#/components/schemas/Checkpoint'
+            id:
+              $ref: '#/components/schemas/CorrelationId'
+            status:
+              $ref: '#/components/schemas/Status'
+            action:
+              type: object
+              description: Event properties
+              properties:
+                message:
+                  $ref: '#/components/schemas/Message'
+                type_:
+                  $ref: '#/components/schemas/Type'
+                data:
+                  type: object
+                  description: Further information for the event
+                  properties:
+                    filename:
+                      $ref: '#/components/schemas/Filename'
     BatchProcessedPaymentRequestInvalidEvent:
       type: object
       description: Error event raised when a payment request cannot be processed
