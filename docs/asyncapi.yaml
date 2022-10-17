@@ -20,6 +20,7 @@ components:
         oneOf:
           - $ref: '#/components/schemas/BatchProcessedEvent'
           - $ref: '#/components/schemas/BatchProcessedErrorEvent'
+          - $ref: '#/components/schemas/BatchProcessedPaymentRequestInvalidEvent'
           - $ref: '#/components/schemas/BatchProcessedQuarantineErrorEvent'
     PaymentRequest:
       contentType: application/json
@@ -72,6 +73,29 @@ components:
           properties:
             filename:
               $ref: '#/components/schemas/Filename'
+        id:
+          $ref: '#/components/schemas/Id'
+        message:
+          $ref: '#/components/schemas/Message'
+        name:
+          $ref: '#/components/schemas/Name'
+        type_:
+          $ref: '#/components/schemas/Type'
+    BatchProcessedPaymentRequestInvalidEvent:
+      type: object
+      description: Error event raised when a payment request cannot be processed
+      required:
+        - id
+        - message
+        - name
+        - type_
+      properties:
+        data:
+          type: object
+          description: Further information for the event
+          properties:
+            paymentRequest:
+              $ref: '#/components/schemas/PaymentRequestSitiAgri'
         id:
           $ref: '#/components/schemas/Id'
         message:
@@ -290,8 +314,9 @@ components:
       description: Event message
       enum:
         - others from error.message
+        - Payment request could not be processed. Error(s) $paymentRequest.errorMessage
         - Payment request created from batch file
-        - Quarantined {filename}
+        - Quarantined $filename
       example: Payment request created from batch file
     Name:
       type: string
@@ -299,6 +324,7 @@ components:
       enum:
         - batch-processing
         - batch-processing-error
+        - batch-processing-payment-request-invalid
         - batch-processing-quarantine-error
       example: batch-processing
     PaymentRequestNumber:
