@@ -16,31 +16,34 @@ components:
   messages:
     Event:
       contentType: application/json
-      payload: 
-        $ref: '#/components/schemas/BatchProcessedEvent'
+      payload:
+        oneOf:
+          - $ref: '#/components/schemas/BatchProcessedEvent'
+          - $ref: '#/components/schemas/BatchProcessedErrorEvent'
     PaymentRequest:
       contentType: application/json
       payload:
         oneOf:
-        - $ref: '#/components/schemas/PaymentRequestSitiAgri'
-        - $ref: '#/components/schemas/PaymentRequestAHWR'
+          - $ref: '#/components/schemas/PaymentRequestSitiAgri'
+          - $ref: '#/components/schemas/PaymentRequestAHWR'
   schemas:
     BatchProcessedEvent:
       type: object
       description: Info event raised when a payment request is created from a batch file
       required:
-      - id
-      - name
-      - type_
+        - id
+        - message
+        - name
+        - type_
       properties:
         data:
           type: object
           description: Further information for the event
           required:
-          - batchExportDate
-          - filename
-          - paymentRequest
-          - sequence
+            - batchExportDate
+            - filename
+            - paymentRequest
+            - sequence
           properties:
             batchExportDate:
               $ref: '#/components/schemas/BatchExportDate'
@@ -52,6 +55,42 @@ components:
               $ref: '#/components/schemas/Sequence'
         id:
           $ref: '#/components/schemas/Id'
+        message:
+          $ref: '#/components/schemas/Message'
+        name:
+          $ref: '#/components/schemas/Name'
+        type_:
+          $ref: '#/components/schemas/Type'
+    BatchProcessedErrorEvent:
+      type: object
+      description: Error event raised when a payment request cannot be created from a batch file
+      required:
+        - id
+        - message
+        - name
+        - type_
+      properties:
+        data:
+          type: object
+          description: Further information for the event
+          required:
+            - batchExportDate
+            - filename
+            - paymentRequest
+            - sequence
+          properties:
+            batchExportDate:
+              $ref: '#/components/schemas/BatchExportDate'
+            filename:
+              $ref: '#/components/schemas/Filename'
+            paymentRequest:
+              $ref: '#/components/schemas/PaymentRequestSitiAgri'
+            sequence:
+              $ref: '#/components/schemas/Sequence'
+        id:
+          $ref: '#/components/schemas/Id'
+        message:
+          $ref: '#/components/schemas/Message'
         name:
           $ref: '#/components/schemas/Name'
         type_:
@@ -60,15 +99,15 @@ components:
       type: object
       description: Vet Visit payment object
       required:
-      - agreementNumber
-      - frn
-      - invoiceLines
-      - invoiceNumber
-      - marketingYear
-      - paymentRequestNumber
-      - sbi
-      - sourceSystem
-      - value
+        - agreementNumber
+        - frn
+        - invoiceLines
+        - invoiceNumber
+        - marketingYear
+        - paymentRequestNumber
+        - sbi
+        - sourceSystem
+        - value
       properties:
         agreementNumber:
           $ref: '#/components/schemas/AgreementNumber'
@@ -88,10 +127,10 @@ components:
           items:
             type: object
             required:
-            - schemeCode
-            - accountCode
-            - description
-            - value
+              - accountCode
+              - description
+              - schemeCode
+              - value
             properties:
               schemeCode:
                 $ref: '#/components/schemas/SchemeCode'
@@ -117,15 +156,15 @@ components:
       type: object
       description: SITI Agri payment object
       required:
-      - agreementNumber
-      - frn
-      - invoiceLines
-      - invoiceNumber
-      - marketingYear
-      - paymentRequestNumber
-      - sbi
-      - sourceSystem
-      - value
+        - agreementNumber
+        - frn
+        - invoiceLines
+        - invoiceNumber
+        - marketingYear
+        - paymentRequestNumber
+        - sbi
+        - sourceSystem
+        - value
       properties:
         agreementNumber:
           $ref: '#/components/schemas/AgreementNumber'
@@ -145,10 +184,10 @@ components:
           items:
             type: object
             required:
-            - schemeCode
-            - accountCode
-            - description
-            - value
+              - accountCode
+              - description
+              - schemeCode
+              - value
             properties:
               schemeCode:
                 $ref: '#/components/schemas/SchemeCode'
@@ -196,8 +235,8 @@ components:
       type: string
       description: Currency of values in request. If not supplied will default to GBP.
       enum:
-      - GBP
-      - EUR
+        - GBP
+        - EUR
       example: GBP
       default: GBP
     Description:
@@ -238,12 +277,19 @@ components:
       minimum: 2021
       maximum: 2099
       example: 2022
+    Message:
+      type: string
+      description: Event message
+      enum:
+        - others from error.message
+        - Payment request created from batch file
+      example: Payment request created from batch file
     Name:
       type: string
       description: Name of the event
       enum:
-      - batch-processing
-      - EUR
+        - batch-processing
+        - batch-processing-error
       example: batch-processing
     PaymentRequestNumber:
       type: number
@@ -261,9 +307,9 @@ components:
       type: string
       description: Payment frequency instruction for DAX, eg Q4 for quarterly payments, optional.
       enum:
-      - Q4
-      - M12
-      - T4
+        - Q4
+        - M12
+        - T4
       example: Q4
     SchemeCode:
       type: string
@@ -281,8 +327,8 @@ components:
       type: string
       description: Type of the event
       enum:
-      - info
-      - EUR
+        - error
+        - info
       example: info
     ValueDecimal:
       type: number
