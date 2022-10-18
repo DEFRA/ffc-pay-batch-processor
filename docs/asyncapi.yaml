@@ -344,7 +344,7 @@ components:
     DueDate:
       type: string
       format: DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD
-      description: Date request should be issued from.  If not supplied will default to current date.
+      description: Date request should be issued from
       example: "2022-12-01"
       default: Current date
     Filename:
