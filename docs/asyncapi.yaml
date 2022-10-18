@@ -34,11 +34,11 @@ components:
       description: Info event raised when a payment request is created from a batch file
       required:
         - name
-        - properties_
+        - properties
       properties:
         name:
           $ref: '#/components/schemas/Name'
-        properties_:
+        properties:
           type: object
           description: Event properties
           required:
@@ -59,14 +59,14 @@ components:
               required:
                 - message
                 - timestamp
-                - type_
+                - type
                 - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
                 timestamp:
                   $ref: '#/components/schemas/Timestamp'
-                type_:
+                type:
                   $ref: '#/components/schemas/Type'
                 data:
                   type: object
@@ -93,11 +93,11 @@ components:
       description: Error event raised when a payment request cannot be created from a batch file
       required:
         - name
-        - properties_
+        - properties
       properties:
         name:
           $ref: '#/components/schemas/Name'
-        properties_:
+        properties:
           type: object
           description: Event properties
           required:
@@ -118,14 +118,14 @@ components:
               required:
                 - message
                 - timestamp
-                - type_
+                - type
                 - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
                 timestamp:
                   $ref: '#/components/schemas/Timestamp'
-                type_:
+                type:
                   $ref: '#/components/schemas/Type'
                 data:
                   type: object
@@ -138,11 +138,11 @@ components:
       description: Error event raised when a payment request cannot be processed
       required:
         - name
-        - properties_
+        - properties
       properties:
         name:
           $ref: '#/components/schemas/Name'
-        properties_:
+        properties:
           type: object
           description: Event properties
           required:
@@ -162,14 +162,14 @@ components:
               required:
                 - message
                 - timestamp
-                - type_
+                - type
                 - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
                 timestamp:
                   $ref: '#/components/schemas/Timestamp'
-                type_:
+                type:
                   $ref: '#/components/schemas/Type'
                 data:
                   type: object
@@ -182,11 +182,11 @@ components:
       description: Error event raised when a payment file cannot be processed and is moved into quarantine location
       required:
         - name
-        - properties_
+        - properties
       properties:
         name:
           $ref: '#/components/schemas/Name'
-        properties_:
+        properties:
           type: object
           description: Event properties
           required:
@@ -207,14 +207,14 @@ components:
               required:
                 - message
                 - timestamp
-                - type_
+                - type
                 - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
                 timestamp:
                   $ref: '#/components/schemas/Timestamp'
-                type_:
+                type:
                   $ref: '#/components/schemas/Type'
                 data:
                   type: object
