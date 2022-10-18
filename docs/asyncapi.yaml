@@ -3,75 +3,511 @@ info:
   title: FFC Pay Batch Processor
   version: '1.0.0'
 channels:
-  payment/request:
+  ffc-pay-request:
     publish:
       message:
         $ref: '#/components/messages/PaymentRequest'
-  error/event:
+  ffc-pay-event:
     publish:
       message:
-        $ref: '#/components/messages/ErrorEvent'
+        $ref: '#/components/messages/Event'
 
 components:
   messages:
+    Event:
+      contentType: application/json
+      payload:
+        oneOf:
+          - $ref: '#/components/schemas/BatchProcessedEvent'
+          - $ref: '#/components/schemas/BatchProcessedErrorEvent'
+          - $ref: '#/components/schemas/BatchProcessedPaymentRequestInvalidEvent'
+          - $ref: '#/components/schemas/BatchProcessedQuarantineErrorEvent'
     PaymentRequest:
       contentType: application/json
       payload:
-        type: object
-        properties:
-          sourceSystem:
-            type: string
-            description: System identifier request originates from
-          frn:
-            type: number
-            description: Firm Reference Number, optional if sbi provided
-          marketingYear:
-            type: number
-            description: Scheme year for request
-          paymentRequestNumber:
-            type: number
-            description: Version of payment request starting with 1, anything greater than 1 is an adjustment
-          correlationId:
-            type: string
-            description: Identifier for event correlation
-          invoiceNumber:
-            type: string
-            description: Unique request for payment
-          agreementNumber:
-            type: string
-            description: Unique reference number for agreement/application
-          contractNumber:
-            type: string
-            description: Contract reference number of agreement
-          currency:
-            type: string
-            description: Currency of values in request, eg GBP
-          schedule:
-            type: string
-            description: Payment frequency instruction for DAX, eg Q4 for quarterly payments
-          dueDate:
-            type: string
-            description: Date request should be issued from DAX in format DD/MM/YYYY
-          value:
-            type: number
-            description: Decimal net value of request, ie sum of all invoice lines
-          invoiceLines:
-            type: array
-            description: List of Invoice lines that make up request
-            items:
+        oneOf:
+          - $ref: '#/components/schemas/PaymentRequestSitiAgri'
+          - $ref: '#/components/schemas/PaymentRequestAHWR'
+  schemas:
+    BatchProcessedEvent:
+      type: object
+      description: Info event raised when a payment request is created from a batch file
+      required:
+        - name
+        - properties_
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        properties_:
+          type: object
+          description: Event properties
+          required:
+            - checkpoint
+            - id
+            - status
+            - action
+          properties:
+            checkpoint:
+              $ref: '#/components/schemas/Checkpoint'
+            id:
+              $ref: '#/components/schemas/CorrelationId'
+            status:
+              $ref: '#/components/schemas/Status'
+            action:
               type: object
+              description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
               properties:
-                schemeCode:
-                  type: string
-                  description: Unique funding option code
-                accountCode:
-                  type: string
-                  description: Unique account code for budgeting
-                description:
-                  type: string
-                  description: Description of what line relates to, eg gross or penalty
-                value:
-                  type: string
-                  description: Decimal value of invoice line
-    ErrorEvent:
-          contentType: application/json
+                message:
+                  $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
+                type_:
+                  $ref: '#/components/schemas/Type'
+                data:
+                  type: object
+                  description: Further information for the event
+                  properties:
+                    batchExportDate:
+                      $ref: '#/components/schemas/BatchExportDate'
+                    filename:
+                      $ref: '#/components/schemas/Filename'
+                    sequence:
+                      $ref: '#/components/schemas/Sequence'
+                    paymentRequest:
+                      $ref: '#/components/schemas/PaymentRequestSitiAgri'
+          batchExportDate:
+              $ref: '#/components/schemas/BatchExportDate'
+          filename:
+            $ref: '#/components/schemas/Filename'
+          paymentRequest:
+            $ref: '#/components/schemas/PaymentRequestSitiAgri'
+          sequence:
+            $ref: '#/components/schemas/Sequence'
+    BatchProcessedErrorEvent:
+      type: object
+      description: Error event raised when a payment request cannot be created from a batch file
+      required:
+        - name
+        - properties_
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        properties_:
+          type: object
+          description: Event properties
+          required:
+            - checkpoint
+            - id
+            - status
+            - action
+          properties:
+            checkpoint:
+              $ref: '#/components/schemas/Checkpoint'
+            id:
+              $ref: '#/components/schemas/CorrelationId'
+            status:
+              $ref: '#/components/schemas/Status'
+            action:
+              type: object
+              description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
+              properties:
+                message:
+                  $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
+                type_:
+                  $ref: '#/components/schemas/Type'
+                data:
+                  type: object
+                  description: Further information for the event
+                  properties:
+                    filename:
+                      $ref: '#/components/schemas/Filename'
+    BatchProcessedPaymentRequestInvalidEvent:
+      type: object
+      description: Error event raised when a payment request cannot be processed
+      required:
+        - name
+        - properties_
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        properties_:
+          type: object
+          description: Event properties
+          required:
+            - id
+            - status
+            - action
+          properties:
+            checkpoint:
+              $ref: '#/components/schemas/Checkpoint'
+            id:
+              $ref: '#/components/schemas/CorrelationId'
+            status:
+              $ref: '#/components/schemas/Status'
+            action:
+              type: object
+              description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
+              properties:
+                message:
+                  $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
+                type_:
+                  $ref: '#/components/schemas/Type'
+                data:
+                  type: object
+                  description: Further information for the event
+                  properties:
+                    paymentRequest:
+                      $ref: '#/components/schemas/PaymentRequestSitiAgri'
+    BatchProcessedQuarantineErrorEvent:
+      type: object
+      description: Error event raised when a payment file cannot be processed and is moved into quarantine location
+      required:
+        - name
+        - properties_
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        properties_:
+          type: object
+          description: Event properties
+          required:
+            - checkpoint
+            - id
+            - status
+            - action
+          properties:
+            checkpoint:
+              $ref: '#/components/schemas/Checkpoint'
+            id:
+              $ref: '#/components/schemas/CorrelationId'
+            status:
+              $ref: '#/components/schemas/Status'
+            action:
+              type: object
+              description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
+              properties:
+                message:
+                  $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
+                type_:
+                  $ref: '#/components/schemas/Type'
+                data:
+                  type: object
+                  description: Further information for the event
+                  properties:
+                    filename:
+                      $ref: '#/components/schemas/Filename'
+    PaymentRequestAHWR:
+      type: object
+      description: Vet Visit payment object
+      required:
+        - agreementNumber
+        - frn
+        - invoiceLines
+        - invoiceNumber
+        - marketingYear
+        - paymentRequestNumber
+        - sbi
+        - sourceSystem
+        - value
+      properties:
+        agreementNumber:
+          $ref: '#/components/schemas/AgreementNumber'
+        contractNumber:
+          $ref: '#/components/schemas/ContractNumber'
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        dueDate:
+          $ref: '#/components/schemas/DueDate'
+        frn:
+          $ref: '#/components/schemas/FRN'
+        invoiceLines:
+          type: array
+          description: List of Invoice lines that make up request
+          items:
+            type: object
+            required:
+              - accountCode
+              - description
+              - schemeCode
+              - value
+            properties:
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
+              accountCode:
+                $ref: '#/components/schemas/AccountCode'
+              description:
+                $ref: '#/components/schemas/Description'
+              value:
+                $ref: '#/components/schemas/ValueDecimal'
+        invoiceNumber:
+          $ref: '#/components/schemas/InvoiceNumber'
+        marketingYear:
+              $ref: '#/components/schemas/MarketingYear'
+        paymentRequestNumber:
+          $ref: '#/components/schemas/PaymentRequestNumber'
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        value:
+          $ref: '#/components/schemas/ValueDecimal'
+    PaymentRequestSitiAgri:
+      type: object
+      description: SITI Agri payment object
+      required:
+        - agreementNumber
+        - frn
+        - invoiceLines
+        - invoiceNumber
+        - marketingYear
+        - paymentRequestNumber
+        - sbi
+        - sourceSystem
+        - value
+      properties:
+        agreementNumber:
+          $ref: '#/components/schemas/AgreementNumber'
+        contractNumber:
+          $ref: '#/components/schemas/ContractNumber'
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        dueDate:
+          $ref: '#/components/schemas/DueDate'
+        frn:
+          $ref: '#/components/schemas/FRN'
+        invoiceLines:
+          type: array
+          description: List of Invoice lines that make up request
+          items:
+            type: object
+            required:
+              - accountCode
+              - description
+              - schemeCode
+              - value
+            properties:
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
+              accountCode:
+                $ref: '#/components/schemas/AccountCode'
+              description:
+                $ref: '#/components/schemas/Description'
+              value:
+                $ref: '#/components/schemas/ValueDecimal'
+        invoiceNumber:
+          $ref: '#/components/schemas/InvoiceNumber'
+        marketingYear:
+              $ref: '#/components/schemas/MarketingYear'
+        paymentRequestNumber:
+          $ref: '#/components/schemas/PaymentRequestNumber'
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        value:
+          $ref: '#/components/schemas/ValueDecimal'
+    AccountCode:
+      type: string
+      description: Unique account code for budgeting
+      enum:
+        - SOS273
+      example: SOS273
+    AgreementNumber:
+      type: string
+      description: Unique reference number for agreement/application
+      example: SIP001000000001
+    BatchExportDate:
+      type: string
+      format: DD-MM-YYYY
+      description: Date SITI Agri exported payment file
+      example: "2022-06-28"
+    Checkpoint:
+      type: string
+      description: Service which raised the event, differs per environment
+      enum:
+        - ffc-pay-batch-processor-local
+        - ffc-pay-batch-processor
+      example: ffc-pay-batch-processor-local
+    ContractNumber:
+      type: string
+      description: Contract reference number of agreement
+      example: S0000001
+    CorrelationId:
+      type: string
+      format: uuid
+      description: GUID for event correlation
+      example: ce6ec916-bebe-4bc0-bad1-255298c82845
+    Currency:
+      type: string
+      description: Currency of values in request
+      enum:
+        - GBP
+        - EUR
+      example: GBP
+      default: GBP
+    Description:
+      type: string
+      description: Description of what line relates to
+      enum:
+        - G00 - Gross value of claim
+        - P02 - Over declaration penalty
+        - P05 - Late claim submission penalty
+        - P06 - Late change penalty
+        - P08 - Non declaration of land penalty
+        - P22 - Rural Development refusals
+        - P23 - Rural Development withdrawals
+        - P24 - Over Declaration reduction
+      example: G00 - Gross value of claim
+    DueDate:
+      type: string
+      format: DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD
+      description: Date request should be issued from
+      example: "2022-12-01"
+      default: Current date
+    Filename:
+      type: string
+      description: Name of the payment file
+      example: SITIELM0001_AP_1.dat
+    FRN:
+      type: number
+      description: Firm Reference Number
+      minimum: 1000000000
+      maximum: 9999999999
+      example: "1000000001"
+    InvoiceNumber:
+      type: string
+      description: Unique identifier for payment request
+      example: SFIP0000001
+    MarketingYear:
+      type: number
+      description: Scheme year for request
+      minimum: 2021
+      maximum: 2099
+      example: 2022
+    Message:
+      type: string
+      description: Event message
+      enum:
+        - others from error.message
+        - Payment request could not be processed. Error(s) $paymentRequest.errorMessage
+        - Payment request created from batch file
+        - Quarantined $filename
+      example: Payment request created from batch file
+    Name:
+      type: string
+      description: Name of the event
+      enum:
+        - batch-processing
+        - batch-processing-error
+        - batch-processing-payment-request-invalid
+        - batch-processing-quarantine-error
+      example: batch-processing
+    PaymentRequestNumber:
+      type: number
+      description: Version of payment request starting with 1, anything greater than 1 is an adjustment
+      minimum: 1
+      maximum: 99
+      example: 1
+    SBI:
+      type: number
+      description: Single Business Identifier
+      minimum: 105000000
+      maximum: 999999999
+      example: 123456789
+    Schedule:
+      type: string
+      description: Payment frequency instruction for DAX
+      enum:
+        - Q4
+        - M12
+        - T4
+      example: Q4
+    SchemeCode:
+      type: string
+      description: Unique funding option code
+      enum:
+        - "80001"
+        - "80002"
+        - "80003"
+        - "80004"
+        - "80005"
+        - "80006"
+        - "80007"
+        - "80008"
+        - "80009"
+        - "80101"
+        - "80102"
+        - "80111"
+        - "80112"
+        - "80121"
+        - "80190"
+        - "80195"
+        - "10570"
+        - "18001"
+        - "18002"
+        - "18003"
+        - "18004"
+      example: "80001"
+    Sequence:
+      type: string
+      description: Sequence number
+      example: "0001"
+    SourceSystem:
+      type: string
+      description: System identifier request originates from
+      example: SFIP
+    Status:
+      type: string
+      description: Event status
+      enum:
+        - error
+        - success
+      example: success
+    Timestamp:
+      type: string
+      description: Current datetime
+      example: "2022-01-01T00:00:00.000Z"
+    Type:
+      type: string
+      description: Type of the event
+      enum:
+        - error
+        - info
+      example: info
+    ValueDecimal:
+      type: number
+      format: decimal
+      description: Decimal net value of request before enrichment
+      minimum: 0.00
+      maximum: 999999999999.99
+      example: 500.99
