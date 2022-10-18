@@ -41,6 +41,11 @@ components:
         properties_:
           type: object
           description: Event properties
+          required:
+            - checkpoint
+            - id
+            - status
+            - action
           properties:
             checkpoint:
               $ref: '#/components/schemas/Checkpoint'
@@ -51,9 +56,16 @@ components:
             action:
               type: object
               description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
                 type_:
                   $ref: '#/components/schemas/Type'
                 data:
@@ -88,6 +100,11 @@ components:
         properties_:
           type: object
           description: Event properties
+          required:
+            - checkpoint
+            - id
+            - status
+            - action
           properties:
             checkpoint:
               $ref: '#/components/schemas/Checkpoint'
@@ -98,9 +115,16 @@ components:
             action:
               type: object
               description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
                 type_:
                   $ref: '#/components/schemas/Type'
                 data:
@@ -121,6 +145,10 @@ components:
         properties_:
           type: object
           description: Event properties
+          required:
+            - id
+            - status
+            - action
           properties:
             checkpoint:
               $ref: '#/components/schemas/Checkpoint'
@@ -131,9 +159,16 @@ components:
             action:
               type: object
               description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
                 type_:
                   $ref: '#/components/schemas/Type'
                 data:
@@ -154,6 +189,11 @@ components:
         properties_:
           type: object
           description: Event properties
+          required:
+            - checkpoint
+            - id
+            - status
+            - action
           properties:
             checkpoint:
               $ref: '#/components/schemas/Checkpoint'
@@ -164,9 +204,16 @@ components:
             action:
               type: object
               description: Event properties
+              required:
+                - message
+                - timestamp
+                - type_
+                - data
               properties:
                 message:
                   $ref: '#/components/schemas/Message'
+                timestamp:
+                  $ref: '#/components/schemas/Timestamp'
                 type_:
                   $ref: '#/components/schemas/Type'
                 data:
@@ -446,6 +493,10 @@ components:
         - error
         - success
       example: success
+    Timestamp:
+      type: string
+      description: Current datetime
+      example: "2022-01-01T00:00:00.000Z"
     Type:
       type: string
       description: Type of the event
