@@ -259,12 +259,12 @@ components:
               - schemeCode
               - value
             properties:
-              schemeCode:
-                $ref: '#/components/schemas/SchemeCode'
               accountCode:
                 $ref: '#/components/schemas/AccountCode'
               description:
                 $ref: '#/components/schemas/Description'
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
               value:
                 $ref: '#/components/schemas/ValueDecimal'
         invoiceNumber:
@@ -316,12 +316,12 @@ components:
               - schemeCode
               - value
             properties:
-              schemeCode:
-                $ref: '#/components/schemas/SchemeCode'
               accountCode:
                 $ref: '#/components/schemas/AccountCode'
               description:
                 $ref: '#/components/schemas/Description'
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
               value:
                 $ref: '#/components/schemas/ValueDecimal'
         invoiceNumber:
@@ -454,7 +454,7 @@ components:
       example: Q4
     SchemeCode:
       type: string
-      description: Unique funding option code
+      description: Unique scheme code
       enum:
         - "80001"
         - "80002"
@@ -485,7 +485,11 @@ components:
     SourceSystem:
       type: string
       description: System identifier request originates from
-      example: SFIP
+      enum:
+        - SFI
+        - SFIP
+        - LSES
+      example: SFI
     Status:
       type: string
       description: Event status
