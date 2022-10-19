@@ -157,28 +157,28 @@ A batch file comprises three different line types which exist on a one : many : 
 
 | Name | Code |
 | ---- | ---- |
- | Arable and horticultural soils: Introductory | 80101 |
- | Arable and horticultural soils: Intermediate | 80102 |
- | Improved grassland soils: Introductory | 80111 |
- | Improved grassland soils: Intermediate | 80112 |
- | Moorland: Introductory | 80121 |
- | Moorland: Additional | 80190 |
- | Common land: Additional | 80195 |
+| Arable and horticultural soils: Introductory | 80101 |
+| Arable and horticultural soils: Intermediate | 80102 |
+| Improved grassland soils: Introductory | 80111 |
+| Improved grassland soils: Intermediate | 80112 |
+| Moorland: Introductory | 80121 |
+| Moorland: Additional | 80190 |
+| Common land: Additional | 80195 |
 
  ###### Lump sums
 
- | Name | Code |
- | ---- | ---- |
- | Lump sum exit scheme | 10570 |
+| Name | Code |
+| ---- | ---- |
+| Lump sum exit scheme | 10570 |
 
 ###### Vet Visits
 
 | Name | Code |
- | ---- | ---- |
- | Sheep | 18001 |
- | Beef cattle | 18002 |
- | Dairy cattle | 18003 |
- | Pigs | 18004 |
+| ---- | ---- |
+| Sheep | 18001 |
+| Beef cattle | 18002 |
+| Dairy cattle | 18003 |
+| Pigs | 18004 |
 
 # Setup
 
