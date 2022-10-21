@@ -8,7 +8,7 @@ services:
     build:
       target: development
     depends_on:
-      - ffc-pay-batch-processor-azurite
+      - ffc-pay-batch-azurite
     image: ffc-pay-batch-processor-development
     container_name: ffc-pay-batch-processor-test
     command: npm run test
@@ -19,7 +19,7 @@ services:
       - ./jest.config.js:/home/node/jest.config.js
       - ./package.json:/home/node/package.json
     environment:
-      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-batch-processor-azurite:10000/devstoreaccount1;
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-batch-azurite:10000/devstoreaccount1;
       DISABLE_SEQUENCE_VALIDATION: ${DISABLE_SEQUENCE_VALIDATION:-false}
 
   ffc-pay-batch-processor-postgres:
