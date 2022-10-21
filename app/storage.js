@@ -26,7 +26,6 @@ const initialiseContainers = async () => {
 }
 
 const initialiseFolders = async () => {
-  console.log('Making sure folders exist')
   const placeHolderText = 'Placeholder'
   const inboundClient = container.getBlockBlobClient(`${config.inboundFolder}/default.txt`)
   const archiveClient = container.getBlockBlobClient(`${config.archiveFolder}/default.txt`)
@@ -34,7 +33,6 @@ const initialiseFolders = async () => {
   await inboundClient.upload(placeHolderText, placeHolderText.length)
   await archiveClient.upload(placeHolderText, placeHolderText.length)
   await quarantineClient.upload(placeHolderText, placeHolderText.length)
-  console.log('Folders ready')
 }
 
 const getBlob = async (folder, filename) => {
