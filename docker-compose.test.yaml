@@ -26,5 +26,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  ffc-pay-batch-azurite:
+    labels:
+      com.docker.compose.pay.role: test
+
 volumes:
   postgres_data: {}
