@@ -3,6 +3,7 @@ const { BlobServiceClient } = require('@azure/storage-blob')
 const config = require('./config/storage')
 let blobServiceClient
 let containersInitialised
+let foldersInitialised
 
 if (config.useConnectionStr) {
   console.log('Using connection string for BlobServiceClient')
@@ -19,19 +20,19 @@ const initialiseContainers = async () => {
   if (config.createContainers) {
     console.log('Making sure blob containers exist')
     await container.createIfNotExists()
+    console.log('Containers ready')
   }
-  await initialiseFolders()
+  foldersInitialised ?? await initialiseFolders()
   containersInitialised = true
 }
 
 const initialiseFolders = async () => {
+  console.log('Making sure folders exist')
   const placeHolderText = 'Placeholder'
   const inboundClient = container.getBlockBlobClient(`${config.inboundFolder}/default.txt`)
-  const archiveClient = container.getBlockBlobClient(`${config.archiveFolder}/default.txt`)
-  const quarantineClient = container.getBlockBlobClient(`${config.quarantineFolder}/default.txt`)
   await inboundClient.upload(placeHolderText, placeHolderText.length)
-  await archiveClient.upload(placeHolderText, placeHolderText.length)
-  await quarantineClient.upload(placeHolderText, placeHolderText.length)
+  foldersInitialised = true
+  console.log('Folders ready')
 }
 
 const getBlob = async (folder, filename) => {

@@ -4,6 +4,11 @@ if [ -z "$(docker network ls --filter name=^ffc-pay$ --format={{.Name}})" ]; the
   docker network create ffc-pay
 fi
 
+if [ -n "$(docker container ls --filter label=com.docker.compose.pay.role=ffc-pay-batch-azurite --format={{.ID}})" ]; then
+  echo "Azurite container already exists, skipping creation"
+  args="--scale ffc-pay-batch-azurite=0"
+fi
+
 set -e
 projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
 
@@ -12,10 +17,10 @@ cd "${projectRoot}"
 docker-compose down
 docker-compose -f docker-compose.migrate.yaml down
 # Ensure container images are up to date
-docker-compose -f docker-compose.migrate.yaml run database-up
+docker-compose -f docker-compose.migrate.yaml run --rm database-up
 
 docker-compose \
   -f docker-compose.yaml \
   -f docker-compose.override.yaml \
   -f docker-compose.link.yaml \
-  up $@
+  up $args $@

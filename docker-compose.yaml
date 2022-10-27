@@ -16,7 +16,7 @@ services:
       MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
       MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}
       PAYMENT_TOPIC_ADDRESS: ${PAYMENT_TOPIC_ADDRESS:-ffc-pay-request}${MESSAGE_QUEUE_SUFFIX}
-      AZURE_STORAGE_USE_CONNECTION_STRING: "true"      
+      AZURE_STORAGE_USE_CONNECTION_STRING: "true"
       AZURE_STORAGE_CREATE_CONTAINERS: "true"
       POLLING_INTERVAL: ${POLLING_INTERVAL:-10000}
       MAX_PROCESSING_TRIES: ${MAX_PROCESSING_TRIES:-3}
@@ -36,6 +36,8 @@ services:
       POSTGRES_PASSWORD: ppp
       POSTGRES_USERNAME: postgres
 
-  ffc-pay-batch-processor-azurite:
+  ffc-pay-batch-azurite:
     image: mcr.microsoft.com/azure-storage/azurite:3.17.1
     command: "azurite-blob --loose --blobHost 0.0.0.0"
+    labels:
+      com.docker.compose.pay.role: ffc-pay-batch-azurite
