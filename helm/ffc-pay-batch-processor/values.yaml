@@ -22,18 +22,13 @@ containerSecret:
   type: Opaque
 
 deployment:
-  restartPolicy: Always
-  priorityClassName: default
   # DO NOT have more than 1 replica
   # Payment batch files need to be processed in order
   # So concurrent processing with multiple pods could cause problems
-  replicas: 1
   minReplicas: 1
   maxReplicas: 1
-  minReadySeconds: 0
 
 container:
-  imagePullPolicy: Always
   requestMemory: 100Mi
   requestCpu: 60m
   limitMemory: 200Mi
