@@ -10,7 +10,7 @@ const sendBatchSuccessEvent = async (filename) => {
 const sendV2BatchQuarantineEvent = async (filename) => {
   const event = {
     source: 'ffc-pay-batch-processor',
-    type: 'uk.gov.defra.ffc.pay.batch.processed',
+    type: 'uk.gov.defra.ffc.pay.batch.processed.siti-agri',
     subject: filename,
     data: {
       filename
