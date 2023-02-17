@@ -1,8 +1,19 @@
+const { EventPublisher } = require('ffc-pay-event-publisher')
 const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
+const config = require('../config/processing')
 const sendPaymentRequestInvalidEvent = require('./send-payment-request-invalid-event')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
+  if (config.useV1Events) {
+    await sendV1PaymentRequestInvalidEvents(paymentRequests)
+  }
+  if (config.useV2Events) {
+    await sendV2PaymentRequestInvalidEvents(paymentRequests)
+  }
+}
+
+const sendV1PaymentRequestInvalidEvents = async (paymentRequests) => {
   if (paymentRequests?.length) {
     const events = []
     for (const paymentRequest of paymentRequests) {
@@ -24,6 +35,23 @@ const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
 
     for (const x of events) {
       await sendPaymentRequestInvalidEvent(x)
+    }
+  }
+}
+
+const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
+  const events = paymentRequests.map(createEvent)
+  const eventPublisher = new EventPublisher(config.eventsTopic)
+  await eventPublisher.publishEvents(events)
+}
+
+const createEvent = (paymentRequest) => {
+  return {
+    source: 'ffc-pay-batch-processor',
+    type: 'uk.gov.defra.ffc.pay.payment.rejected',
+    data: {
+      message: paymentRequest.errorMessage,
+      paymentRequest
     }
   }
 }
