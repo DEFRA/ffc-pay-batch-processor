@@ -14,8 +14,8 @@ const parsePaymentFile = async (filename, fileBuffer, scheme, sequence) => {
 
 const sendParsedPaymentRequests = async (paymentRequestsCollection, filename, sequence, batchExportDate) => {
   try {
-    await sendBatchProcessedEvents(paymentRequestsCollection.successfulPaymentRequests, filename, sequence, batchExportDate)
     await sendPaymentBatchMessages(paymentRequestsCollection.successfulPaymentRequests)
+    await sendBatchProcessedEvents(paymentRequestsCollection.successfulPaymentRequests, filename, sequence, batchExportDate)
     await sendPaymentRequestInvalidEvents(paymentRequestsCollection.unsuccessfulPaymentRequests)
   } catch (err) {
     console.error(`One or more payment requests could not be sent: ${err}`)
