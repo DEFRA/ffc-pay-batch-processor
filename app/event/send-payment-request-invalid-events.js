@@ -48,7 +48,7 @@ const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
 const createEvent = (paymentRequest) => {
   return {
     source: 'ffc-pay-batch-processor',
-    type: 'uk.gov.defra.ffc.pay.payment.rejected',
+    type: 'uk.gov.defra.ffc.pay.warning.payment.rejected',
     data: {
       message: paymentRequest.errorMessage,
       paymentRequest
