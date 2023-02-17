@@ -8,9 +8,11 @@ data:
   {{- if and (.Values.environmentCode) (not .Values.pr) }}
   PAYMENT_TOPIC_ADDRESS: {{ .Values.container.paymentTopicAddress }}-{{ .Values.environmentCode }}
   EVENT_TOPIC_ADDRESS: {{ .Values.container.eventTopicAddress }}-{{ .Values.environmentCode }}
+  EVENTS_TOPIC_ADDRESS: {{ .Values.container.eventsTopicAddress }}-{{ .Values.environmentCode }}
   {{ else }}
   PAYMENT_TOPIC_ADDRESS: {{ quote .Values.container.paymentTopicAddress }}
   EVENT_TOPIC_ADDRESS: {{ quote .Values.container.eventTopicAddress }}
+  EVENTS_TOPIC_ADDRESS: {{ quote .Values.container.eventsTopicAddress }}
   {{- end }}
   AZURE_STORAGE_CONNECTION_STRING: {{ quote .Values.container.azureStorageConnectionString }}
   AZURE_STORAGE_USE_CONNECTION_STRING: {{ quote .Values.container.azureStorageUseConnectionString }}
@@ -22,4 +24,6 @@ data:
   POLLING_INTERVAL: {{ quote .Values.container.pollingInterval }}
   MAX_PROCESSING_TRIES: {{ quote .Values.container.maxProcessingTries }}
   DISABLE_SEQUENCE_VALIDATION: {{ quote .Values.container.disableSequenceValidation }}
+  USE_V1_EVENTS: {{ quote .Values.container.useV1Events }}
+  USE_V2_EVENTS: {{ quote .Values.container.useV2Events }}
 {{- end -}}

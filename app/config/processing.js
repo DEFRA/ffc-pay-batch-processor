@@ -4,14 +4,18 @@ const Joi = require('joi')
 const schema = Joi.object({
   pollingInterval: Joi.number().default(10000), // 10 seconds
   maxProcessingTries: Joi.number().default(3),
-  disableSequenceValidation: Joi.boolean().default(false)
+  disableSequenceValidation: Joi.boolean().default(false),
+  useV1Events: Joi.boolean().default(true),
+  useV2Events: Joi.boolean().default(true)
 })
 
 // Build config
 const config = {
   pollingInterval: process.env.POLLING_INTERVAL,
   maxProcessingTries: process.env.MAX_PROCESSING_TRIES,
-  disableSequenceValidation: process.env.DISABLE_SEQUENCE_VALIDATION
+  disableSequenceValidation: process.env.DISABLE_SEQUENCE_VALIDATION,
+  useV1Events: process.env.USE_V1_EVENTS,
+  useV2Events: process.env.USE_V2_EVENTS
 }
 
 // Validate config
