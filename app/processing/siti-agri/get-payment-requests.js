@@ -4,12 +4,12 @@ const transformInvoiceLine = require('./transform-invoice-line')
 const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
 
-const readSitiAgriFile = async (readBatchLines, scheme, input) => {
+const readSitiAgriFile = async (readBatchLines, scheme, input, filename) => {
   return new Promise((resolve, reject) => {
     const batch = createBatch()
     readBatchLines.on('line', (line) => {
       const batchLine = line.split('^')
-      !readLine(batchLine, batch, scheme) &&
+      !readLine(batchLine, batch, scheme, filename) &&
         reject(new Error('Invalid file - Unknown line'))
     })
 
@@ -30,7 +30,7 @@ const createBatch = () => {
   }
 }
 
-const readLine = (batchLine, batch, scheme) => {
+const readLine = (batchLine, batch, scheme, filename) => {
   const lineType = batchLine[0]
 
   switch (lineType) {
@@ -38,7 +38,7 @@ const readLine = (batchLine, batch, scheme) => {
       batch.batchHeaders.push(transformBatch(batchLine))
       return true
     case 'H':
-      batch.paymentRequests.push(transformHeader(batchLine, scheme.schemeId))
+      batch.paymentRequests.push(transformHeader(batchLine, scheme.schemeId, filename))
       return true
     case 'L':
       batch.paymentRequests[batch.paymentRequests.length - 1]

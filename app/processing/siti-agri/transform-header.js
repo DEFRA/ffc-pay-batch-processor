@@ -1,18 +1,21 @@
+const { v4: uuidv4 } = require('uuid')
 const { sfi, sfiPilot, lumpSums } = require('../../schemes')
 
-const transformHeader = (headerData, schemeId) => {
+const transformHeader = (headerData, schemeId, filename) => {
   switch (schemeId) {
     case sfi.schemeId:
     case sfiPilot.schemeId:
-      return transformSFIHeader(headerData)
+      return transformSFIHeader(headerData, filename)
     case lumpSums.schemeId:
-      return transformLumpSumsHeader(headerData)
+      return transformLumpSumsHeader(headerData, filename)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
 }
 
-const transformSFIHeader = (headerData) => ({
+const transformSFIHeader = (headerData, filename) => ({
+  correlationId: uuidv4(),
+  batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
   contractNumber: headerData[3],
@@ -24,7 +27,9 @@ const transformSFIHeader = (headerData) => ({
   invoiceLines: []
 })
 
-const transformLumpSumsHeader = (headerData) => ({
+const transformLumpSumsHeader = (headerData, filename) => ({
+  correlationId: uuidv4(),
+  batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
   contractNumber: headerData[3],
