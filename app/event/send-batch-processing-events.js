@@ -46,9 +46,11 @@ const sendV1BatchProcessedEvents = async (paymentRequests, filename, sequence, b
 }
 
 const sendV2BatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
-  const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename))
-  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
-  await eventPublisher.publishEvents(events)
+  if (paymentRequests.length) {
+    const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename))
+    const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
+    await eventPublisher.publishEvents(events)
+  }
 }
 
 const createEvent = (paymentRequest, filename) => {

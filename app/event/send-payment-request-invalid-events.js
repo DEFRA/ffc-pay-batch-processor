@@ -41,9 +41,11 @@ const sendV1PaymentRequestInvalidEvents = async (paymentRequests) => {
 }
 
 const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
-  const events = paymentRequests.map(createEvent)
-  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
-  await eventPublisher.publishEvents(events)
+  if (paymentRequests.length) {
+    const events = paymentRequests.map(createEvent)
+    const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
+    await eventPublisher.publishEvents(events)
+  }
 }
 
 const createEvent = (paymentRequest) => {

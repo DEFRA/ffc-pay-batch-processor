@@ -30,7 +30,7 @@
     "@joi/date": "2.1.0",
     "applicationinsights": "2.3.3",
     "ffc-messaging": "2.5.1",
-    "ffc-pay-event-publisher": "1.2.0-alpha.5",
+    "ffc-pay-event-publisher": "1.2.0-alpha.8",
     "joi": "17.6.0",
     "log-timestamp": "0.3.0",
     "pg": "8.7.3",
