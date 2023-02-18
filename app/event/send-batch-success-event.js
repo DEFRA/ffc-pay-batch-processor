@@ -4,11 +4,11 @@ const { EventPublisher } = require('ffc-pay-event-publisher')
 
 const sendBatchSuccessEvent = async (filename) => {
   if (config.useV2Events) {
-    await sendV2BatchQuarantineEvent(filename)
+    await sendV2BatchSuccessEvent(filename)
   }
 }
 
-const sendV2BatchQuarantineEvent = async (filename) => {
+const sendV2BatchSuccessEvent = async (filename) => {
   const event = {
     source: 'ffc-pay-batch-processor',
     type: 'uk.gov.defra.ffc.pay.batch.processed.siti-agri',

@@ -5,12 +5,12 @@ const config = require('../config/processing')
 const messageConfig = require('../config/message')
 const sendBatchProcessedEvent = require('./send-batch-processing-event')
 
-const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
+const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate, scheme) => {
   if (config.useV1Events) {
     await sendV1BatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
   }
   if (config.useV2Events) {
-    await sendV2BatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
+    await sendV2BatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
   }
 }
 
@@ -45,20 +45,23 @@ const sendV1BatchProcessedEvents = async (paymentRequests, filename, sequence, b
   }
 }
 
-const sendV2BatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
+const sendV2BatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate, scheme) => {
   if (paymentRequests.length) {
-    const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename))
+    const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename, scheme))
     const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
     await eventPublisher.publishEvents(events)
   }
 }
 
-const createEvent = (paymentRequest, filename) => {
+const createEvent = (paymentRequest, filename, scheme) => {
   return {
     source: 'ffc-pay-batch-processor',
     type: 'uk.gov.defra.ffc.pay.payment.extracted',
     subject: filename,
-    data: paymentRequest
+    data: {
+      schemeId: scheme.schemeId,
+      ...paymentRequest
+    }
   }
 }
 
