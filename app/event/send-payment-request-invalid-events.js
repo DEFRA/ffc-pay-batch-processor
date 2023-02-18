@@ -2,6 +2,7 @@ const { EventPublisher } = require('ffc-pay-event-publisher')
 const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
 const config = require('../config/processing')
+const messageConfig = require('../config/message')
 const sendPaymentRequestInvalidEvent = require('./send-payment-request-invalid-event')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
@@ -41,7 +42,7 @@ const sendV1PaymentRequestInvalidEvents = async (paymentRequests) => {
 
 const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
   const events = paymentRequests.map(createEvent)
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvents(events)
 }
 

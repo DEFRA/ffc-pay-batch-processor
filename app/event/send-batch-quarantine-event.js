@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const raiseEvent = require('./raise-event')
 const config = require('../config/processing')
+const messageConfig = require('../config/message')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 
 const sendBatchQuarantineEvent = async (filename) => {
@@ -35,7 +36,7 @@ const sendV2BatchQuarantineEvent = async (filename) => {
       filename
     }
   }
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvent(event)
 }
 

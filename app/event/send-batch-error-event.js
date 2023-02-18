@@ -1,6 +1,7 @@
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const { v4: uuidv4 } = require('uuid')
 const config = require('../config/processing')
+const messageConfig = require('../config/message')
 const raiseEvent = require('./raise-event')
 
 const sendBatchErrorEvent = async (filename, error) => {
@@ -34,7 +35,7 @@ const sendV2BatchErrorEvent = async (filename, error) => {
       filename
     }
   }
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvent(event)
 }
 

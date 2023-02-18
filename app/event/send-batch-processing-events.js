@@ -2,6 +2,7 @@ const { EventPublisher } = require('ffc-pay-event-publisher')
 const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
 const config = require('../config/processing')
+const messageConfig = require('../config/message')
 const sendBatchProcessedEvent = require('./send-batch-processing-event')
 
 const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
@@ -46,7 +47,7 @@ const sendV1BatchProcessedEvents = async (paymentRequests, filename, sequence, b
 
 const sendV2BatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
   const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename))
-  const eventPublisher = new EventPublisher(config.eventsTopic)
+  const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
   await eventPublisher.publishEvents(events)
 }
 
