@@ -51,7 +51,7 @@ const createEvent = (paymentRequest) => {
     type: 'uk.gov.defra.ffc.pay.warning.payment.rejected',
     data: {
       message: paymentRequest.errorMessage,
-      paymentRequest
+      ...paymentRequest
     }
   }
 }
