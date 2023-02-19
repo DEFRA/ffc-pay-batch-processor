@@ -7,7 +7,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
 
   return paymentRequests.map(paymentRequest => ({
     sourceSystem,
-    batch: paymentRequest.batch
+    batch: paymentRequest.batch,
     deliveryBody: paymentRequest.deliveryBody,
     invoiceNumber: paymentRequest.invoiceNumber,
     frn: paymentRequest.frn,
