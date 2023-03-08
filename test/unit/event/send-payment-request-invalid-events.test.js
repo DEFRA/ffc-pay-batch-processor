@@ -4,6 +4,19 @@ const { v4: uuidv4 } = require('uuid')
 jest.mock('../../../app/event/send-payment-request-invalid-event')
 const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-request-invalid-event')
 
+// const disableV2Events = () => {
+//   jest.mock('../../../app/config/processing', () => {
+//     return { useV2Events: false }
+//   })
+// }
+
+const setupEventsConfig = jest.mock('../../../app/config/processing', (V1 = true, V2 = true) => {
+  return {
+    useV1Events: V1,
+    useV2Events: V2
+  }
+})
+
 const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
 
 let paymentRequest
@@ -136,6 +149,7 @@ describe('Sending events for unprocessable payment requests', () => {
   })
 
   test('should call sendPaymentRequestInvalidEvent with valid payment requests when paymentRequests with 2 valid payment requests and 1 invalid payment request are received', async () => {
+    setupEventsConfig(true, false)
     paymentRequests.push(undefined)
     paymentRequests.push(paymentRequest)
 
