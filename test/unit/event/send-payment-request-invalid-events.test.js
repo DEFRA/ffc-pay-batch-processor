@@ -1,17 +1,11 @@
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
+jest.mock('../../../app/config/processing')
+const config = require('../../../app/config/processing')
+
 jest.mock('../../../app/event/send-payment-request-invalid-event')
 const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-request-invalid-event')
-
-// set the processing config to not use V2 events.
-// Aiming to have this to be toggled on a per test basis but cant get the mocks setup correct.
-jest.mock('../../../app/config/processing', () => {
-  return {
-    useV1Events: true,
-    useV2Events: false
-  }
-})
 
 const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
 
@@ -24,6 +18,8 @@ describe('Sending events for unprocessable payment requests', () => {
   beforeEach(async () => {
     const correlationId = require('../../mockCorrelationId')
     uuidv4.mockReturnValue(correlationId)
+    config.useV1Events = true
+    config.useV2Events = true
 
     paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
     paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
@@ -136,6 +132,7 @@ describe('Sending events for unprocessable payment requests', () => {
   })
 
   test('should call sendPaymentRequestInvalidEvent twice when paymentRequests with 2 valid payment requests and 1 invalid payment request are received', async () => {
+    config.useV2Events = false
     paymentRequests.push(undefined)
     paymentRequests.push(paymentRequest)
 
@@ -145,6 +142,7 @@ describe('Sending events for unprocessable payment requests', () => {
   })
 
   test('should call sendPaymentRequestInvalidEvent with valid payment requests when paymentRequests with 2 valid payment requests and 1 invalid payment request are received', async () => {
+    config.useV2Events = false
     paymentRequests.push(undefined)
     paymentRequests.push(paymentRequest)
 
