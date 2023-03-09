@@ -19,10 +19,10 @@ let paymentRequests
 let event
 let events
 
-describe('Sending events for unprocessable payment requests', () => {
+describe('V1 Events Only: Sending events for unprocessable payment requests', () => {
   beforeEach(async () => {
     config.useV1Events = true
-    config.useV2Events = true
+    config.useV2Events = false
 
     const correlationId = require('../../mockCorrelationId')
     uuidv4.mockReturnValue(correlationId)
