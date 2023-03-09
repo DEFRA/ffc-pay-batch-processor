@@ -59,7 +59,7 @@ const createEvent = (paymentRequest, filename, scheme) => {
     type: 'uk.gov.defra.ffc.pay.payment.extracted',
     subject: filename,
     data: {
-      schemeId: scheme?.schemeId,
+      schemeId: scheme.schemeId,
       ...paymentRequest
     }
   }

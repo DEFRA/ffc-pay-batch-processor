@@ -28,6 +28,7 @@ describe('Filter payment requests', () => {
 
   test('should return mappedPaymentRequest as successfulPaymentRequests when valid payment request and sourceSystem are given', async () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
+    console.log(result)
 
     mappedPaymentRequest.correlationId = result.successfulPaymentRequests[0].correlationId
     paymentRequestCollection.successfulPaymentRequests.push(mappedPaymentRequest)

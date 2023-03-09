@@ -4,6 +4,9 @@ const { v4: uuidv4 } = require('uuid')
 jest.mock('../../../app/event/send-batch-processing-event')
 const sendBatchProcessedEvent = require('../../../app/event/send-batch-processing-event')
 
+jest.mock('../../../app/config/processing')
+const config = require('../../../app/config/processing')
+
 const { sendBatchProcessedEvents } = require('../../../app/event')
 
 let filename
@@ -16,8 +19,11 @@ let paymentRequests
 let event
 let events
 
-describe('Sending events for unprocessable payment requests', () => {
+describe('V1 Events Only: Sending events for unprocessable payment requests', () => {
   beforeEach(async () => {
+    config.useV1Events = true
+    config.useV2Events = false
+
     const correlationId = require('../../mockCorrelationId')
     uuidv4.mockReturnValue(correlationId)
 

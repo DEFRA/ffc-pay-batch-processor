@@ -3,7 +3,13 @@ const transformHeader = require('../../../../app/processing/siti-agri/transform-
 const { M12 } = require('../../../../app/schedules')
 const { sfi, sfiPilot, lumpSums } = require('../../../../app/schemes')
 
+jest.mock('uuid')
+const { v4: uuidv4 } = require('uuid')
+
 describe('Transform header', () => {
+  const correlationId = require('../../../mockCorrelationId')
+  uuidv4.mockReturnValue(correlationId)
+
   test('transforms SFI header', async () => {
     const headerData = ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
     const result = transformHeader(headerData, sfi.schemeId)
@@ -54,7 +60,7 @@ describe('Transform header', () => {
   test('returns undefined values if line empty', async () => {
     const headerData = []
     const result = transformHeader(headerData, lumpSums.schemeId)
-    Object.values(result).forEach(value => expect(value === undefined || value.length === 0).toBeTruthy())
+    Object.values(result).forEach(value => expect(value === undefined || value.length === 0 || value === uuidv4()).toBeTruthy())
   })
 
   test('throws error if no scheme', async () => {

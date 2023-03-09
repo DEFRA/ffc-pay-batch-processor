@@ -6,6 +6,7 @@ const correlationId = require('./mockCorrelationId')
 
 const paymentRequest = {
   sourceSystem: sfiPilot.sourceSystem,
+  batch: 'SITISFI0001_AP_20230306115413497.dat',
   frn: 1234567890,
   paymentRequestNumber: 1,
   invoiceNumber: 'SITI1234567',
