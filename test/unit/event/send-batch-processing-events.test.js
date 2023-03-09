@@ -150,7 +150,6 @@ describe('V1 Events Only: Sending events for unprocessable payment requests', ()
   })
 
   test('should call sendBatchProcessedEvent twice when paymentRequests with 2 valid payment requests and 1 invalid payment request, filename, sequence and batchExportDate are received', async () => {
-    config.useV2Events = false
     paymentRequests.push(undefined)
     paymentRequests.push(paymentRequest)
 
@@ -196,7 +195,6 @@ describe('V1 Events Only: Sending events for unprocessable payment requests', ()
   })
 
   test('should not reject when sendBatchProcessedEvent rejects', async () => {
-    config.useV2Events = false
     await sendBatchProcessedEvent.mockReturnValue('Mocking sendBatchProcessedEvent returning error message')
 
     const wrapper = async () => {
