@@ -25,4 +25,49 @@ module.exports = [{
 }, {
   invalid: '2023-03-05',
   correction: '2023-06-05'
+}, {
+  invalid: '2023-04-05',
+  correction: '2023-07-05'
+}, {
+  invalid: '2023-05-05',
+  correction: '2023-08-05'
+}, {
+  invalid: '2023-06-05',
+  correction: '2023-09-05'
+}, {
+  invalid: '2023-07-05',
+  correction: '2023-10-05'
+}, {
+  invalid: '2023-08-05',
+  correction: '2023-11-05'
+}, {
+  invalid: '2023-09-05',
+  correction: '2023-12-05'
+}, {
+  invalid: '2023-10-05',
+  correction: '2024-01-05'
+}, {
+  invalid: '2023-11-05',
+  correction: '2024-02-05'
+}, {
+  invalid: '2023-12-05',
+  correction: '2024-03-05'
+}, {
+  invalid: '2024-01-05',
+  correction: '2024-04-05'
+}, {
+  invalid: '2024-02-05',
+  correction: '2024-05-05'
+}, {
+  invalid: '2024-03-05',
+  correction: '2024-06-05'
+}, {
+  invalid: '2024-04-05',
+  correction: '2024-07-05'
+}, {
+  invalid: '2024-05-05',
+  correction: '2024-08-05'
+}, {
+  invalid: '2024-06-05',
+  correction: '2024-09-05'
 }]
