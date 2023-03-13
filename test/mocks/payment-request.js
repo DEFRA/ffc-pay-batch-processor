@@ -1,11 +1,12 @@
-const { GBP } = require('../app/currency')
-const { Q4 } = require('../app/schedules')
-const { sfiPilot } = require('../app/schemes')
-const { invoiceLines, mappedInvoiceLines } = require('./mockInvoiceLines')
-const correlationId = require('./mockCorrelationId')
+const { GBP } = require('../../app/currency')
+const { Q4 } = require('../../app/schedules')
+const { sfiPilot } = require('../../app/schemes')
+const { invoiceLines, mappedInvoiceLines } = require('./invoice-lines')
+const correlationId = require('./correlation-id')
 
 const paymentRequest = {
   sourceSystem: sfiPilot.sourceSystem,
+  batch: 'SITISFI0001_AP_20230306115413497.dat',
   frn: 1234567890,
   paymentRequestNumber: 1,
   invoiceNumber: 'SITI1234567',

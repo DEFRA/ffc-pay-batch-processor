@@ -11,19 +11,21 @@ jest.mock('ffc-messaging', () => {
 })
 
 const mockSendEvent = jest.fn()
-const mockSendEventBatch = jest.fn()
+const mockPublishEvent = jest.fn()
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
 jest.mock('ffc-pay-event-publisher', () => {
   return {
-    PublishEvent: jest.fn().mockImplementation(() => {
-      return {
-        sendEvent: mockSendEvent
-      }
-    }),
-    PublishEventBatch: jest.fn().mockImplementation(() => {
-      return {
-        sendEvents: mockSendEventBatch
-      }
-    })
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
   }
 })
 

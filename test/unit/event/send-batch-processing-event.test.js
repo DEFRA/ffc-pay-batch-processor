@@ -8,9 +8,9 @@ let event
 
 describe('Sending event for unprocessable payment request', () => {
   beforeEach(async () => {
-    const correlationId = require('../../mockCorrelationId')
+    const correlationId = require('../../mocks/correlation-id')
 
-    paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
+    paymentRequest = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequest))
 
     event = {
       id: correlationId,

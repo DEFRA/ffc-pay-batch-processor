@@ -37,12 +37,15 @@ container:
   messageQueueHost: namespace.servicebus.windows.net
   paymentTopicAddress: ffc-pay-request
   eventTopicAddress: ffc-pay-event
+  eventsTopicAddress: ffc-pay-events
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false
   pollingInterval: 10000
   maxProcessingTries: 500
   disableSequenceValidation: false
+  useV1Events: true
+  useV2Events: true
 
 postgresService:
   postgresDb: ffc_pay_batch_processor

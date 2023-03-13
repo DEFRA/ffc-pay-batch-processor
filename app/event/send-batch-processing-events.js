@@ -1,8 +1,22 @@
+const { EventPublisher } = require('ffc-pay-event-publisher')
 const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
+const config = require('../config/processing')
+const messageConfig = require('../config/message')
 const sendBatchProcessedEvent = require('./send-batch-processing-event')
+const { SOURCE } = require('../constants/source')
+const { PAYMENT_EXTRACTED } = require('../constants/events')
 
-const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
+const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate, scheme) => {
+  if (config.useV1Events) {
+    await sendV1BatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
+  }
+  if (config.useV2Events) {
+    await sendV2BatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+  }
+}
+
+const sendV1BatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate) => {
   if (paymentRequests?.length) {
     const events = []
     for (const paymentRequest of paymentRequests) {
@@ -29,6 +43,26 @@ const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, bat
 
     for (const x of events) {
       await sendBatchProcessedEvent(x)
+    }
+  }
+}
+
+const sendV2BatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate, scheme) => {
+  if (paymentRequests.length) {
+    const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename, scheme))
+    const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
+    await eventPublisher.publishEvents(events)
+  }
+}
+
+const createEvent = (paymentRequest, filename, scheme) => {
+  return {
+    source: SOURCE,
+    type: PAYMENT_EXTRACTED,
+    subject: filename,
+    data: {
+      schemeId: scheme.schemeId,
+      ...paymentRequest
     }
   }
 }

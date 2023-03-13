@@ -1,242 +1,137 @@
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
+
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+
+jest.mock('../../../app/config/processing')
+const processingConfig = require('../../../app/config/processing')
+
+jest.mock('../../../app/config/message')
+const messageConfig = require('../../../app/config/message')
+
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
-jest.mock('../../../app/event/raise-event')
-const raiseEvent = require('../../../app/event/raise-event')
-
-const sendBatchQuarantineEvent = require('../../../app/event/send-batch-quarantine-event')
+const { sendBatchQuarantineEvent } = require('../../../app/event')
+const { SOURCE } = require('../../../app/constants/source')
+const { BATCH_QUARANTINED } = require('../../../app/constants/events')
 
 let filename
-let event
+let correlationId
 
-describe('Sending event for quarantined DAX response file', () => {
-  beforeEach(async () => {
-    uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
+beforeEach(async () => {
+  processingConfig.useV1Events = true
+  processingConfig.useV2Events = true
+  messageConfig.eventTopic = 'v1-events'
+  messageConfig.eventsTopic = 'v2-events'
 
-    filename = 'SITIELM0001_AP_20210812105407541.dat'
+  correlationId = require('../../mocks/correlation-id')
+  uuidv4.mockReturnValue(correlationId)
 
-    event = {
-      name: 'batch-processing-quarantine-error',
-      type: 'error',
-      message: `Quarantined ${filename}`,
-      data: {
-        filename
-      }
-    }
-  })
+  filename = 'SITIELM0001_AP_1.dat'
+})
 
-  afterEach(async () => {
-    jest.resetAllMocks()
-  })
+afterEach(async () => {
+  jest.clearAllMocks()
+})
 
-  test('should call uuidv4 when a filename is received', async () => {
+describe('V1 events for batch quarantine', () => {
+  test('should send V1 events if V1 events enabled', async () => {
+    processingConfig.useV1Events = true
     await sendBatchQuarantineEvent(filename)
-    expect(uuidv4).toHaveBeenCalled()
+    expect(mockSendEvent).toHaveBeenCalled()
   })
 
-  test('should call uuidv4 once when a filename is received', async () => {
+  test('should not send V1 events if V1 events disabled', async () => {
+    processingConfig.useV1Events = false
+    await sendBatchQuarantineEvent(filename)
+    expect(mockSendEvent).not.toHaveBeenCalled()
+  })
+
+  test('should send event to V1 topic', async () => {
+    await sendBatchQuarantineEvent(filename)
+    expect(MockPublishEvent.mock.calls[0][0]).toBe(messageConfig.eventTopic)
+  })
+
+  test('should create a new uuid as Id', async () => {
     await sendBatchQuarantineEvent(filename)
     expect(uuidv4).toHaveBeenCalledTimes(1)
+    expect(mockSendEvent.mock.calls[0][0].properties.id).toBe(correlationId)
   })
 
-  test('should call uuidv4 when an empty string is received', async () => {
-    await sendBatchQuarantineEvent('')
-    expect(uuidv4).toHaveBeenCalled()
-  })
-
-  test('should call uuidv4 once when an empty string is received', async () => {
-    await sendBatchQuarantineEvent('')
-    expect(uuidv4).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call uuidv4 when an object is received', async () => {
-    await sendBatchQuarantineEvent({})
-    expect(uuidv4).toHaveBeenCalled()
-  })
-
-  test('should call uuidv4 once when an object is received', async () => {
-    await sendBatchQuarantineEvent({})
-    expect(uuidv4).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call uuidv4 when an array is received', async () => {
-    await sendBatchQuarantineEvent([])
-    expect(uuidv4).toHaveBeenCalled()
-  })
-
-  test('should call uuidv4 once when an array is received', async () => {
-    await sendBatchQuarantineEvent([])
-    expect(uuidv4).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call uuidv4 when undefined is received', async () => {
-    await sendBatchQuarantineEvent(undefined)
-    expect(uuidv4).toHaveBeenCalled()
-  })
-
-  test('should call uuidv4 once when undefined is received', async () => {
-    await sendBatchQuarantineEvent(undefined)
-    expect(uuidv4).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call uuidv4 when null is received', async () => {
-    await sendBatchQuarantineEvent(null)
-    expect(uuidv4).toHaveBeenCalled()
-  })
-
-  test('should call uuidv4 once when null is received', async () => {
-    await sendBatchQuarantineEvent(null)
-    expect(uuidv4).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call raiseEvent when a filename is received', async () => {
+  test('should raise batch quarantine event name', async () => {
     await sendBatchQuarantineEvent(filename)
-    expect(raiseEvent).toHaveBeenCalled()
+    expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing-quarantine-error')
   })
 
-  test('should call raiseEvent once when a filename is received', async () => {
+  test('should raise error status event', async () => {
     await sendBatchQuarantineEvent(filename)
-    expect(raiseEvent).toHaveBeenCalledTimes(1)
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('error')
   })
 
-  test('should call raiseEvent with event and "error" when a filename is received', async () => {
-    event = {
-      ...event,
-      id: uuidv4()
-    }
-
+  test('should raise error event type', async () => {
     await sendBatchQuarantineEvent(filename)
-
-    expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
+    expect(mockSendEvent.mock.calls[0][0].properties.action.type).toBe('error')
   })
 
-  test('should call raiseEvent when an empty string is received', async () => {
-    await sendBatchQuarantineEvent('')
-    expect(raiseEvent).toHaveBeenCalled()
-  })
-
-  test('should call raiseEvent once when an empty string is received', async () => {
-    await sendBatchQuarantineEvent('')
-    expect(raiseEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call raiseEvent with event and "error" when an empty string is received', async () => {
-    filename = ''
-    event = {
-      ...event,
-      id: uuidv4(),
-      message: `Quarantined ${filename}`,
-      data: {
-        filename
-      }
-    }
-
+  test('should include filename in event', async () => {
     await sendBatchQuarantineEvent(filename)
-
-    expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
+    expect(mockSendEvent.mock.calls[0][0].properties.action.data.filename).toBe(filename)
   })
+})
 
-  test('should call raiseEvent when an object is received', async () => {
-    await sendBatchQuarantineEvent({})
-    expect(raiseEvent).toHaveBeenCalled()
-  })
-
-  test('should call raiseEvent once when an object is received', async () => {
-    await sendBatchQuarantineEvent({})
-    expect(raiseEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call raiseEvent with event and "error" when an object is received', async () => {
-    filename = {}
-    event = {
-      ...event,
-      id: uuidv4(),
-      message: `Quarantined ${filename}`,
-      data: {
-        filename
-      }
-    }
-
+describe('V2 events for batch quarantine', () => {
+  test('should send V2 event if V2 events enabled', async () => {
+    processingConfig.useV2Events = true
     await sendBatchQuarantineEvent(filename)
-
-    expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
+    expect(mockPublishEvent).toHaveBeenCalled()
   })
 
-  test('should call raiseEvent when an array is received', async () => {
-    await sendBatchQuarantineEvent([])
-    expect(raiseEvent).toHaveBeenCalled()
-  })
-
-  test('should call raiseEvent once when an array is received', async () => {
-    await sendBatchQuarantineEvent([])
-    expect(raiseEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call raiseEvent with event and "error" when an array is received', async () => {
-    filename = []
-    event = {
-      ...event,
-      id: uuidv4(),
-      message: `Quarantined ${filename}`,
-      data: {
-        filename
-      }
-    }
-
+  test('should not send V2 event if V2 events disabled', async () => {
+    processingConfig.useV2Events = false
     await sendBatchQuarantineEvent(filename)
-
-    expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
+    expect(mockPublishEvent).not.toHaveBeenCalled()
   })
 
-  test('should call raiseEvent when undefined is received', async () => {
-    await sendBatchQuarantineEvent(undefined)
-    expect(raiseEvent).toHaveBeenCalled()
-  })
-
-  test('should call raiseEvent once when undefined is received', async () => {
-    await sendBatchQuarantineEvent(undefined)
-    expect(raiseEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call raiseEvent with event and "error" when undefined is received', async () => {
-    filename = undefined
-    event = {
-      ...event,
-      id: uuidv4(),
-      message: `Quarantined ${filename}`,
-      data: {
-        filename
-      }
-    }
-
+  test('should send event to V2 topic', async () => {
     await sendBatchQuarantineEvent(filename)
-
-    expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
+    expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
   })
 
-  test('should call raiseEvent when null is received', async () => {
-    await sendBatchQuarantineEvent(null)
-    expect(raiseEvent).toHaveBeenCalled()
-  })
-
-  test('should call raiseEvent once when null is received', async () => {
-    await sendBatchQuarantineEvent(null)
-    expect(raiseEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call raiseEvent with event and "error" when null is received', async () => {
-    filename = null
-    event = {
-      ...event,
-      id: uuidv4(),
-      message: `Quarantined ${filename}`,
-      data: {
-        filename
-      }
-    }
-
+  test('should raise an event with batch processor source', async () => {
     await sendBatchQuarantineEvent(filename)
+    expect(mockPublishEvent.mock.calls[0][0].source).toBe(SOURCE)
+  })
 
-    expect(raiseEvent).toHaveBeenCalledWith(event, 'error')
+  test('should raise quarantined event type', async () => {
+    await sendBatchQuarantineEvent(filename)
+    expect(mockPublishEvent.mock.calls[0][0].type).toBe(BATCH_QUARANTINED)
+  })
+
+  test('should include filename in event data', async () => {
+    await sendBatchQuarantineEvent(filename)
+    expect(mockPublishEvent.mock.calls[0][0].data.filename).toBe(filename)
+  })
+
+  test('should include error message in event data', async () => {
+    await sendBatchQuarantineEvent(filename)
+    expect(mockPublishEvent.mock.calls[0][0].data.message).toBe('Batch quarantined')
   })
 })

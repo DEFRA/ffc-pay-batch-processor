@@ -1,200 +1,176 @@
+const mockSendEvent = jest.fn()
+const mockPublishEvents = jest.fn()
+
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvents: mockPublishEvents
+  }
+})
+
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+
+jest.mock('../../../app/config/processing')
+const processingConfig = require('../../../app/config/processing')
+
+jest.mock('../../../app/config/message')
+const messageConfig = require('../../../app/config/message')
+
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
-jest.mock('../../../app/event/send-batch-processing-event')
-const sendBatchProcessedEvent = require('../../../app/event/send-batch-processing-event')
-
 const { sendBatchProcessedEvents } = require('../../../app/event')
+const { SOURCE } = require('../../../app/constants/source')
+const { PAYMENT_EXTRACTED } = require('../../../app/constants/events')
 
 let filename
 let sequence
 let batchExportDate
+let scheme
 
+let correlationId
 let paymentRequest
 let paymentRequests
 
-let event
-let events
+beforeEach(async () => {
+  processingConfig.useV1Events = true
+  processingConfig.useV2Events = true
+  messageConfig.eventTopic = 'v1-events'
+  messageConfig.eventsTopic = 'v2-events'
 
-describe('Sending events for unprocessable payment requests', () => {
-  beforeEach(async () => {
-    const correlationId = require('../../mockCorrelationId')
-    uuidv4.mockReturnValue(correlationId)
+  correlationId = require('../../mocks/correlation-id')
+  uuidv4.mockReturnValue(correlationId)
 
-    filename = 'SITIELM0001_AP_1.dat'
-    sequence = '0001'
-    batchExportDate = '2021-08-12'
+  filename = 'SITIELM0001_AP_1.dat'
+  sequence = '0001'
+  batchExportDate = '2021-08-12'
+  scheme = require('../../../app/schemes').sfiPilot
 
-    paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
+  paymentRequest = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequest))
+  paymentRequests = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequests))
+})
 
-    event = {
-      id: correlationId,
-      name: 'batch-processing',
-      type: 'info',
-      message: 'Payment request created from batch file',
-      data: {
-        filename,
-        sequence,
-        batchExportDate,
-        paymentRequest
-      }
-    }
+afterEach(async () => {
+  jest.clearAllMocks()
+})
 
-    events = [event]
+describe('V1 events for processed payment requests', () => {
+  test('should send V1 events if V1 events enabled', async () => {
+    processingConfig.useV1Events = true
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent).toHaveBeenCalled()
   })
 
-  afterEach(async () => {
-    jest.resetAllMocks()
+  test('should not send V1 events if V1 events disabled', async () => {
+    processingConfig.useV1Events = false
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent).not.toHaveBeenCalled()
   })
 
-  test('should call uuidv4 when paymentRequests, filename, sequence and batchExportDate are received', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(uuidv4).toHaveBeenCalled()
+  test('should send event to V1 topic', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(MockPublishEvent.mock.calls[0][0]).toBe(messageConfig.eventTopic)
   })
 
-  test('should call uuidv4 once when paymentRequests, filename, sequence and batchExportDate are received', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
+  test('should create a new uuid as Id', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
     expect(uuidv4).toHaveBeenCalledTimes(1)
+    expect(mockSendEvent.mock.calls[0][0].properties.id).toBe(correlationId)
   })
 
-  test('should not call uuidv4 when an empty array is received', async () => {
-    await sendBatchProcessedEvents([])
-    expect(uuidv4).not.toHaveBeenCalled()
+  test('should raise batch processing event name', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].name).toBe('batch-processing')
   })
 
-  test('should not call uuidv4 when an empty string is received', async () => {
-    await sendBatchProcessedEvents('')
-    expect(uuidv4).not.toHaveBeenCalled()
+  test('should raise success status event', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].properties.status).toBe('success')
   })
 
-  test('should not call uuidv4 when an object is received', async () => {
-    await sendBatchProcessedEvents({})
-    expect(uuidv4).not.toHaveBeenCalled()
+  test('should raise info event type', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.type).toBe('info')
   })
 
-  test('should not call uuidv4 when undefined is received', async () => {
-    await sendBatchProcessedEvents(undefined)
-    expect(uuidv4).not.toHaveBeenCalled()
+  test('should include filename in event', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.data.filename).toBe(filename)
   })
 
-  test('should not call uuidv4 when null is received', async () => {
-    await sendBatchProcessedEvents(null)
-    expect(uuidv4).not.toHaveBeenCalled()
+  test('should include sequence in event', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.data.sequence).toBe(sequence)
   })
 
-  test('should call sendBatchProcessedEvent when paymentRequests has 1 payment request, filename, sequence and batchExportDate are received', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(sendBatchProcessedEvent).toHaveBeenCalled()
+  test('should include batch export date in event', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.data.batchExportDate).toBe(batchExportDate)
   })
 
-  test('should call sendBatchProcessedEvent once when paymentRequests has 1 payment request, filename, sequence and batchExportDate are received', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(sendBatchProcessedEvent).toHaveBeenCalledTimes(1)
+  test('should include payment request in event', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent.mock.calls[0][0].properties.action.data.paymentRequest).toEqual(paymentRequest)
   })
 
-  test('should call sendBatchProcessedEvent with event when paymentRequests has 1 payment request, filename, sequence and batchExportDate are received', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(sendBatchProcessedEvent).toHaveBeenCalledWith(event)
+  test('should send event for every payment request', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockSendEvent).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('V2 events for processed payment requests', () => {
+  test('should send V2 event if V2 events enabled', async () => {
+    processingConfig.useV2Events = true
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents).toHaveBeenCalled()
   })
 
-  test('should call sendBatchProcessedEvent when paymentRequests with 2 payment requests, filename, sequence and batchExportDate are received', async () => {
-    paymentRequests.push(paymentRequest)
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(sendBatchProcessedEvent).toHaveBeenCalled()
+  test('should not send V2 event if V2 events disabled', async () => {
+    processingConfig.useV2Events = false
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents).not.toHaveBeenCalled()
   })
 
-  test('should call sendBatchProcessedEvent twice when paymentRequests with 2 payment requests, filename, sequence and batchExportDate are received', async () => {
-    paymentRequests.push(paymentRequest)
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(sendBatchProcessedEvent).toHaveBeenCalledTimes(2)
+  test('should send event to V2 topic', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
   })
 
-  test('should call sendBatchProcessedEvent with each event including each payment request in data when paymentRequests with 2 payment requests, filename, sequence and batchExportDate are received', async () => {
-    paymentRequests.push(paymentRequest)
-
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-
-    event = {
-      ...event,
-      id: uuidv4()
-    }
-    events = [{
-      ...event,
-      data: {
-        ...event.data,
-        paymentRequest: paymentRequests[0]
-      }
-    },
-    {
-      ...event,
-      data: {
-        ...event.data,
-        paymentRequest: paymentRequests[1]
-      }
-    }]
-    expect(sendBatchProcessedEvent).toHaveBeenNthCalledWith(1, events[0])
-    expect(sendBatchProcessedEvent).toHaveBeenNthCalledWith(2, events[1])
+  test('should raise an event with batch processor source', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents.mock.calls[0][0][0].source).toBe(SOURCE)
   })
 
-  test('should call sendBatchProcessedEvent when paymentRequests with 2 valid payment requests and 1 invalid payment request, filename, sequence and batchExportDate are received', async () => {
-    paymentRequests.push(paymentRequest)
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    expect(sendBatchProcessedEvent).toHaveBeenCalled()
+  test('should raise extracted event type', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents.mock.calls[0][0][0].type).toBe(PAYMENT_EXTRACTED)
   })
 
-  test('should call sendBatchProcessedEvent twice when paymentRequests with 2 valid payment requests and 1 invalid payment request, filename, sequence and batchExportDate are received', async () => {
-    paymentRequests.push(undefined)
-    paymentRequests.push(paymentRequest)
-
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-
-    expect(sendBatchProcessedEvent).toBeCalledTimes(2)
+  test('should include payment request in event data', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents.mock.calls[0][0][0].data).toMatchObject(paymentRequest)
   })
 
-  test('should call sendBatchProcessedEvent with valid payment requests when paymentRequests with 2 valid payment requests and 1 invalid payment request, filename, sequence and batchExportDate are received', async () => {
-    paymentRequests.push(undefined)
-    paymentRequests.push(paymentRequest)
-
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-
-    events = [event, event]
-    expect(sendBatchProcessedEvent).toHaveBeenNthCalledWith(1, events[0])
-    expect(sendBatchProcessedEvent).toHaveBeenNthCalledWith(2, events[1])
+  test('should include scheme in event data', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents.mock.calls[0][0][0].data.schemeId).toBe(scheme.schemeId)
   })
 
-  test('should not call sendBatchProcessedEvent when an empty array is received', async () => {
-    await sendBatchProcessedEvents([])
-    expect(sendBatchProcessedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendBatchProcessedEvent when an empty string is received', async () => {
-    await sendBatchProcessedEvents('')
-    expect(sendBatchProcessedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendBatchProcessedEvent when an object is received', async () => {
-    await sendBatchProcessedEvents({})
-    expect(sendBatchProcessedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendBatchProcessedEvent when undefined is received', async () => {
-    await sendBatchProcessedEvents(undefined)
-    expect(sendBatchProcessedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not call sendBatchProcessedEvent when null is received', async () => {
-    await sendBatchProcessedEvents(null)
-    expect(sendBatchProcessedEvent).not.toHaveBeenCalled()
-  })
-
-  test('should not reject when sendBatchProcessedEvent rejects', async () => {
-    await sendBatchProcessedEvent.mockReturnValue('Mocking sendBatchProcessedEvent returning error message')
-
-    const wrapper = async () => {
-      await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
-    }
-
-    expect(wrapper).not.toThrow()
+  test('should send event for every payment request', async () => {
+    paymentRequests = [paymentRequest, paymentRequest]
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents.mock.calls[0][0].length).toBe(2)
   })
 })

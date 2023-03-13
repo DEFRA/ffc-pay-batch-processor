@@ -1,8 +1,22 @@
+const { EventPublisher } = require('ffc-pay-event-publisher')
 const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
+const config = require('../config/processing')
+const messageConfig = require('../config/message')
 const sendPaymentRequestInvalidEvent = require('./send-payment-request-invalid-event')
+const { SOURCE } = require('../constants/source')
+const { PAYMENT_REJECTED } = require('../constants/events')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
+  if (config.useV1Events) {
+    await sendV1PaymentRequestInvalidEvents(paymentRequests)
+  }
+  if (config.useV2Events) {
+    await sendV2PaymentRequestInvalidEvents(paymentRequests)
+  }
+}
+
+const sendV1PaymentRequestInvalidEvents = async (paymentRequests) => {
   if (paymentRequests?.length) {
     const events = []
     for (const paymentRequest of paymentRequests) {
@@ -24,6 +38,25 @@ const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
 
     for (const x of events) {
       await sendPaymentRequestInvalidEvent(x)
+    }
+  }
+}
+
+const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
+  if (paymentRequests?.length) {
+    const events = paymentRequests.map(createEvent)
+    const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
+    await eventPublisher.publishEvents(events)
+  }
+}
+
+const createEvent = (paymentRequest) => {
+  return {
+    source: SOURCE,
+    type: PAYMENT_REJECTED,
+    data: {
+      message: paymentRequest.errorMessage,
+      ...paymentRequest
     }
   }
 }
