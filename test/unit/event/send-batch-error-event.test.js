@@ -73,6 +73,11 @@ describe('V1 send batch error event for SITI payment file that cannot be parsed'
     expect(mockSendEvent).not.toHaveBeenCalled()
   })
 
+  test('should send event to V1 topic', async () => {
+    await sendBatchErrorEvent(filename, error)
+    expect(MockPublishEvent.mock.calls[0][0]).toBe(messageConfig.eventTopic)
+  })
+
   test('should call uuidv4 when a filename and error is received', async () => {
     await sendBatchErrorEvent(filename, error)
     expect(uuidv4).toHaveBeenCalled()
@@ -118,7 +123,6 @@ describe('V2 send batch error event for SITI payment file that cannot be parsed'
 
   test('should send event to V2 topic', async () => {
     await sendBatchErrorEvent(filename, error)
-    console.log(MockEventPublisher.mock.calls[0][0])
     expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
   })
 
