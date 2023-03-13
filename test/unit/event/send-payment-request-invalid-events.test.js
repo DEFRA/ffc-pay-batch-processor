@@ -1,3 +1,22 @@
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
+
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
@@ -6,40 +25,61 @@ const config = require('../../../app/config/processing')
 
 jest.mock('../../../app/event/send-payment-request-invalid-event')
 const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-request-invalid-event')
+/*
+jest.mock('../../../app/event/send-payment-request-invalid-events')
+const mockSendV1Event = require('../../../app/event/send-payment-request-invalid-events')
+
+jest.mock('../../../app/event/send-payment-request-invalid-events')
+const mockSendV2Event = require('../../../app/event/send-payment-request-invalid-events')
 
 const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
-
+*/
+const sendPaymentRequestInvalidEvents = require('../../../app/event/send-payment-request-invalid-events')
 let paymentRequest
 let paymentRequests
 let event
 let events
 
-describe('Sending events for unprocessable payment requests', () => {
-  beforeEach(async () => {
-    const correlationId = require('../../mockCorrelationId')
-    uuidv4.mockReturnValue(correlationId)
+beforeEach(async () => {
+  const correlationId = require('../../mockCorrelationId')
+  uuidv4.mockReturnValue(correlationId)
+  config.useV1Events = true
+  config.useV2Events = true
+  config.eventTopic = 'v1-events'
+  config.eventsTopic = 'v2-events'
+
+  paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
+  paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
+
+  paymentRequest.errorMessage = 'Invalid invoice lines received'
+  paymentRequests = [paymentRequest]
+
+  event = {
+    id: correlationId,
+    name: 'batch-processing-payment-request-invalid',
+    type: 'error',
+    message: `Payment request could not be processed. Error(s): ${paymentRequest.errorMessage}`,
+    data: { paymentRequest }
+  }
+
+  events = [event]
+})
+
+afterEach(async () => {
+  jest.resetAllMocks()
+})
+
+describe('V1 invalid payment request event', () => {
+  test('should send V1 event if V1 events enabled', async () => {
     config.useV1Events = true
-    config.useV2Events = true
-
-    paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
-
-    paymentRequest.errorMessage = 'Invalid invoice lines received'
-    paymentRequests = [paymentRequest]
-
-    event = {
-      id: correlationId,
-      name: 'batch-processing-payment-request-invalid',
-      type: 'error',
-      message: `Payment request could not be processed. Error(s): ${paymentRequest.errorMessage}`,
-      data: { paymentRequest }
-    }
-
-    events = [event]
+    await sendPaymentRequestInvalidEvents(paymentRequest)
+    expect(mockSendEvent).toHaveBeenCalled()
   })
 
-  afterEach(async () => {
-    jest.resetAllMocks()
+  test('should not send V1 event if V1 events disabled', async () => {
+    config.useV1Events = false
+    await sendPaymentRequestInvalidEvents(paymentRequest)
+    expect(mockSendEvent).not.toHaveBeenCalled()
   })
 
   test('should call uuidv4 when paymentRequests are received', async () => {
@@ -186,5 +226,19 @@ describe('Sending events for unprocessable payment requests', () => {
     }
 
     expect(wrapper).not.toThrow()
+  })
+})
+
+describe('V2 invalid payment request event', () => {
+  test('should send V2 event if V2 events enabled', async () => {
+    config.useV2Events = true
+    await sendPaymentRequestInvalidEvents(paymentRequest)
+    expect(mockSendEvent).toHaveBeenCalled()
+  })
+
+  test('should not send V2 event if V2 events disabled', async () => {
+    config.useV2Events = false
+    await sendPaymentRequestInvalidEvents(paymentRequest)
+    expect(mockSendEvent).not.toHaveBeenCalled()
   })
 })
