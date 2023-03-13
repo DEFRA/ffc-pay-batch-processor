@@ -131,7 +131,7 @@ describe('V1 events for processed payment requests', () => {
   })
 })
 
-describe('V2 enrichment error event', () => {
+describe('V2 events for processed payment requests', () => {
   test('should send V2 event if V2 events enabled', async () => {
     processingConfig.useV2Events = true
     await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
