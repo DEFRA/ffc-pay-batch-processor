@@ -4,6 +4,8 @@ const { v4: uuidv4 } = require('uuid')
 const config = require('../config/processing')
 const messageConfig = require('../config/message')
 const sendPaymentRequestInvalidEvent = require('./send-payment-request-invalid-event')
+const { SOURCE } = require('../constants/source')
+const { PAYMENT_REJECTED } = require('../constants/events')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
   if (config.useV1Events) {
@@ -50,8 +52,8 @@ const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
 
 const createEvent = (paymentRequest) => {
   return {
-    source: 'ffc-pay-batch-processor',
-    type: 'uk.gov.defra.ffc.pay.warning.payment.rejected',
+    source: SOURCE,
+    type: PAYMENT_REJECTED,
     data: {
       message: paymentRequest.errorMessage,
       ...paymentRequest
