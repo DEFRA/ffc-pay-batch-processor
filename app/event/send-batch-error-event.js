@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require('uuid')
 const config = require('../config/processing')
 const messageConfig = require('../config/message')
 const raiseEvent = require('./raise-event')
+const { SOURCE } = require('../constants/source')
+const { BATCH_REJECTED } = require('../constants/events')
 
 const sendBatchErrorEvent = async (filename, error) => {
   if (config.useV1Events) {
@@ -27,8 +29,8 @@ const sendV1BatchErrorEvent = async (filename, error) => {
 
 const sendV2BatchErrorEvent = async (filename, error) => {
   const event = {
-    source: 'ffc-pay-batch-processor',
-    type: 'uk.gov.defra.ffc.pay.warning.batch.rejected',
+    source: SOURCE,
+    type: BATCH_REJECTED,
     subject: filename,
     data: {
       message: error.message,

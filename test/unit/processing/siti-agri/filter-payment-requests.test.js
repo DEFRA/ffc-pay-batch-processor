@@ -25,14 +25,14 @@ describe('Filter payment requests', () => {
   let mappedInvoiceLines
 
   beforeEach(() => {
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequests))
+    paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequests))
 
-    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequest))
-    unsuccessfulMappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').unsuccessfulMappedPaymentRequest))
-    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').mappedPaymentRequests))
+    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequest))
+    unsuccessfulMappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').unsuccessfulMappedPaymentRequest))
+    mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequests))
 
-    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../../../mockInvoiceLines').mappedInvoiceLines))
+    mappedInvoiceLines = JSON.parse(JSON.stringify(require('../../../mocks/invoice-lines').mappedInvoiceLines))
 
     sourceSystem = paymentRequest.sourceSystem
 

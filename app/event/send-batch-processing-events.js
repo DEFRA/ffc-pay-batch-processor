@@ -4,6 +4,8 @@ const { v4: uuidv4 } = require('uuid')
 const config = require('../config/processing')
 const messageConfig = require('../config/message')
 const sendBatchProcessedEvent = require('./send-batch-processing-event')
+const { SOURCE } = require('../constants/source')
+const { PAYMENT_EXTRACTED } = require('../constants/events')
 
 const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate, scheme) => {
   if (config.useV1Events) {
@@ -55,8 +57,8 @@ const sendV2BatchProcessedEvents = async (paymentRequests, filename, sequence, b
 
 const createEvent = (paymentRequest, filename, scheme) => {
   return {
-    source: 'ffc-pay-batch-processor',
-    type: 'uk.gov.defra.ffc.pay.payment.extracted',
+    source: SOURCE,
+    type: PAYMENT_EXTRACTED,
     subject: filename,
     data: {
       schemeId: scheme.schemeId,

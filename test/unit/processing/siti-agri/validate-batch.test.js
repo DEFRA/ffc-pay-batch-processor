@@ -8,8 +8,8 @@ let paymentRequest
 
 describe('Validate batch', () => {
   beforeEach(() => {
-    batchHeader = JSON.parse(JSON.stringify(require('../../../mockBatchHeader')))
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../mockPaymentRequest').paymentRequest))
+    batchHeader = JSON.parse(JSON.stringify(require('../../../mocks/batch-header')))
+    paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
 
     convertToPence.mockImplementation(() => batchHeader.batchValue)
     getTotalValueInPence.mockImplementation(() => paymentRequest.value)

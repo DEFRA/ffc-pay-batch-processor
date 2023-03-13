@@ -7,8 +7,8 @@ const filterPaymentRequests = require('../../../app/processing/siti-agri/filter-
 jest.mock('../../../app/processing/siti-agri/validate-batch')
 const validateBatch = require('../../../app/processing/siti-agri/validate-batch')
 
-const mockCorrelationId = require('../../mockCorrelationId')
-const mockFileName = require('../../mockFileName')
+const mockCorrelationId = require('../../mocks/correlation-id')
+const mockFileName = require('../../mocks/filename')
 const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
 const { lumpSums, sfiPilot, sfi } = require('../../../app/schemes')
 const { M12 } = require('../../../app/schedules')

@@ -1,11 +1,33 @@
-jest.mock('uuid')
-const { v4: uuidv4 } = require('uuid')
+const mockSendEvent = jest.fn()
+const mockPublishEvent = jest.fn()
 
-jest.mock('../../../app/event/send-batch-processing-event')
-const sendBatchProcessedEvent = require('../../../app/event/send-batch-processing-event')
+const MockPublishEvent = jest.fn().mockImplementation(() => {
+  return {
+    sendEvent: mockSendEvent
+  }
+})
+
+const MockEventPublisher = jest.fn().mockImplementation(() => {
+  return {
+    publishEvent: mockPublishEvent
+  }
+})
+
+jest.mock('ffc-pay-event-publisher', () => {
+  return {
+    PublishEvent: MockPublishEvent,
+    EventPublisher: MockEventPublisher
+  }
+})
 
 jest.mock('../../../app/config/processing')
-const config = require('../../../app/config/processing')
+const processingConfig = require('../../../app/config/processing')
+
+jest.mock('../../../app/config/message')
+const messageConfig = require('../../../app/config/message')
+
+jest.mock('uuid')
+const { v4: uuidv4 } = require('uuid')
 
 const { sendBatchProcessedEvents } = require('../../../app/event')
 
@@ -21,18 +43,22 @@ let events
 
 describe('V1 Events Only: Sending events for unprocessable payment requests', () => {
   beforeEach(async () => {
-    config.useV1Events = true
-    config.useV2Events = false
+    uuidv4.mockImplementation(() => { '70cb0f07-e0cf-449c-86e8-0344f2c6cc6c' })
 
-    const correlationId = require('../../mockCorrelationId')
+    processingConfig.useV1Events = true
+    processingConfig.useV2Events = true
+    messageConfig.eventTopic = 'v1-events'
+    messageConfig.eventsTopic = 'v2-events'
+
+    const correlationId = require('../../mocks/correlation-id')
     uuidv4.mockReturnValue(correlationId)
 
     filename = 'SITIELM0001_AP_1.dat'
     sequence = '0001'
     batchExportDate = '2021-08-12'
 
-    paymentRequest = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../../mockPaymentRequest').paymentRequests))
+    paymentRequest = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequest))
+    paymentRequests = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequests))
 
     event = {
       id: correlationId,

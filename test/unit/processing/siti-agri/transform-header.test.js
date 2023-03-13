@@ -7,7 +7,7 @@ jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
 describe('Transform header', () => {
-  const correlationId = require('../../../mockCorrelationId')
+  const correlationId = require('../../../mocks/correlation-id')
   uuidv4.mockReturnValue(correlationId)
 
   test('transforms SFI header', async () => {
