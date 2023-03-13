@@ -201,6 +201,6 @@ describe('V1 Events Only: Sending events for unprocessable payment requests', ()
       await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate)
     }
 
-    expect(wrapper).not.toThrow()
+    await expect(wrapper).not.toThrow()
   })
 })

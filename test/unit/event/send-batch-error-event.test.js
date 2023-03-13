@@ -29,9 +29,6 @@ const messageConfig = require('../../../app/config/message')
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
-// jest.mock('../../../app/event/raise-event')
-// const raiseEvent = require('../../../app/event/raise-event')
-
 const { SOURCE } = require('../../../app/constants/source')
 const { BATCH_REJECTED } = require('../../../app/constants/events')
 const { BATCH_PROCESSING_ERROR } = require('../../../app/constants/event-name')
@@ -63,7 +60,7 @@ afterEach(async () => {
   jest.clearAllMocks()
 })
 
-describe('V1 send batch error event for unparsable SITI payment file', () => {
+describe('V1 send batch error event for SITI payment file that cannot be parsed', () => {
   test('when V1 events enabled should call mockSendEvent when a filename and error is received', async () => {
     processingConfig.useV1Events = true
     await sendBatchErrorEvent(filename, error)
@@ -106,7 +103,7 @@ describe('V1 send batch error event for unparsable SITI payment file', () => {
   })
 })
 
-describe('V2 send batch error event for unparsable SITI payment file', () => {
+describe('V2 send batch error event for SITI payment file that cannot be parsed', () => {
   test('send V2 events when v2 events enabled ', async () => {
     processingConfig.useV2Events = true
     await sendBatchErrorEvent(filename, error)

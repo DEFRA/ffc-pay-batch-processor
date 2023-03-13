@@ -29,23 +29,6 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 
-// const mockSendEvent = jest.fn()
-// const mockSendEventBatch = jest.fn()
-// jest.mock('ffc-pay-event-publisher', () => {
-//   return {
-//     PublishEvent: jest.fn().mockImplementation(() => {
-//       return {
-//         sendEvent: mockSendEvent
-//       }
-//     }),
-//     PublishEventBatch: jest.fn().mockImplementation(() => {
-//       return {
-//         sendEvents: mockSendEventBatch
-//       }
-//     })
-//   }
-// })
-
 const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
 
