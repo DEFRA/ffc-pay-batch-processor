@@ -25,15 +25,6 @@ const config = require('../../../app/config/processing')
 
 jest.mock('../../../app/event/send-payment-request-invalid-event')
 const sendPaymentRequestInvalidEvent = require('../../../app/event/send-payment-request-invalid-event')
-/*
-jest.mock('../../../app/event/send-payment-request-invalid-events')
-const mockSendV1Event = require('../../../app/event/send-payment-request-invalid-events')
-
-jest.mock('../../../app/event/send-payment-request-invalid-events')
-const mockSendV2Event = require('../../../app/event/send-payment-request-invalid-events')
-
-const { sendPaymentRequestInvalidEvents } = require('../../../app/event')
-*/
 const sendPaymentRequestInvalidEvents = require('../../../app/event/send-payment-request-invalid-events')
 let paymentRequest
 let paymentRequests
