@@ -82,8 +82,7 @@ describe('V1 events for processed payment requests', () => {
     expect(MockPublishEvent.mock.calls[0][0]).toBe(messageConfig.eventTopic)
   })
 
-  test('should create a new uuid as Id if payment request does not have correlation Id', async () => {
-    paymentRequest.correlationId = undefined
+  test('should create a new uuid as Id', async () => {
     await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
     expect(uuidv4).toHaveBeenCalledTimes(1)
     expect(mockSendEvent.mock.calls[0][0].properties.id).toBe(correlationId)

@@ -3,6 +3,8 @@ const raiseEvent = require('./raise-event')
 const config = require('../config/processing')
 const messageConfig = require('../config/message')
 const { EventPublisher } = require('ffc-pay-event-publisher')
+const { SOURCE } = require('../constants/source')
+const { BATCH_QUARANTINED } = require('../constants/events')
 
 const sendBatchQuarantineEvent = async (filename) => {
   if (config.useV1Events) {
@@ -28,11 +30,11 @@ const sendV1BatchQuarantineEvent = async (filename) => {
 
 const sendV2BatchQuarantineEvent = async (filename) => {
   const event = {
-    source: 'ffc-pay-batch-processor',
-    type: 'uk.gov.defra.ffc.pay.warning.batch.quarantined',
+    source: SOURCE,
+    type: BATCH_QUARANTINED,
     subject: filename,
     data: {
-      message: 'File quarantined',
+      message: 'Batch quarantined',
       filename
     }
   }
