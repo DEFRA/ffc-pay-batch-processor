@@ -16,5 +16,17 @@ module.exports = {
     name: 'Lump Sums',
     sourceSystem: 'LSES',
     fileMask: /^SITILSES\d{4}_AP_\d*.dat$/
+  },
+  cs: {
+    schemeId: 5,
+    name: 'CS',
+    sourceSystem: 'SITI AGRI CS SYS',
+    fileMask: /^SITICS\d{4}_AP_\d*.dat$/
+  },
+  bps: {
+    schemeId: 6,
+    name: 'BPS',
+    sourceSystem: 'SITI AGRI SYS',
+    fileMask: /^SITI_\d{4}_AP_\d*.dat$/
   }
 }

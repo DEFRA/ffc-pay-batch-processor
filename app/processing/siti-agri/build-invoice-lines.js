@@ -7,7 +7,8 @@ const buildInvoiceLines = (invoiceLines) => {
       accountCode: invoiceLine.accountCode,
       fundCode: invoiceLine.fundCode,
       description: invoiceLine.description,
-      value: invoiceLine.value
+      value: invoiceLine.value,
+      convergence: invoiceLine.convergence
     })
     )
   } catch {
