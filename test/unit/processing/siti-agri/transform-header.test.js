@@ -1,6 +1,6 @@
-const { GBP } = require('../../../../app/currency')
+const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
-const { M12 } = require('../../../../app/schedules')
+const { M12 } = require('../../../../app/constants/schedules')
 const { sfi, sfiPilot, lumpSums } = require('../../../../app/schemes')
 
 jest.mock('uuid')

@@ -1,4 +1,4 @@
-const { AP } = require('../../app/ledgers')
+const { AP } = require('../../app/ledger')
 const { sfiPilot } = require('../../app/schemes')
 
 const batchHeader = {
