@@ -29,6 +29,20 @@ describe('Transform header', () => {
     })
   })
 
+  test('for SFI return undefined if paymentRequestNumber is NaN', async () => {
+    const filename = 'SITISFI0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'SFI0000001', 'abc', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
+    const result = transformHeader(headerData, sfi.schemeId, filename)
+    expect(result.paymentRequestNumber).toBe(undefined)
+  })
+
+  test('for SFI return undefined if value is NaN', async () => {
+    const filename = 'SITISFI0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFI', 'M12']
+    const result = transformHeader(headerData, sfi.schemeId, filename)
+    expect(result.value).toBe(undefined)
+  })
+
   test('transforms SFI Pilot header', async () => {
     const filename = 'SITIELM0001_AP_20230315083940939.dat'
     const headerData = ['H', 'SFIP0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
@@ -46,20 +60,6 @@ describe('Transform header', () => {
       schedule: M12,
       invoiceLines: []
     })
-  })
-
-  test('for SFI return undefined if paymentRequestNumber is NaN', async () => {
-    const filename = 'SITISFI0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFI0000001', 'abc', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
-    const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
-  })
-
-  test('for SFI return undefined if value is NaN', async () => {
-    const filename = 'SITISFI0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFI', 'M12']
-    const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result.value).toBe(undefined)
   })
 
   test('transforms Lump Sums header', async () => {

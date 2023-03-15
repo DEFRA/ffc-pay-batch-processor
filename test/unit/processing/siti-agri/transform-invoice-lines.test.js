@@ -51,6 +51,22 @@ describe('Transform invoice lines', () => {
     })
   })
 
+  test('transforms BPS invoice line', async () => {
+    const lineData = ['L', 'SITI0000001', '100', '2023', '10501', 'EGF00', 'RP00', '1', 'G00 - Gross value of claim', '2023-12-01'
+    ]
+    const result = transformInvoiceLine(lineData, bps.schemeId)
+    expect(result).toEqual({
+      invoiceNumber: 'SITI0000001',
+      value: 100,
+      marketingYear: 2023,
+      schemeCode: '10501',
+      fundCode: 'EGF00',
+      deliveryBody: 'RP00',
+      description: 'G00 - Gross value of claim',
+      dueDate: '2023-12-01'
+    })
+  })
+
   test('transforms CS invoice line', async () => {
     const lineData = ['L', 'CS000000001', '100', '2023', '5704A', 'ERD14', 'A01000000001/MT', 'NE00', 'Y', '1', 'G00 - Gross value of claim', '2023-12-01', 'SOS273']
     const result = transformInvoiceLine(lineData, cs.schemeId)
@@ -66,22 +82,6 @@ describe('Transform invoice lines', () => {
       description: 'G00 - Gross value of claim',
       dueDate: '2023-12-01',
       accountCode: 'SOS273'
-    })
-  })
-
-  test('transforms BPS invoice line', async () => {
-    const lineData = ['L', 'SITI0000001', '100', '2023', '10501', 'EGF00', 'RP00', '1', 'G00 - Gross value of claim', '2023-12-01'
-    ]
-    const result = transformInvoiceLine(lineData, bps.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'SITI0000001',
-      value: 100,
-      marketingYear: 2023,
-      schemeCode: '10501',
-      fundCode: 'EGF00',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2023-12-01'
     })
   })
 
