@@ -8,29 +8,14 @@ const transformHeader = (headerData, schemeId, filename) => {
       return transformSFIHeader(headerData, filename)
     case lumpSums.schemeId:
       return transformLumpSumsHeader(headerData, filename)
-    // TODO add BPS Simon
     case bps.schemeId:
       return transformBPSHeader(headerData, filename)
-    // TODO add CS
     case cs.schemeId:
       return transformCSHeader(headerData, filename)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
 }
-
-const transformBPSHeader = (headerData, filename) => ({
-  correlationId: uuidv4(),
-  batch: filename,
-  invoiceNumber: headerData[1],
-  paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
-  contractNumber: headerData[3],
-  frn: headerData[4],
-  value: !isNaN(headerData[6]) ? parseFloat(headerData[6]) : undefined,
-  deliveryBody: headerData[7],
-  currency: headerData[8],
-  invoiceLines: []
-})
 
 const transformSFIHeader = (headerData, filename) => ({
   correlationId: uuidv4(),
@@ -56,6 +41,19 @@ const transformLumpSumsHeader = (headerData, filename) => ({
   currency: headerData[8],
   value: !isNaN(headerData[6]) ? parseFloat(headerData[6]) : undefined,
   deliveryBody: headerData[7],
+  invoiceLines: []
+})
+
+const transformBPSHeader = (headerData, filename) => ({
+  correlationId: uuidv4(),
+  batch: filename,
+  invoiceNumber: headerData[1],
+  paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
+  contractNumber: headerData[3],
+  frn: headerData[4],
+  value: !isNaN(headerData[6]) ? parseFloat(headerData[6]) : undefined,
+  deliveryBody: headerData[7],
+  currency: headerData[8],
   invoiceLines: []
 })
 
