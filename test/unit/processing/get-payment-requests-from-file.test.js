@@ -11,8 +11,8 @@ const mockCorrelationId = require('../../mocks/correlation-id')
 const mockFileName = require('../../mocks/filename')
 const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
 const { lumpSums, sfiPilot, sfi } = require('../../../app/schemes')
-const { M12 } = require('../../../app/constants/schedules')
-const { GBP } = require('../../../app/contstants/currency')
+const { M12 } = require('../../../app/constants/schedule')
+const { GBP } = require('../../../app/constants/currency')
 const { AP } = require('../../../app/constants/ledger')
 
 let filename
