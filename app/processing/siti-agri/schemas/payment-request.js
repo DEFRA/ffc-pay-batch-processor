@@ -1,5 +1,5 @@
-const { GBP, EUR } = require('../../../currency')
-const { Q4, M12, T4 } = require('../../../schedules')
+const { GBP, EUR } = require('../../../constants/currency')
+const { Q4, M12, T4 } = require('../../../constants/schedule')
 
 const Joi = require('joi').extend(require('@joi/date'))
 

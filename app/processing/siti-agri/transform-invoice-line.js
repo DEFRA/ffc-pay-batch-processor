@@ -1,4 +1,4 @@
-const { sfi, sfiPilot, lumpSums } = require('../../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs } = require('../../schemes')
 
 const transformInvoiceLine = (lineData, schemeId) => {
   switch (schemeId) {
@@ -6,7 +6,10 @@ const transformInvoiceLine = (lineData, schemeId) => {
     case sfiPilot.schemeId:
       return transformSFIInvoiceLine(lineData)
     case lumpSums.schemeId:
-      return transformLumpSumsInvoiceLine(lineData)
+    case bps.schemeId:
+      return transformSitiInvoiceLine(lineData)
+    case cs.schemeId:
+      return transformCSInvoiceLine(lineData)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
@@ -25,7 +28,7 @@ const transformSFIInvoiceLine = (lineData) => ({
   accountCode: lineData[13]
 })
 
-const transformLumpSumsInvoiceLine = (lineData) => ({
+const transformSitiInvoiceLine = (lineData) => ({
   invoiceNumber: lineData[1],
   value: !isNaN(lineData[2]) ? parseFloat(lineData[2]) : undefined,
   marketingYear: !isNaN(lineData[3]) ? parseInt(lineData[3]) : undefined,
@@ -34,6 +37,20 @@ const transformLumpSumsInvoiceLine = (lineData) => ({
   deliveryBody: lineData[6],
   description: lineData[8],
   dueDate: lineData[9]
+})
+
+const transformCSInvoiceLine = (lineData) => ({
+  invoiceNumber: lineData[1],
+  value: !isNaN(lineData[2]) ? parseFloat(lineData[2]) : undefined,
+  marketingYear: !isNaN(lineData[3]) ? parseInt(lineData[3]) : undefined,
+  schemeCode: lineData[4],
+  fundCode: lineData[5],
+  agreementNumber: lineData[6],
+  deliveryBody: lineData[7],
+  convergence: lineData[8] === 'Y',
+  description: lineData[10],
+  dueDate: lineData[11],
+  accountCode: lineData[12]
 })
 
 module.exports = transformInvoiceLine

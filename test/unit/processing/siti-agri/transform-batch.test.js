@@ -1,4 +1,4 @@
-const { AP } = require('../../../../app/ledgers')
+const { AP } = require('../../../../app/constants/ledger')
 const transformBatch = require('../../../../app/processing/siti-agri/transform-batch')
 
 describe('Transform batch', () => {

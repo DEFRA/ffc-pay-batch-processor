@@ -46,7 +46,7 @@ and
 
 
 
-### Azure Blob Storage
+## Azure Blob Storage
 
 This repository polls for files from Azure Blob Storage within a `batch` container.
 
@@ -56,27 +56,19 @@ The following directories are automatically created within this container:
 - `archive` - successfully processed files
 - `quarantine` - unsuccessfully processed files
 
-### Payment batch file specification
-#### SFI Pilot
-##### Example file
-Filename: `SITIELM0001_AP_20210812105404541.dat`
-```
-B^2021-08-12^2^200^0001^SFIP^AP
-H^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12
-L^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273
-H^SFI00000002^01^SFIP000002^1^1000000002^GBP^100^RP00^GBP^SFIP^M12
-L^SFI00000002^100^2022^80001^DRD10^SIP00000000002^RP00^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS273
-```
-
-#### Specification
+## Payment batch file specification
+### Siti Agri
 
 A batch file comprises three different line types which exist on a one : many : many relationship.  i.e. each batch file will have:
 
 - one batch line
 - many header lines
-- each header line can have many invoice lines.
+- each header line can have many invoice lines
 
-##### Batch line
+The format of each line type varies depending on the payment scheme.
+
+##### Sustainable Farming Incentive Pilot
+###### Batch line
  
 | Name | Max | Length position | Is Mandatory | Data Type | Description |
 | ---- | ---- | ---- | ---- | ---- | ---- |
@@ -88,7 +80,7 @@ A batch file comprises three different line types which exist on a one : many : 
 | Creator ID | 16 | 6 | Y | String | `SFIP` |
 | Invoice type | 2 | 7 | Y | String | `AP` |
  
-##### Header line
+###### Header line
  
 | Name | Max | Length position | Is Mandatory | Data Type | Description |
 | ---- | ---- | ---- | ---- | ---- | ---- |
@@ -105,15 +97,15 @@ A batch file comprises three different line types which exist on a one : many : 
 | Creator ID | 4 | 11 | Y | String | `SFIP` |
 | Payment Schedule | 3 | 12 | Y | String | `Q4` |
  
-##### Invoice line
+###### Invoice line
  
 | Name | Max | Length position | Is Mandatory | Data Type | Description |
 | ---- | ---- | ---- | ---- | ---- | ---- |
 | Line type | 1 | 1 | Y | Char | `L` |
-| Invoice number | 11 | 2 | Y | String | Also called transaction ID.Should match corresponding header value. SFIP + 7 digits. Start at next available number (sequence is shared across all SitiAgri schemes) For example `SFIP0123456` |
+| Invoice number | 11 | 2 | Y | String | As header |
 | Value | 15,2 | 3 | Y | Decimal | Value of detail line |
 | Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
-| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A`.  See valid SFI Pilot schemes below. |
+| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A`.|
 | Fund | 5 | 6 | Y | String | `DRD10` |
 | Agreement Number | 15 | 7 | Y | String | SIP + 12 digits. Unique number related to the Agreement. Start at next available number (sequence is shared across all SitiAgri schemes). For example `SIP000012345678` | 
 | Delivery body | 4 | 8 | Y | String | Allowed values: For example `RP00` (Rural Payments Agency). As per Header Delivery body. |
@@ -124,63 +116,228 @@ A batch file comprises three different line types which exist on a one : many : 
 | Batch to Customer Date | 10 | 13 | Y | Date | `yyyy-mm-dd`. Set to 15th dd  for Year 1 SFI Pilot. The payment cannot be made any earlier than this date (but can be later).Where due date does not apply and is left blank the system date will be used to pass to DAX to effect payment to customer. |
 | Account Code | 6 | 14 | Y | String | `LLLNNN` i.e. `SOS273` |
 
-##### Line type descriptions
+##### Sustainable Farming Incentive
+###### Batch line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `B` |
+| Export date | 10 | 2 | Y | Date | `yyyy-mm-dd` |
+| Number of invoices | 5 | 3 | Y | Integer | How many invoices are included within the batch |
+| Batch value | 15,2 | 4 | Y | Decimal | Total net value of all invoices in batch |
+| Batch ID | 4 | 5 | Y | String | Unique identifier of the batch |
+| Creator ID | 16 | 6 | Y | String | `SFI` |
+| Invoice type | 2 | 7 | Y | String | `AP` |
+ 
+###### Header line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `H` |
+| Invoice number | 11 | 2 | Y | String | Also called transaction ID. SFI + 8 digits. Start at next available number (sequence is shared across all SitiAgri schemes). For example `SFI00123456` |
+| Request Invoice Number | 2 | 3 | Y | String | Starts at 01, finishes at 99. First invoice request number will represent first payment request. Subsequent numbers will represent a correction or delta transaction. |
+| Claim ID | 8 | 4 | Y | String | 8 digits. Unique number related to the payment. Start at next available number (sequence is shared across all SitiAgri schemes). For example `00123456` |
+| Payment Type | 1 | 5 | Y | String | Unique number to identify payment. 1 = Request Invoice Number, 2 = Recovery/Reimbursement/Correction (currently derived in Matrix reporting from Request Invoice Number)
+| FRN | 10 | 6 | Y | String | The unique customer identifier – Firm Reference Number |
+| Calculation Currency | 3 | 7 | Y | String | This will always be `GBP` |
+| Total value | 15,2 | 8 | Y | Decimal | Net value of invoice (sum of all invoice lines associated with the header) |
+| Delivery body | 4 | 9 | Y | String | Allowed values: For example `NE00` (Natural England via Rural Payments Agency). |
+| Payment preference currency | 3 | 10 | Y | String | Currency to be paid in is always `GBP` |
+| Creator ID | 4 | 11 | Y | String | `SFI` |
+| Payment Schedule | 3 | 12 | Y | String | `Q4` |
+ 
+###### Invoice line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `L` |
+| Invoice number | 11 | 2 | Y | String | As header |
+| Value | 15,2 | 3 | Y | Decimal | Value of detail line |
+| Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
+| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A` |
+| Fund | 5 | 6 | Y | String | `DRD10` |
+| Claim ID | 15 | 7 | Y | String | Same as header Claim ID `00123456` | 
+| Delivery body | 4 | 8 | Y | String | Allowed values: For example `NE00`. As per Header Delivery body. |
+| Convergence | 1 | 9 | Y | String | `N` = Convergence, or `N` = non-convergence. |
+| Line ID | 3 | 10 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
+| Line type description | 60 | 11 | Y | String | Description of invoice line |
+| Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
+| Batch to Customer Date | 10 | 13 | Y | Date | `yyyy-mm-dd`. Set to 15th dd  for Year 1 SFI Pilot. The payment cannot be made any earlier than this date (but can be later).Where due date does not apply and is left blank the system date will be used to pass to DAX to effect payment to customer. |
+| Account Code | 6 | 14 | Y | String | `LLLNNN` i.e. `SOS273` |
 
-| Line type | Description |
-| ---- | ---- |
-| `G00 - Gross value of claim` | Positive Value |
-| `P02 - Over declaration penalty` | Negative Value |
-| `P05 - Late claim submission penalty` | Negative Value |
-| `P06 - Late change penalty` | Negative Value |
-| `P08 - Non declaration of land penalty` | Negative Value |
-| `P22 - Rural Development refusals` | Negative Value |
-| `P23 - Rural Development withdrawals` | Negative Value |
-| `P24 - Over Declaration reduction` | Negative Value |
+##### Lump Sums Exit Scheme
+###### Batch line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `B` |
+| Export date | 10 | 2 | Y | Date | `yyyy-mm-dd` |
+| Number of invoices | 5 | 3 | Y | Integer | How many invoices are included within the batch |
+| Batch value | 15,2 | 4 | Y | Decimal | Total net value of all invoices in batch |
+| Batch ID | 4 | 5 | Y | String | Unique identifier of the batch |
+| Creator ID | 16 | 6 | Y | String | `LSES` |
+| Invoice type | 2 | 7 | Y | String | `AP` |
+ 
+###### Header line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `H` |
+| Invoice number | 11 | 2 | Y | String | Also called transaction ID. LSES + 7 digits. Start at next available number (sequence is shared across all SitiAgri schemes). For example `LSES0123456` |
+| Request Invoice Number | 2 | 3 | Y | String | Starts at 01, finishes at 99. First invoice request number will represent first payment request. Subsequent numbers will represent a correction or delta transaction. |
+| Claim ID | 8 | 4 | Y | String | L + 7 digits. Unique number related to the payment. Start at next available number (sequence is shared across all SitiAgri schemes). For example `L0123456` |
+| FRN | 10 | 6 | Y | String | The unique customer identifier – Firm Reference Number |
+| Payment Type | 1 | 5 | Y | String | Unique number to identify payment. 1 = Request Invoice Number, 2 = Recovery/Reimbursement/Correction (currently derived in Matrix reporting from Request Invoice Number)
+| Total value | 15,2 | 8 | Y | Decimal | Net value of invoice (sum of all invoice lines associated with the header) |
+| Delivery body | 4 | 9 | Y | String | Allowed values: For example `RP00` (Rural Payments Agency). |
+| Payment preference currency | 3 | 10 | Y | String | Currency to be paid in is always `GBP` |
+ 
+###### Invoice line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `L` |
+| Invoice number | 11 | 2 | Y | String | As header |
+| Value | 15,2 | 3 | Y | Decimal | Value of detail line |
+| Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
+| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A` |
+| Fund | 5 | 6 | Y | String | `DRD10` |
+| Delivery body | 4 | 8 | Y | String | Allowed values: For example `RP00`. As per Header Delivery body. |
+| Line ID | 3 | 10 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
+| Line type description | 60 | 11 | Y | String | Description of invoice line |
+| Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
 
-##### Scheme codes
+##### Basic Payment Scheme
+###### Batch line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `B` |
+| Export date | 10 | 2 | Y | Date | `yyyy-mm-dd` |
+| Number of invoices | 5 | 3 | Y | Integer | How many invoices are included within the batch |
+| Batch value | 15,2 | 4 | Y | Decimal | Total net value of all invoices in batch |
+| Batch ID | 4 | 5 | Y | String | Unique identifier of the batch |
+| Creator ID | 16 | 6 | Y | String | `SITI AGRI SYS` |
+| Invoice type | 2 | 7 | Y | String | `AP` |
+ 
+###### Header line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `H` |
+| Invoice number | 11 | 2 | Y | String | Also called transaction ID. SITI + 7 digits. Start at next available number (sequence is shared across all SitiAgri schemes). For example `SITI0123456` |
+| Request Invoice Number | 2 | 3 | Y | String | Starts at 01, finishes at 99. First invoice request number will represent first payment request. Subsequent numbers will represent a correction or delta transaction. |
+| Claim ID | 8 | 4 | Y | String | C + 7 digits. Unique number related to the payment. Start at next available number (sequence is shared across all SitiAgri schemes). For example `C0123456` |
+| FRN | 10 | 6 | Y | String | The unique customer identifier – Firm Reference Number |
+| Payment Type | 1 | 5 | Y | String | Unique number to identify payment. 1 = Request Invoice Number, 2 = Recovery/Reimbursement/Correction (currently derived in Matrix reporting from Request Invoice Number)
+| Total value | 15,2 | 8 | Y | Decimal | Net value of invoice (sum of all invoice lines associated with the header) |
+| Delivery body | 4 | 9 | Y | String | Allowed values: For example `RP00` (Rural Payments Agency). |
+| Payment preference currency | 3 | 10 | Y | String | Currency to be paid in is always `GBP` |
+ 
+###### Invoice line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `L` |
+| Invoice number | 11 | 2 | Y | String | As header |
+| Value | 15,2 | 3 | Y | Decimal | Value of detail line |
+| Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
+| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A` |
+| Fund | 5 | 6 | Y | String | `DRD10` |
+| Delivery body | 4 | 8 | Y | String | Allowed values: For example `RP00`. As per Header Delivery body. |
+| Line ID | 3 | 10 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
+| Line type description | 60 | 11 | Y | String | Description of invoice line |
+| Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
 
-###### SFI Pilot
+##### Financial Discipline Mechanism Reimbursement
+###### Batch line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `B` |
+| Export date | 10 | 2 | Y | Date | `yyyy-mm-dd` |
+| Number of invoices | 5 | 3 | Y | Integer | How many invoices are included within the batch |
+| Batch value | 15,2 | 4 | Y | Decimal | Total net value of all invoices in batch |
+| Batch ID | 4 | 5 | Y | String | Unique identifier of the batch |
+| Creator ID | 16 | 6 | Y | String | `FDMR` |
+| Invoice type | 2 | 7 | Y | String | `AP` |
+ 
+###### Header line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `H` |
+| Invoice number | 11 | 2 | Y | String | Also called transaction ID. FDMR + 7 digits. Start at next available number (sequence is shared across all SitiAgri schemes). For example `FDMR0123456` |
+| Request Invoice Number | 2 | 3 | Y | String | Starts at 01, finishes at 99. First invoice request number will represent first payment request. Subsequent numbers will represent a correction or delta transaction. |
+| Claim ID | 8 | 4 | Y | String | C + 7 digits. Unique number related to the payment. Start at next available number (sequence is shared across all SitiAgri schemes). For example `C0123456` |
+| FRN | 10 | 6 | Y | String | The unique customer identifier – Firm Reference Number |
+| Payment Type | 1 | 5 | Y | String | Unique number to identify payment. 1 = Request Invoice Number, 2 = Recovery/Reimbursement/Correction (currently derived in Matrix reporting from Request Invoice Number)
+| Total value | 15,2 | 8 | Y | Decimal | Net value of invoice (sum of all invoice lines associated with the header) |
+| Delivery body | 4 | 9 | Y | String | Allowed values: For example `RP00` (Rural Payments Agency). |
+| Payment preference currency | 3 | 10 | Y | String | Currency to be paid in is always `GBP` |
+ 
+###### Invoice line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `L` |
+| Invoice number | 11 | 2 | Y | String | As header |
+| Value | 15,2 | 3 | Y | Decimal | Value of detail line |
+| Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
+| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A` |
+| Fund | 5 | 6 | Y | String | `DRD10` |
+| Delivery body | 4 | 8 | Y | String | Allowed values: For example `RP00`. As per Header Delivery body. |
+| Line ID | 3 | 10 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
+| Line type description | 60 | 11 | Y | String | Description of invoice line |
+| Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
 
-| Scheme | Code |
-| ---- | ---- |
-| Arable and Horticultural Land | 80001 |
-| Arable and Horticultural Soils| 80002 |
-| Hedgerow | 80003 |
-| Improved Grassland Soils | 80004 |
-| Improved Grassland | 80005 |
-| On Farm Woodland | 80006 |
-| Low and no input Grassland | 80007 |
-| Water body Buffering | 80008 |
-| Pilot Participation Payment | 80009 |
+##### Countryside Stewardship
+###### Batch line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `B` |
+| Export date | 10 | 2 | Y | Date | `yyyy-mm-dd` |
+| Number of invoices | 5 | 3 | Y | Integer | How many invoices are included within the batch |
+| Batch value | 15,2 | 4 | Y | Decimal | Total net value of all invoices in batch |
+| Batch ID | 4 | 5 | Y | String | Unique identifier of the batch |
+| Creator ID | 16 | 6 | Y | String | `SITI AGRI CS SYS` |
+| Invoice type | 2 | 7 | Y | String | `AP` |
+ 
+###### Header line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `H` |
+| Invoice number | 11 | 2 | Y | String | Also called transaction ID. CS + 8 digits. Start at next available number (sequence is shared across all SitiAgri schemes). For example `CS000123456` |
+| Request Invoice Number | 2 | 3 | Y | String | Starts at 01, finishes at 99. First invoice request number will represent first payment request. Subsequent numbers will represent a correction or delta transaction. |
+| Claim ID | 8 | 4 | Y | String | 8 digits. Unique number related to the payment. Start at next available number (sequence is shared across all SitiAgri schemes). For example `A0123456` |
+| Payment Type | 1 | 5 | Y | String | Unique number to identify payment. 1 = Request Invoice Number, 2 = Recovery/Reimbursement/Correction (currently derived in Matrix reporting from Request Invoice Number)
+| FRN | 10 | 6 | Y | String | The unique customer identifier – Firm Reference Number |
+| Calculation Currency | 3 | 7 | Y | String | This will always be `GBP` |
+| Total value | 15,2 | 8 | Y | Decimal | Net value of invoice (sum of all invoice lines associated with the header) |
+| Delivery body | 4 | 9 | Y | String | Allowed values: For example `NE00` (Natural England via Rural Payments Agency). |
+| Payment preference currency | 3 | 10 | Y | String | Currency to be paid in is always `GBP` |
+ 
+###### Invoice line
+ 
+| Name | Max | Length position | Is Mandatory | Data Type | Description |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| Line type | 1 | 1 | Y | Char | `L` |
+| Invoice number | 11 | 2 | Y | String | As header |
+| Value | 15,2 | 3 | Y | Decimal | Value of detail line |
+| Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
+| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A` |
+| Fund | 5 | 6 | Y | String | `DRD10` |
+| Agreement Number | 15 | 7 | Y | String | Unique agreement number | 
+| Delivery body | 4 | 8 | Y | String | Allowed values: For example `NE00`. As per Header Delivery body. |
+| Convergence | 1 | 9 | Y | String | `N` = Convergence, or `N` = non-convergence. |
+| Line ID | 3 | 10 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
+| Line type description | 60 | 11 | Y | String | Description of invoice line |
+| Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
+| Account Code | 6 | 14 | Y | String | `LLLNNN` i.e. `SOS273` |
 
-###### SFI
-
-| Name | Code |
-| ---- | ---- |
-| Arable and horticultural soils: Introductory | 80101 |
-| Arable and horticultural soils: Intermediate | 80102 |
-| Improved grassland soils: Introductory | 80111 |
-| Improved grassland soils: Intermediate | 80112 |
-| Moorland: Introductory | 80121 |
-| Moorland: Additional | 80190 |
-| Common land: Additional | 80195 |
-
- ###### Lump sums
-
-| Name | Code |
-| ---- | ---- |
-| Lump sum exit scheme | 10570 |
-
-###### Vet Visits
-
-| Name | Code |
-| ---- | ---- |
-| Sheep | 18001 |
-| Beef cattle | 18002 |
-| Dairy cattle | 18003 |
-| Pigs | 18004 |
-
-# Setup
+## Setup
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
 
@@ -199,14 +356,14 @@ through the Docker Compose
 docker-compose build
 ```
 
-# How to start the Batch Processor
+## How to start the Batch Processor
 
 The service can be run using the convenience script:
 ```
 ./scripts/start
 ```
 
-# How to get an output
+## How to get an output
 
 There are several different possible outcomes depending on the input:
 
@@ -230,7 +387,7 @@ There are several different possible outcomes depending on the input:
 **Input:** A payment file where the batch header sequence number is different from the expected value.  
 **Output:** If the sequence number is lower than the expected value the payment file is ignored. If the sequence number is higher than the expected value the payment file is quarantined. A message is logged stating that the payment file has been ignored or quarentined accordingly.  
 
-# How to stop the Batch Processor
+## How to stop the Batch Processor
 
 This serivice can be stopped in different ways:
 - [Bring the service down](#bring-the-service-down)
@@ -242,9 +399,9 @@ This serivice can be stopped in different ways:
 ### Bring the service down and clear its data  
 `docker-compose down -v`  
 
-# How to test the Batch Processor
+## How to test the Batch Processor
 
-## Running tests
+### Running tests
 
 Tests can be run in several modes:
 - [Run tests and exit](#run-tests-and-exit)
@@ -270,7 +427,7 @@ scripts/test -d
 
 This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
 
-# Licence
+## Licence
 
 THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:
 
