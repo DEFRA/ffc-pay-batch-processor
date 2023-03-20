@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+set -e
+projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
+
+cd "${projectRoot}"
+docker-compose down -v
+./scripts/start -d
+
+# run acceptance tests
+cd test/acceptance
+
+  echo "==================================="
+  echo "Running Test using Docker Image"
+  echo "=================================="
+
+  docker-compose down -v
+  docker-compose -f docker-compose.yaml -f docker-compose.override.yaml -f docker-compose.link.yaml up --build --abort-on-container-exit
+
