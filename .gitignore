@@ -6,4 +6,4 @@ helm/**/*.lock
 .dat
 .env
 .idea
-reports
+.DS_Store

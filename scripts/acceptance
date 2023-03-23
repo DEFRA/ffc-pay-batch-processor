@@ -3,17 +3,22 @@
 set -e
 projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
 
+service="ffc-pay-batch-processor"
+
 cd "${projectRoot}"
-docker-compose down -v
-./scripts/start -d
+  # Create test output folder
+  mkdir -p test-output
 
-# run acceptance tests
-cd test/acceptance
+ # Guarantee clean environment
+  docker-compose -f docker-compose.yaml -f docker-compose.migrate.yaml -p "${service}-acceptance-test" down -v
+  docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-test-runner" down -v
 
-  echo "==================================="
-  echo "Running Test using Docker Image"
-  echo "=================================="
+  # Ensure container images are up to date
+  docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-acceptance-test" build
+  docker-compose -f docker-compose.yaml -f docker-compose.migrate.yaml -p "${service}-acceptance-test" run --rm database-up
 
-  docker-compose down -v
-  docker-compose -f docker-compose.yaml -f docker-compose.override.yaml -f docker-compose.link.yaml up --build --abort-on-container-exit
-
+  echo "============================================"
+  echo "Running Batch Processor Acceptance Test(s)"
+  echo "============================================"
+  #Start container and run tests
+  docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-acceptance-test" run --rm "${service}-test-runner" ${command}

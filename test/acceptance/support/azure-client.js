@@ -1,18 +1,25 @@
 const { BlobServiceClient } = require('@azure/storage-blob')
 const { ServiceBusClient } = require('@azure/service-bus')
 const config = require('./config')
+let containerCreated = false
 
-let blobServiceClient = BlobServiceClient.fromConnectionString(`${config.connectionStr}`)
-let container = blobServiceClient.getContainerClient(`${config.container}`)
+const blobServiceClient = BlobServiceClient.fromConnectionString(`${config.connectionStr}`)
+const container = blobServiceClient.getContainerClient(`${config.container}`)
 
+const initialiseContainer = async () => {
+  if (!containerCreated) {
+    await container.createIfNotExists()
+    containerCreated = true
+  }
+}
 const uploadFile = async (filename, filepath) => {
+  initialiseContainer()
   const blob = container.getBlockBlobClient(`${config.inboundFolder}/${filename}`)
   await blob.uploadFile(filepath)
 }
 
-const receiveMessage = async () => {
+const receiveMessages = async () => {
   const connectionString = `Endpoint=sb://${config.host}/;SharedAccessKeyName=${config.username};SharedAccessKey=${config.password}`
-
   let sbClient
   let messages
 
@@ -21,16 +28,11 @@ const receiveMessage = async () => {
     const receiver = sbClient.createReceiver(config.paymentAddress, config.paymentSubscriptionAddress, { receiveMode: 'receiveAndDelete' })
     console.log(`Setup to receive messages from '${config.paymentAddress}/${config.paymentSubscriptionAddress}'.`)
 
-    const batchSize = 10
-    let counter = 1
+    const batchSize = 2
+    messages = await receiver.receiveMessages(batchSize, { maxWaitTimeInMs: 60 * 1000 })
+    console.log(`Received (and deleted) ${messages.length} messages.`)
 
-    do {
-      messages = await receiver.receiveMessages(batchSize, { maxWaitTimeInMs: 30 * 1000 })
-      console.log(`Received (and deleted) ${messages.length} messages.`)
-      counter++
-    } while (messages.length > 0 && messages.length === batchSize)
     await receiver.close()
-    console.log(`No more messages in: '${config.paymentAddress}/${config.paymentSubscriptionAddress}'.`)
   } catch (err) {
     console.log('Error:', err)
     throw err
@@ -43,5 +45,5 @@ const receiveMessage = async () => {
 
 module.exports = {
   uploadFile,
-  receiveMessage
+  receiveMessages
 }

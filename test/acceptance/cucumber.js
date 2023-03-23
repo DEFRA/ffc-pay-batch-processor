@@ -4,6 +4,6 @@ module.exports = {
     publishQuiet: true,
     require: ['step_definitions/**/*.js'],
     parallel: 1,
-    format: ['html:reports/cucumber-report.html']
-  },
+    format: ['html:test-output/cucumber-report.html']
+  }
 }

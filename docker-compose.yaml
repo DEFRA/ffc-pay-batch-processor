@@ -9,6 +9,7 @@ services:
     container_name: ffc-pay-batch-processor
     depends_on:
       - ffc-pay-batch-processor-postgres
+      - ffc-pay-batch-azurite
     environment:
       APPINSIGHTS_CLOUDROLE: ffc-pay-batch-processor-local
       AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
