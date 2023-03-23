@@ -5,6 +5,7 @@ let containerCreated = false
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(`${config.connectionStr}`)
 const container = blobServiceClient.getContainerClient(`${config.container}`)
+const connectionString = `Endpoint=sb://${config.host}/;SharedAccessKeyName=${config.username};SharedAccessKey=${config.password}`
 
 const initialiseContainer = async () => {
   if (!containerCreated) {
@@ -19,28 +20,34 @@ const uploadFile = async (filename, filepath) => {
 }
 
 const receiveMessages = async () => {
-  const connectionString = `Endpoint=sb://${config.host}/;SharedAccessKeyName=${config.username};SharedAccessKey=${config.password}`
-  let sbClient
-  let messages
+  const sbClient = new ServiceBusClient(connectionString)
+  const receiver = sbClient.createReceiver(config.paymentAddress, config.paymentSubscriptionAddress, { receiveMode: 'receiveAndDelete' })
+  const batchSize = 2
 
   try {
-    sbClient = new ServiceBusClient(connectionString)
-    const receiver = sbClient.createReceiver(config.paymentAddress, config.paymentSubscriptionAddress, { receiveMode: 'receiveAndDelete' })
+    const allMessages = []
     console.log(`Setup to receive messages from '${config.paymentAddress}/${config.paymentSubscriptionAddress}'.`)
 
-    const batchSize = 2
-    messages = await receiver.receiveMessages(batchSize, { maxWaitTimeInMs: 60 * 1000 })
-    console.log(`Received (and deleted) ${messages.length} messages.`)
+    while (allMessages.length < batchSize) {
+      const messages = await receiver.receiveMessages(batchSize, { maxWaitTimeInMs: 20 * 1000 })
+
+      if (!messages.length) {
+        console.log('No more messages to receive')
+        break
+      }
+
+      console.log(`Received (and deleted) ${messages.length} messages.`)
+      allMessages.push(...messages)
+    }
 
     await receiver.close()
+    return allMessages.map(message => message.body)
   } catch (err) {
     console.log('Error:', err)
     throw err
   } finally {
     await sbClient.close()
   }
-
-  return messages.map(x => x.body)
 }
 
 module.exports = {
