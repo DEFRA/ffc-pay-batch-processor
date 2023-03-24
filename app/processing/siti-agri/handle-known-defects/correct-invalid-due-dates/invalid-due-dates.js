@@ -1,4 +1,22 @@
 module.exports = [{
+  invalid: '2022-01-05',
+  correction: '2023-04-05'
+}, {
+  invalid: '2022-02-05',
+  correction: '2023-05-05'
+}, {
+  invalid: '2022-03-05',
+  correction: '2023-06-05'
+}, {
+  invalid: '2022-04-05',
+  correction: '2023-07-05'
+}, {
+  invalid: '2022-05-05',
+  correction: '2023-08-05'
+}, {
+  invalid: '2022-06-05',
+  correction: '2023-09-05'
+}, {
   invalid: '2022-07-05',
   correction: '2022-10-05'
 }, {
