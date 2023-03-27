@@ -1,5 +1,5 @@
 const transformInvoiceLine = require('../../../../app/processing/siti-agri/transform-invoice-line')
-const { sfi, sfiPilot, lumpSums, bps, cs } = require('../../../../app/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/schemes')
 
 describe('Transform invoice lines', () => {
   test('transforms SFI invoice line', async () => {
@@ -82,6 +82,21 @@ describe('Transform invoice lines', () => {
       description: 'G00 - Gross value of claim',
       dueDate: '2023-12-01',
       accountCode: 'SOS273'
+    })
+  })
+
+  test('transforms FDMR invoice line', async () => {
+    const lineData = ['L', 'FDMR0000001', '100', '2023', '10573', 'EGF00', 'RP00', '1', 'G01 - Gross value of claim', '2023-12-01']
+    const result = transformInvoiceLine(lineData, fdmr.schemeId)
+    expect(result).toEqual({
+      invoiceNumber: 'FDMR0000001',
+      value: 100,
+      marketingYear: 2023,
+      schemeCode: '10573',
+      fundCode: 'EGF00',
+      deliveryBody: 'RP00',
+      description: 'G01 - Gross value of claim',
+      dueDate: '2023-12-01'
     })
   })
 

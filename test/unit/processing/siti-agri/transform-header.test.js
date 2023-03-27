@@ -1,7 +1,7 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
 const { M12 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs } = require('../../../../app/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/schemes')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
@@ -141,6 +141,38 @@ describe('Transform header', () => {
     const filename = 'SITICS0001_AP_20230315084313836.dat'
     const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', 'abc', 'NE00', 'GBP']
     const result = transformHeader(headerData, cs.schemeId, filename)
+    expect(result.value).toBe(undefined)
+  })
+
+  test('transforms FDMR header', async () => {
+    const filename = 'FDMR_0001_AP_20230315081841316.dat'
+    const headerData = ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
+    const result = transformHeader(headerData, fdmr.schemeId, filename)
+    expect(result).toEqual({
+      correlationId,
+      batch: filename,
+      invoiceNumber: 'FDMR0000001',
+      paymentRequestNumber: 1,
+      contractNumber: 'C0000001',
+      frn: '1000000001',
+      value: 100,
+      deliveryBody: 'RP00',
+      currency: GBP,
+      invoiceLines: []
+    })
+  })
+
+  test('for BPS return undefined if paymentRequestNumber is NaN', async () => {
+    const filename = 'SITI_0001_AP_20230315081841316.dat'
+    const headerData = ['H', 'SITI0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
+    const result = transformHeader(headerData, bps.schemeId, filename)
+    expect(result.paymentRequestNumber).toBe(undefined)
+  })
+
+  test('for BPS return undefined if value is NaN', async () => {
+    const filename = 'SITI_0001_AP_20230315081841316.dat'
+    const headerData = ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
+    const result = transformHeader(headerData, bps.schemeId, filename)
     expect(result.value).toBe(undefined)
   })
 
