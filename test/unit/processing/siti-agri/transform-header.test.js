@@ -162,16 +162,16 @@ describe('Transform header', () => {
     })
   })
 
-  test('for BPS return undefined if paymentRequestNumber is NaN', async () => {
-    const filename = 'SITI_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'SITI0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
-    const result = transformHeader(headerData, bps.schemeId, filename)
+  test('for FDMR return undefined if paymentRequestNumber is NaN', async () => {
+    const filename = 'FDMR_0001_AP_20230315081841316.dat'
+    const headerData = ['H', 'FDMR0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
+    const result = transformHeader(headerData, fdmr.schemeId, filename)
     expect(result.paymentRequestNumber).toBe(undefined)
   })
 
-  test('for BPS return undefined if value is NaN', async () => {
-    const filename = 'SITI_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
+  test('for FDMR return undefined if value is NaN', async () => {
+    const filename = 'FDMR_0001_AP_20230315081841316.dat'
+    const headerData = ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
     const result = transformHeader(headerData, bps.schemeId, filename)
     expect(result.value).toBe(undefined)
   })
