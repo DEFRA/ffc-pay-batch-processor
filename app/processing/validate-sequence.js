@@ -17,7 +17,6 @@ const getSequence = (schemeId, filename) => {
     case cs.schemeId:
       return Number(filename.substr(6, 4))
     case bps.schemeId:
-      return Number(filename.substr(5, 4))
     case fdmr.schemeId:
       return Number(filename.substr(5, 4))
     default:

@@ -7,11 +7,10 @@ const transformInvoiceLine = (lineData, schemeId) => {
       return transformSFIInvoiceLine(lineData)
     case lumpSums.schemeId:
     case bps.schemeId:
+    case fdmr.schemeId:
       return transformSitiInvoiceLine(lineData)
     case cs.schemeId:
       return transformCSInvoiceLine(lineData)
-    case fdmr.schemeId:
-      return transformSitiInvoiceLine(lineData)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
