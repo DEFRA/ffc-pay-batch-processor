@@ -1,4 +1,4 @@
-const { sfi, sfiPilot, lumpSums, bps, cs } = require('../../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../schemes')
 
 const transformInvoiceLine = (lineData, schemeId) => {
   switch (schemeId) {
@@ -10,6 +10,8 @@ const transformInvoiceLine = (lineData, schemeId) => {
       return transformSitiInvoiceLine(lineData)
     case cs.schemeId:
       return transformCSInvoiceLine(lineData)
+    case fdmr.schemeId:
+      return transformSitiInvoiceLine(lineData)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
