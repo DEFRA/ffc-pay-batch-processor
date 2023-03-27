@@ -1,4 +1,4 @@
-const { sfi, sfiPilot, lumpSums, bps, cs } = require('../../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../schemes')
 
 const transformInvoiceLine = (lineData, schemeId) => {
   switch (schemeId) {
@@ -7,6 +7,7 @@ const transformInvoiceLine = (lineData, schemeId) => {
       return transformSFIInvoiceLine(lineData)
     case lumpSums.schemeId:
     case bps.schemeId:
+    case fdmr.schemeId:
       return transformSitiInvoiceLine(lineData)
     case cs.schemeId:
       return transformCSInvoiceLine(lineData)

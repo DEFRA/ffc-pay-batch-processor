@@ -1,6 +1,6 @@
 let batch
 let validateSequence
-const { sfi, sfiPilot, lumpSums, bps, cs } = require('../../../app/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../app/schemes')
 
 const setupMocks = (mockDisableSequenceValidation = false) => {
   jest.mock('../../../app/processing/batch')
@@ -146,6 +146,33 @@ describe('Validate sequence', () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
     const result = await validateSequence(cs.schemeId, 'SITICS0002_AP_20230315124537408.dat')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(2)
+  })
+
+  test('returns success if next sequence matches expected for FDMR', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(fdmr.schemeId, 'FDMR_0001_AP_20230315124537408.dat')
+    expect(result.success).toBeTruthy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next lower than expected for FDMR', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(2)
+    const result = await validateSequence(fdmr.schemeId, 'FDMR_0001_AP_20230315124537408.dat')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(2)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next higher than expected for FDMR', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(fdmr.schemeId, 'FDMR_0002_AP_20230315124537408.dat')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)
