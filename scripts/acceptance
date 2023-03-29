@@ -9,16 +9,16 @@ cd "${projectRoot}"
   # Create test output folder
   mkdir -p test-output
 
- # Guarantee clean environment
-  docker-compose -f docker-compose.yaml -f docker-compose.migrate.yaml -p "${service}-acceptance-test" down -v
-  docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-test-runner" down -v
+# Guarantee clean environment
+docker-compose -f docker-compose.yaml -f docker-compose.migrate.yaml -p "${service}-acceptance-test" down -v
+docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-test-runner" down -v
 
-  # Ensure container images are up to date
-  docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-acceptance-test" build
-  docker-compose -f docker-compose.yaml -f docker-compose.migrate.yaml -p "${service}-acceptance-test" run --rm database-up
+# Ensure container images are up to date
+docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-acceptance-test" build
+docker-compose -f docker-compose.yaml -f docker-compose.migrate.yaml -p "${service}-acceptance-test" run --rm database-up
 
-  echo "============================================"
-  echo "Running Batch Processor Acceptance Test(s)"
-  echo "============================================"
-  #Start container and run tests
-  docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-acceptance-test" run --rm "${service}-test-runner" ${command}
+echo "============================================"
+echo "Running Batch Processor Acceptance Test(s)"
+echo "============================================"
+# Start container and run tests
+docker-compose -f docker-compose.yaml -f docker-compose.acceptance.yaml -p "${service}-acceptance-test" run --rm "${service}-test-runner" ${command}
