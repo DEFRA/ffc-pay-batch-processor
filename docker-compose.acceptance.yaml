@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  ffc-pay-batch-processor:
+      build: 
+        target: development
+      image: ffc-pay-batch-processor-development
+      volumes:
+        - ./app:/home/node/app
+        - ./package.json:/home/node/package.json
+      environment:
+        DISABLE_SEQUENCE_VALIDATION: ${DISABLE_SEQUENCE_VALIDATION:-true}
+  
+  ffc-pay-batch-processor-test-runner:
+    build:
+      context: .
+      target: development
+    depends_on:
+      - ffc-pay-batch-processor
+    image: ffc-pay-batch-processor-development
+    command: npm run test:acceptance
+    volumes:
+      - ./test-output:/home/node/test/acceptance/test-output
+      - ./test:/home/node/test
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-batch-azurite:10000/devstoreaccount1;
+      AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
+      PAYMENT_TOPIC_ADDRESS: ${PAYMENT_TOPIC_ADDRESS:-ffc-pay-request}${MESSAGE_QUEUE_SUFFIX}
+      MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST}
+      MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
+      MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}
+      PAYMENT_SUBSCRIPTION_ADDRESS: ${PAYMENT_SUBSCRIPTION_ADDRESS:-ffc-pay-enrichment}${MESSAGE_QUEUE_SUFFIX}
+  
+  ffc-pay-batch-processor-postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
