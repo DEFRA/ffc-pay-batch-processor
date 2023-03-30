@@ -10,8 +10,6 @@ services:
         - ./package.json:/home/node/package.json
       environment:
         DISABLE_SEQUENCE_VALIDATION: ${DISABLE_SEQUENCE_VALIDATION:-true}
-        AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-batch-azurite:10000/devstoreaccount1;
-
   
   ffc-pay-batch-processor-test-runner:
     build:
@@ -32,3 +30,10 @@ services:
       MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
       MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}
       PAYMENT_SUBSCRIPTION_ADDRESS: ${PAYMENT_SUBSCRIPTION_ADDRESS:-ffc-pay-enrichment}${MESSAGE_QUEUE_SUFFIX}
+  
+  ffc-pay-batch-processor-postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

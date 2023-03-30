@@ -6,8 +6,8 @@
   "main": "app/index.js",
   "scripts": {
     "pretest": "npm run test:lint",
-    "test": "jest --runInBand && npm run test:acceptance",
-    "test:acceptance": "cucumber-js",
+    "test": "jest --runInBand",
+    "test:acceptance": "cucumber-js --config ./test/acceptance/cucumber.js",
     "test:lint": "standard",
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
