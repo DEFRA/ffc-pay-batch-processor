@@ -13,6 +13,7 @@ module.exports = Joi.object({
   paymentRequestNumber: Joi.number().integer().required(),
   agreementNumber: Joi.string().optional(),
   contractNumber: Joi.string().required(),
+  paymentType: Joi.string().optional(),
   currency: Joi.string().valid(GBP, EUR).required(),
   schedule: Joi.string().valid(Q4, M12, T4).optional(),
   dueDate: Joi.date().format('YYYY-MM-DD'),
