@@ -1,12 +1,17 @@
 {
   "name": "ffc-pay-batch-processor",
+<<<<<<< HEAD
   "version": "1.26.0",
+=======
+  "version": "1.25.1",
+>>>>>>> main
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
   "scripts": {
     "pretest": "npm run test:lint",
     "test": "jest --runInBand",
+    "test:acceptance": "cucumber-js --config ./test/acceptance/cucumber.js",
     "test:lint": "standard",
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
@@ -40,9 +45,12 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "@azure/service-bus": "7.8.1",
+    "@cucumber/cucumber": "9.0.0",
     "jest": "28.1.1",
     "jest-junit": "13.2.0",
     "nodemon": "2.0.21",
+    "hamjest": "3.7.3",
     "standard": "17.0.0"
   },
   "standard": {
