@@ -1,8 +1,12 @@
-const { Given, When, Then, setDefaultTimeout } = require('@cucumber/cucumber')
+const { Given, When, Then, Before, setDefaultTimeout } = require('@cucumber/cucumber')
 const __ = require('hamjest')
 const processor = require('../support/processor')
 
 setDefaultTimeout(60 * 1000)
+
+Before({ name: 'Clear topic to ensure clean test run' }, async function () {
+  await processor.consumeMessages('Clearing messages')
+})
 
 Given('a batch file is received', async () => {
   await processor.uploadFile()
@@ -12,7 +16,7 @@ When('the file is processed', async () => {
 })
 
 Then('a Payment Request is generated', async () => {
-  const messages = await processor.consumeMessages()
+  const messages = await processor.consumeMessages('Receiving messages')
 
   const expectedFields = {
     paymentRequestNumber: __.equalTo(1),
