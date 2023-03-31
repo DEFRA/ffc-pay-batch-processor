@@ -14,8 +14,8 @@ const uploadFile = async () => {
   return response
 }
 
-const consumeMessages = async () => {
-  return azureClient.receiveMessages()
+const consumeMessages = async (message) => {
+  return azureClient.receiveMessages(message)
 }
 
 module.exports = {
