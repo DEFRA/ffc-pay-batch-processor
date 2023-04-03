@@ -6,6 +6,6 @@ module.exports = {
     backtrace: true,
     require: ['test/acceptance/step_definitions/**/*.js'],
     parallel: 1,
-    format: ['html:test-output/cucumber-report.html']
+    format: ['html:test/acceptance/test-output/cucumber-report.html']
   }
 }

@@ -5,6 +5,7 @@ const config = require('./config')
 const blobServiceClient = BlobServiceClient.fromConnectionString(`${config.connectionStr}`)
 const container = blobServiceClient.getContainerClient(`${config.container}`)
 const connectionString = `Endpoint=sb://${config.host}/;SharedAccessKeyName=${config.username};SharedAccessKey=${config.password}`
+let sbClient
 
 const uploadFile = async (filename, filepath) => {
   await container.createIfNotExists()
@@ -12,29 +13,36 @@ const uploadFile = async (filename, filepath) => {
   await blob.uploadFile(filepath)
 }
 
-const receiveMessages = async () => {
-  const sbClient = new ServiceBusClient(connectionString)
-  const receiver = sbClient.createReceiver(config.paymentAddress, config.paymentSubscriptionAddress, { receiveMode: 'receiveAndDelete' })
-  const batchSize = 2
+const receiveMessages = async (message = 'Peeking & deleting') => {
+  const batchSize = 10
+  const receiver = initReciever()
+  console.log(`${message} from '${config.paymentAddress}/${config.paymentSubscriptionAddress}'.`)
+  return getAllMessages(receiver, batchSize)
+}
+
+const getAllMessages = async (receiver, batchSize) => {
+  const allMessages = []
   let messages
 
   try {
-    const allMessages = []
-    console.log(`Setup to receive messages from '${config.paymentAddress}/${config.paymentSubscriptionAddress}'.`)
     do {
       messages = await receiver.receiveMessages(batchSize, { maxWaitTimeInMs: 20 * 1000 })
-      console.log(`Received (and deleted) ${messages.length} messages.`)
       allMessages.push(...messages)
     } while (allMessages.length < batchSize && messages > 0)
 
+    console.log(`Received and (deleted) ${allMessages.length}`)
     await receiver.close()
     return allMessages.map(message => message.body)
   } catch (err) {
-    console.log('Error:', err)
-    throw err
+    throw new Error(`Unable to read from ${config.paymentSubscriptionAddress}. `, err)
   } finally {
     await sbClient.close()
   }
+}
+
+const initReciever = () => {
+  sbClient = new ServiceBusClient(connectionString)
+  return sbClient.createReceiver(config.paymentAddress, config.paymentSubscriptionAddress, { receiveMode: 'receiveAndDelete' })
 }
 
 module.exports = {
