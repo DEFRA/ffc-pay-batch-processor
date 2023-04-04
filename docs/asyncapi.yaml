@@ -289,7 +289,6 @@ components:
         - invoiceNumber
         - marketingYear
         - paymentRequestNumber
-        - paymentType
         - sbi
         - sourceSystem
         - value
