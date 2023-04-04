@@ -445,7 +445,7 @@ components:
       type: number
       description: Defines type of payment request either Balance or Advance
       minimum: 0
-      maximum: 1
+      maximum: 3
       example: 1
     SBI:
       type: number
