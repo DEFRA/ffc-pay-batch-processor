@@ -145,11 +145,18 @@ describe('Transform header', () => {
     expect(result.value).toBe(undefined)
   })
 
-  test('for CS return Payment Type', async () => {
+  test('for CS return Payment Type as an int', async () => {
     const filename = 'SITICS0001_AP_20230315084313836.dat'
     const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP']
     const result = transformHeader(headerData, cs.schemeId, filename)
     expect(result.paymentType).toBe(1)
+  })
+
+  test('for CS return Payment Type as undefined if NaN', async () => {
+    const filename = 'SITICS0001_AP_20230315084313836.dat'
+    const headerData = ['H', 'CS000000001', '001', 'A0000001', 'payment-type', '1000000001', 'GBP', '100', 'NE00', 'GBP']
+    const result = transformHeader(headerData, cs.schemeId, filename)
+    expect(result.paymentType).toBe(undefined)
   })
 
   test('transforms FDMR header', async () => {

@@ -65,7 +65,7 @@ const transformCSHeader = (headerData, filename) => ({
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
   contractNumber: headerData[3],
-  paymentType: parseInt(headerData[4]),
+  paymentType: !isNaN(headerData[4]) ? parseInt(headerData[4]) : undefined,
   frn: headerData[5],
   currency: headerData[6],
   value: !isNaN(headerData[7]) ? parseFloat(headerData[7]) : undefined,
