@@ -15,6 +15,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     paymentRequestNumber: paymentRequest.paymentRequestNumber,
     agreementNumber: paymentRequest.invoiceLines?.[0]?.agreementNumber,
     contractNumber: paymentRequest.contractNumber,
+    paymentType: paymentRequest.paymentType,
     currency: paymentRequest.currency,
     schedule: paymentRequest.schedule,
     dueDate: paymentRequest.invoiceLines?.[0]?.dueDate,
