@@ -1,7 +1,7 @@
 asyncapi: 2.2.0
 info:
-  title: FFC Pay Batch Processor
-  version: '1.0.0'
+  title: Payment Hub Batch Processor
+  version: '1.0.1'
 channels:
   ffc-pay-request:
     publish:
@@ -243,7 +243,7 @@ components:
         correlationId:
           $ref: '#/components/schemas/CorrelationId'
         currency:
-          $ref: '#/components/schemas/constants/currency'
+          $ref: '#/components/schemas/Currency' 
         dueDate:
           $ref: '#/components/schemas/DueDate'
         frn:
@@ -289,6 +289,7 @@ components:
         - invoiceNumber
         - marketingYear
         - paymentRequestNumber
+        - paymentType
         - sbi
         - sourceSystem
         - value
@@ -300,7 +301,7 @@ components:
         correlationId:
           $ref: '#/components/schemas/CorrelationId'
         currency:
-          $ref: '#/components/schemas/constants/currency'
+          $ref: '#/components/schemas/Currency'
         dueDate:
           $ref: '#/components/schemas/DueDate'
         frn:
@@ -330,6 +331,8 @@ components:
               $ref: '#/components/schemas/MarketingYear'
         paymentRequestNumber:
           $ref: '#/components/schemas/PaymentRequestNumber'
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
         schedule:
           $ref: '#/components/schemas/Schedule'
         sourceSystem:
@@ -437,6 +440,12 @@ components:
       description: Version of payment request starting with 1, anything greater than 1 is an adjustment
       minimum: 1
       maximum: 99
+      example: 1
+    PaymentType:
+      type: number
+      description: Defines type of payment request either Balance or Advance
+      minimum: 0
+      maximum: 1
       example: 1
     SBI:
       type: number
