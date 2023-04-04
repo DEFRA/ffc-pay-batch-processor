@@ -122,7 +122,7 @@ describe('Transform header', () => {
       invoiceNumber: 'CS000000001',
       paymentRequestNumber: 1,
       contractNumber: 'A0000001',
-      paymentType: '1',
+      paymentType: 1,
       frn: '1000000001',
       currency: GBP,
       value: 100,
@@ -147,9 +147,9 @@ describe('Transform header', () => {
 
   test('for CS return Payment Type', async () => {
     const filename = 'SITICS0001_AP_20230315084313836.dat'
-    const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', 'abc', 'NE00', 'GBP']
+    const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP']
     const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.paymentType).toBe('1')
+    expect(result.paymentType).toBe(1)
   })
 
   test('transforms FDMR header', async () => {
