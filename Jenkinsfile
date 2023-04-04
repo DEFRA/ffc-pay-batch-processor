@@ -1,3 +1,3 @@
-@Library('defra-library@v-9') _
+@Library('defra-library@test/add-acceptance-test-to-pipeline') _
 
 buildNodeJs()
