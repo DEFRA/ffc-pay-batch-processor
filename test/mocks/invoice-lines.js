@@ -3,7 +3,8 @@ const mappedInvoiceLines = [{
   accountCode: 'ABC123',
   fundCode: 'ABC12',
   description: 'G00 - Gross value of claim',
-  value: 100
+  value: 100,
+  deliveryBody: 'RP00'
 }]
 
 const invoiceLines = [{

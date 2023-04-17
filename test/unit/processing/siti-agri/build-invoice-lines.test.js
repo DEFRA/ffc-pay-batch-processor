@@ -12,7 +12,8 @@ describe('Build invoice lines', () => {
       fundCode: 'ABC12',
       description: 'G00 - Gross value of claim',
       value: 100,
-      convergence: true
+      convergence: true,
+      deliveryBody: 'RP00'
     }]
   })
 
@@ -29,7 +30,8 @@ describe('Build invoice lines', () => {
         fundCode: 'ABC12',
         description: 'G00 - Gross value of claim',
         value: 100,
-        convergence: true
+        convergence: true,
+        deliveryBody: 'RP00'
       }
     ])
   })
@@ -78,6 +80,13 @@ describe('Build invoice lines', () => {
     invoiceLines[0].convergence = 'Y'
     const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
     expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "convergence" must be a boolean')
+    expect(invoiceLineIsValid.result).toBe(false)
+  })
+
+  test('Failed validation of invoice lines for deliveryBody', async () => {
+    invoiceLines[0].deliveryBody = 'RP'
+    const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
+    expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "deliveryBody" with value "RP" fails to match the required pattern: /^[A-Z]{2}\\d{2}$/')
     expect(invoiceLineIsValid.result).toBe(false)
   })
 })
