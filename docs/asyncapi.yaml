@@ -224,7 +224,7 @@ components:
                       $ref: '#/components/schemas/Filename'
     PaymentRequest:
       type: object
-      description: Vet Visit payment object
+      description: Payment request object
       required:
         - agreementNumber
         - frn
@@ -314,107 +314,6 @@ components:
               - accountCode
               - description
               - schemeCode
-              - value
-            properties:
-              accountCode:
-                $ref: '#/components/schemas/AccountCode'
-              description:
-                $ref: '#/components/schemas/Description'
-              schemeCode:
-                $ref: '#/components/schemas/SchemeCode'
-              value:
-                $ref: '#/components/schemas/ValueDecimal'
-              deliveryBody:
-                $ref: '#/components/schemas/DeliveryBody'
-        invoiceNumber:
-          $ref: '#/components/schemas/InvoiceNumber'
-        marketingYear:
-              $ref: '#/components/schemas/MarketingYear'
-        paymentRequestNumber:
-          $ref: '#/components/schemas/PaymentRequestNumber'
-        paymentType:
-          $ref: '#/components/schemas/PaymentType'
-        schedule:
-          $ref: '#/components/schemas/Schedule'
-        sourceSystem:
-          $ref: '#/components/schemas/SourceSystem'
-        value:
-          $ref: '#/components/schemas/ValueDecimal'
-    AccountCode:
-      type: string
-      description: Unique account code for budgeting
-      enum:
-        - SOS273
-      example: SOS273
-    AgreementNumber:
-      type: string
-      description: Unique reference number for agreement/application
-      example: SIP001000000001
-    BatchExportDate:
-      type: string
-      format: DD-MM-YYYY
-      description: Date SITI Agri exported payment file
-      example: "2022-06-28"
-    Checkpoint:
-      type: string
-      description: Service which raised the event, differs per environment
-      enum:
-        - ffc-pay-batch-processor-local
-        - ffc-pay-batch-processor
-      example: ffc-pay-batch-processor-local
-    ContractNumber:
-      type: string
-      description: Contract reference number of agreement
-      example: S0000001
-    CorrelationId:
-      type: string
-      format: uuid
-      description: GUID for event correlation
-      example: ce6ec916-bebe-4bc0-bad1-255298c82845
-    Currency:
-      type: string
-      description: Currency of values in request
-      enum:
-        - GBP
-        - EUR
-      example: GBP
-      default: GBP
-    DeliveryBody:
-      type: string
-      description: Delivery body for payment
-      example: RP00
-    Description:
-      type: string
-      description: Description of what line relates to
-      enum:
-        - G00 - Gross value of claim
-        - P02 - Over declaration penalty
-        - P05 - Late claim submission penalty
-        - P06 - Late change penalty
-        - P08 - Non declaration of land penalty
-        - P22 - Rural Development refusals
-        - P23 - Rural Development withdrawals
-        - P24 - Over Declaration reduction
-      example: G00 - Gross value of claim
-    DueDate:
-      type: string
-      format: DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD
-      description: Date request should be issued from
-      example: "2022-12-01"
-      default: Current date
-    Filename:
-      type: string
-      description: Name of the payment file
-      example: SITIELM0001_AP_1.dat
-    FRN:
-      type: number
-      description: Firm Reference Number
-      minimum: 1000000000
-      maximum: 9999999999
-      example: "1000000001"
-    InvoiceNumber:
-      type: string
-      description: Unique identifier for payment request
       example: SFIP0000001
     MarketingYear:
       type: number
@@ -529,3 +428,105 @@ components:
       minimum: 0.00
       maximum: 999999999999.99
       example: 500.99
+
+              - value
+            properties:
+              accountCode:
+                $ref: '#/components/schemas/AccountCode'
+              description:
+                $ref: '#/components/schemas/Description'
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
+              value:
+                $ref: '#/components/schemas/ValueDecimal'
+              deliveryBody:
+                $ref: '#/components/schemas/DeliveryBody'
+        invoiceNumber:
+          $ref: '#/components/schemas/InvoiceNumber'
+        marketingYear:
+              $ref: '#/components/schemas/MarketingYear'
+        paymentRequestNumber:
+          $ref: '#/components/schemas/PaymentRequestNumber'
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        sourceSystem:
+          $ref: '#/components/schemas/SourceSystem'
+        value:
+          $ref: '#/components/schemas/ValueDecimal'
+    AccountCode:
+      type: string
+      description: Unique account code for budgeting
+      enum:
+        - SOS273
+      example: SOS273
+    AgreementNumber:
+      type: string
+      description: Unique reference number for agreement/application
+      example: SIP001000000001
+    BatchExportDate:
+      type: string
+      format: DD-MM-YYYY
+      description: Date SITI Agri exported payment file
+      example: "2022-06-28"
+    Checkpoint:
+      type: string
+      description: Service which raised the event, differs per environment
+      enum:
+        - ffc-pay-batch-processor-local
+        - ffc-pay-batch-processor
+      example: ffc-pay-batch-processor-local
+    ContractNumber:
+      type: string
+      description: Contract reference number of agreement
+      example: S0000001
+    CorrelationId:
+      type: string
+      format: uuid
+      description: GUID for event correlation
+      example: ce6ec916-bebe-4bc0-bad1-255298c82845
+    Currency:
+      type: string
+      description: Currency of values in request
+      enum:
+        - GBP
+        - EUR
+      example: GBP
+      default: GBP
+    DeliveryBody:
+      type: string
+      description: Delivery body for payment
+      example: RP00
+    Description:
+      type: string
+      description: Description of what line relates to
+      enum:
+        - G00 - Gross value of claim
+        - P02 - Over declaration penalty
+        - P05 - Late claim submission penalty
+        - P06 - Late change penalty
+        - P08 - Non declaration of land penalty
+        - P22 - Rural Development refusals
+        - P23 - Rural Development withdrawals
+        - P24 - Over Declaration reduction
+      example: G00 - Gross value of claim
+    DueDate:
+      type: string
+      format: DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD
+      description: Date request should be issued from
+      example: "2022-12-01"
+      default: Current date
+    Filename:
+      type: string
+      description: Name of the payment file
+      example: SITIELM0001_AP_1.dat
+    FRN:
+      type: number
+      description: Firm Reference Number
+      minimum: 1000000000
+      maximum: 9999999999
+      example: "1000000001"
+    InvoiceNumber:
+      type: string
+      description: Unique identifier for payment request
