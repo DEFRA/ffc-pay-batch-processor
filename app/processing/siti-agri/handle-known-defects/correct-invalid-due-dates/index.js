@@ -1,8 +1,9 @@
 const { sfi } = require('../../../../schemes')
 const invalidDueDates = require('./invalid-due-dates')
+const config = require('../../../../config/processing')
 
 const correctInvalidDueDate = (paymentRequest) => {
-  if (paymentRequest.sourceSystem !== sfi.sourceSystem) {
+  if (paymentRequest.sourceSystem !== sfi.sourceSystem && !config.handleDueDateDefect) {
     return paymentRequest
   }
   // Defect in Siti Agri where due date is output as agreement live date rather than date first quarter payment is due
