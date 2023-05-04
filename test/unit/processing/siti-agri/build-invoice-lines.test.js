@@ -64,7 +64,7 @@ describe('Build invoice lines', () => {
   })
 
   test('Failed validation of invoice lines for agreementNumber', async () => {
-    invoiceLines[0].agreementNumber = 123
+    invoiceLines[0].agreementNumber = 1234
     const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
     expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "agreementNumber" must be a string')
     expect(invoiceLineIsValid.result).toBe(false)
