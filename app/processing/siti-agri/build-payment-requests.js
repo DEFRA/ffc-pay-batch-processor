@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
-const handleKnownDefects = require('./handle-known-defects')
 const { buildInvoiceLines } = require('./build-invoice-lines')
+const handleKnownDefects = require('./handle-known-defects')
 
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }

@@ -1,6 +1,6 @@
-const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
-
 global.console.error = jest.fn()
+
+const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
 describe('Build invoice lines', () => {
   let invoiceLines
@@ -29,6 +29,7 @@ describe('Build invoice lines', () => {
         schemeCode: 'SITIELM',
         accountCode: 'ABC123',
         fundCode: 'ABC12',
+        agreementNumber: 'A00000001',
         description: 'G00 - Gross value of claim',
         value: 100,
         convergence: true,
