@@ -11,7 +11,14 @@
   </changeSet>
   <changeSet author="John Watson" id="2">
     <createTable tableName="lock">
-      <column name="locked" type="TIMESTAMP" />
+      <column name="lockId" type="INTEGER">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="lock_pkey"/>
+      </column>
     </createTable>
+  </changeSet>
+  <changeSet author="John Watson" id="3">
+    <insert tableName="lock">
+      <column name="lockId" value="1" />
+    </insert>
   </changeSet>
 </databaseChangeLog>

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('lock', {
-    locked: DataTypes.DATE
+    lockId: { type: DataTypes.INTEGER, primaryKey: true }
   },
   {
     tableName: 'lock',
