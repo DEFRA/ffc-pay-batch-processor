@@ -1,17 +1,20 @@
+const { isNetLine } = require('./is-net-line')
 const invoiceLineSchema = require('./schemas/invoice-line')
 
 const buildInvoiceLines = (invoiceLines) => {
   try {
-    return invoiceLines.map(invoiceLine => ({
-      schemeCode: invoiceLine.schemeCode.toString(),
-      accountCode: invoiceLine.accountCode,
-      fundCode: invoiceLine.fundCode,
-      description: invoiceLine.description,
-      value: invoiceLine.value,
-      convergence: invoiceLine.convergence,
-      deliveryBody: invoiceLine.deliveryBody
-    })
-    )
+    return invoiceLines
+      .filter(x => !isNetLine(x))
+      .map(invoiceLine => ({
+        schemeCode: invoiceLine.schemeCode.toString(),
+        accountCode: invoiceLine.accountCode,
+        fundCode: invoiceLine.fundCode,
+        description: invoiceLine.description,
+        value: invoiceLine.value,
+        convergence: invoiceLine.convergence,
+        deliveryBody: invoiceLine.deliveryBody
+      })
+      )
   } catch {
     return []
   }
