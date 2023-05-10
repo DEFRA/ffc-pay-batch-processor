@@ -98,4 +98,28 @@ describe('Build invoice lines', () => {
     expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "deliveryBody" with value "RP" fails to match the required pattern: /^[A-Z]{2}\\d{2}$/')
     expect(invoiceLineIsValid.result).toBe(false)
   })
+
+  test('should exclude net lines', async () => {
+    invoiceLines.push({
+      schemeCode: 'SITIELM',
+      accountCode: 'ABC123',
+      fundCode: 'ABC12',
+      description: 'N00 - Net value of claim',
+      value: 100,
+      convergence: true,
+      deliveryBody: 'RP00'
+    })
+    const invoiceLinesParse = buildInvoiceLines(invoiceLines)
+    expect(invoiceLinesParse).toMatchObject([
+      {
+        schemeCode: 'SITIELM',
+        accountCode: 'ABC123',
+        fundCode: 'ABC12',
+        description: 'G00 - Gross value of claim',
+        value: 100,
+        convergence: true,
+        deliveryBody: 'RP00'
+      }
+    ])
+  })
 })
