@@ -6,6 +6,7 @@ const buildInvoiceLines = (invoiceLines) => {
       schemeCode: invoiceLine.schemeCode.toString(),
       accountCode: invoiceLine.accountCode,
       fundCode: invoiceLine.fundCode,
+      agreementNumber: invoiceLine.agreementNumber,
       description: invoiceLine.description,
       value: invoiceLine.value,
       convergence: invoiceLine.convergence,

@@ -1,6 +1,6 @@
-const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
-
 global.console.error = jest.fn()
+
+const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
 describe('Build invoice lines', () => {
   let invoiceLines
@@ -10,6 +10,7 @@ describe('Build invoice lines', () => {
       schemeCode: 'SITIELM',
       accountCode: 'ABC123',
       fundCode: 'ABC12',
+      agreementNumber: 'SIP123456789012',
       description: 'G00 - Gross value of claim',
       value: 100,
       convergence: true,
@@ -28,6 +29,7 @@ describe('Build invoice lines', () => {
         schemeCode: 'SITIELM',
         accountCode: 'ABC123',
         fundCode: 'ABC12',
+        agreementNumber: 'SIP123456789012',
         description: 'G00 - Gross value of claim',
         value: 100,
         convergence: true,
@@ -59,6 +61,13 @@ describe('Build invoice lines', () => {
     invoiceLines[0].fundCode = 'ABC'
     const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
     expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "fundCode" with value "ABC" fails to match the required pattern: /^[A-Z]{3}\\d{2}$/')
+    expect(invoiceLineIsValid.result).toBe(false)
+  })
+
+  test('Failed validation of invoice lines for agreementNumber', async () => {
+    invoiceLines[0].agreementNumber = 1234
+    const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
+    expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "agreementNumber" must be a string')
     expect(invoiceLineIsValid.result).toBe(false)
   })
 

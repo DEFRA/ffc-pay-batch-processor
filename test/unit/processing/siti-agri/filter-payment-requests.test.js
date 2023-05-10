@@ -12,18 +12,18 @@ const buildPaymentRequests = require('../../../../app/processing/siti-agri/build
 
 const filterPaymentRequest = require('../../../../app/processing/siti-agri/filter-payment-requests')
 
+let paymentRequest
+let paymentRequests
+
+let mappedPaymentRequest
+let unsuccessfulMappedPaymentRequest
+let mappedPaymentRequests
+
+let mappedInvoiceLines
+
+let sourceSystem
+
 describe('Filter payment requests', () => {
-  let sourceSystem
-
-  let paymentRequest
-  let paymentRequests
-
-  let mappedPaymentRequest
-  let unsuccessfulMappedPaymentRequest
-  let mappedPaymentRequests
-
-  let mappedInvoiceLines
-
   beforeEach(() => {
     paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
     paymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequests))
