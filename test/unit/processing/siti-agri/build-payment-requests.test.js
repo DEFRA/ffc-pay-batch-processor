@@ -1,5 +1,3 @@
-const correlationId = require('../../../mocks/correlation-id')
-
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 
@@ -9,23 +7,26 @@ const handleKnownDefects = require('../../../../app/processing/siti-agri/handle-
 jest.mock('../../../../app/processing/siti-agri/build-invoice-lines')
 const { buildInvoiceLines } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
+const correlationId = require('../../../mocks/correlation-id')
+
 const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
 
+let paymentRequest
+let paymentRequests
+
+let mappedPaymentRequest
+let mappedPaymentRequests
+
+let invoiceLines
+let mappedInvoiceLines
+
+let sourceSystem
+
 describe('Build payment requests', () => {
-  let sourceSystem
-
-  let paymentRequest
-  let paymentRequests
-
-  let mappedPaymentRequest
-  let mappedPaymentRequests
-
-  let invoiceLines
-  let mappedInvoiceLines
-
   beforeEach(() => {
     paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
     paymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequests))
+
     mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequest))
     mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequests))
 

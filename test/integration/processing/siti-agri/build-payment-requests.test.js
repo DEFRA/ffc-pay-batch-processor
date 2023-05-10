@@ -1,20 +1,21 @@
 const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
 
+let paymentRequest
+let paymentRequests
+
+let mappedPaymentRequest
+let mappedPaymentRequests
+
+let invoiceLines
+let mappedInvoiceLines
+
+let sourceSystem
+
 describe('Build mappedPaymentRequests', () => {
-  let sourceSystem
-
-  let invoiceLines
-  let mappedInvoiceLines
-
-  let paymentRequest
-  let paymentRequests
-
-  let mappedPaymentRequest
-  let mappedPaymentRequests
-
   beforeEach(() => {
     paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
     paymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequests))
+
     mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequest))
     mappedPaymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequests))
 
@@ -167,7 +168,7 @@ describe('Build mappedPaymentRequests', () => {
     expect(result).toMatchObject(mappedPaymentRequests)
   })
 
-  test('should return mappedPaymentRequests with an empty array for invoiceLines and undefined agreeementNumber, dueDate and marketingYear when paymentRequests with an empty array for invoiceLines and valid sourceSystem are given', async () => {
+  test('should return mappedPaymentRequests with an empty array for invoiceLines and undefined agreementNumber, dueDate and marketingYear when paymentRequests with an empty array for invoiceLines and valid sourceSystem are given', async () => {
     paymentRequest.invoiceLines = []
     paymentRequests = [paymentRequest]
 
