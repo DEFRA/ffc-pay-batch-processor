@@ -5,7 +5,7 @@ const { P02, P04 } = require('../../../../../app/constants/line-descriptions')
 jest.mock('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 
-describe('Correct BPS penalties', () => {
+describe('Identify if bps penalties need correcting', () => {
   let paymentRequest
   let invoiceLine
 
