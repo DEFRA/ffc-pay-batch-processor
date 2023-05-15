@@ -1,7 +1,6 @@
 const calculateBPSPenalties = (paymentRequest) => {
   // get all unique schemes
   const schemeCodes = [...new Set(paymentRequest.invoiceLines.map(invoiceLine => invoiceLine.schemeCode))] // [10501, 10502 ...]
-  console.log(schemeCodes)
 
   // loop over the schemeCodes array
   schemeCodes.forEach((schemeCode) => {
@@ -24,8 +23,6 @@ const calculateBPSPenalties = (paymentRequest) => {
 
 const calculateGrossAfterPenalties = (paymentRequest, invoiceLinesByScheme) => {
   const penaltyInvoiceLines = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P0/gm))
-  console.log(penaltyInvoiceLines)
-  // sum all penalties using reduce
   const totalPenalties = penaltyInvoiceLines.reduce((total, invoiceLine) => total + invoiceLine.value, 0)
   const grossPayment = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^G00/gm))[0].value
   console.log(`total penalties = ${totalPenalties}, gross total = ${grossPayment}, total = ${Math.abs(grossPayment) - Math.abs(totalPenalties)}`)

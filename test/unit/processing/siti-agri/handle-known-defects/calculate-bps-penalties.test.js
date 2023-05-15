@@ -24,8 +24,8 @@ describe('Calculate the correct BPS penalties', () => {
 
   test('Should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
     grossInvoiceLine.value = 100
-    addInvoiceLine(P02, 10501, -120)
     paymentRequest.invoiceLines.push(grossInvoiceLine)
+    addInvoiceLine(P02, 10501, -120)
 
     const result = calculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === 'P02 - Over declaration penalty')[0].value).toBe(-100)
@@ -37,6 +37,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(P01, 10501, -60)
     addInvoiceLine(P02, 10501, -50)
 
+    console.log(paymentRequest.invoiceLines)
     const result = calculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === 'P02 - Over declaration penalty')[0].value).toBe(-50)
   })
@@ -44,7 +45,6 @@ describe('Calculate the correct BPS penalties', () => {
   test('Should not reduce P02 value when Gross value is 100 and P02 value is -50', () => {
     grossInvoiceLine.value = 100
     paymentRequest.invoiceLines.push(grossInvoiceLine)
-    addInvoiceLine(P01, 10501, -60)
     addInvoiceLine(P02, 10501, -50)
 
     const result = calculateBPSPenalties(paymentRequest)
