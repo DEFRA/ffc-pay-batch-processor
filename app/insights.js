@@ -1,6 +1,6 @@
 const appInsights = require('applicationinsights')
 
-function setup () {
+const setup = () => {
   if (process.env.APPINSIGHTS_CONNECTIONSTRING) {
     appInsights.setup(process.env.APPINSIGHTS_CONNECTIONSTRING)
       .setAutoCollectDependencies(false)

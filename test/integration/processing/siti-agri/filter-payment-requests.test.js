@@ -1,16 +1,17 @@
-const filterPaymentRequest = require('../../../../app/processing/siti-agri/filter-payment-requests')
 const mockErrorMessages = require('../../../mocks/error-messages')
 
+const filterPaymentRequest = require('../../../../app/processing/siti-agri/filter-payment-requests')
+
+let paymentRequest
+let paymentRequests
+
+let mappedPaymentRequest
+
+let sourceSystem
+
+let paymentRequestCollection
+
 describe('Filter payment requests', () => {
-  let sourceSystem
-
-  let paymentRequest
-  let paymentRequests
-
-  let mappedPaymentRequest
-
-  let paymentRequestCollection
-
   beforeEach(() => {
     paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
     paymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequests))
