@@ -1,23 +1,19 @@
 const { capBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties')
 const { bps, sfi } = require('../../../../../app/schemes')
-const { P02 } = require('../../../../../app/constants/line-descriptions')
+const { P02, P04 } = require('../../../../../app/constants/line-descriptions')
+
+jest.mock('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
+const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 
 describe('Correct BPS penalties', () => {
   let paymentRequest
-  let P02InvoiceLine
+  let invoiceLine
 
   beforeEach(() => {
     paymentRequest = JSON.parse(JSON.stringify(require('../../../../mocks/payment-request').paymentRequest))
     paymentRequest.sourceSystem = bps.sourceSystem
 
-    P02InvoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
-    P02InvoiceLine.description = P02
-  })
-
-  test('check test file is setup correctly', () => {
-    const logSpy = jest.spyOn(global.console, 'log')
-    capBPSPenalties(paymentRequest)
-    expect(logSpy).toHaveBeenCalledWith('cap bps penalties')
+    invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
   })
 
   test('Should return paymentRequest unchanged when scheme is not BPS', () => {
@@ -31,11 +27,17 @@ describe('Correct BPS penalties', () => {
     expect(result).toStrictEqual(paymentRequest)
   })
 
-  test('Should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
-    P02InvoiceLine.value = -120
-    paymentRequest.invoiceLines.push(P02InvoiceLine)
+  test('Should call recalculateBPSPenalties when payment request contains a P02 penalty', () => {
+    invoiceLine.description = P02
+    paymentRequest.invoiceLines.push(invoiceLine)
+    capBPSPenalties(paymentRequest)
+    expect(recalculateBPSPenalties).toHaveBeenCalled()
+  })
 
-    const result = capBPSPenalties(paymentRequest)
-    expect(result.invoiceLines[1].value).toBe(-100)
+  test('Should call recalculateBPSPenalties when payment request contains a P04 penalty', () => {
+    invoiceLine.description = P04
+    paymentRequest.invoiceLines.push(invoiceLine)
+    capBPSPenalties(paymentRequest)
+    expect(recalculateBPSPenalties).toHaveBeenCalled()
   })
 })

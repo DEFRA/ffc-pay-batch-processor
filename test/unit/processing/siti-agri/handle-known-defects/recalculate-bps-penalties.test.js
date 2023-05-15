@@ -1,4 +1,4 @@
-const { calculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/calculate-bps-penalties')
+const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 const { P01, P02, P04, G00 } = require('../../../../../app/constants/line-descriptions')
 describe('Calculate the correct BPS penalties', () => {
   let paymentRequest
@@ -21,7 +21,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P02, 10501, -120)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
   })
 
@@ -30,7 +30,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(P01, 10501, -50)
     addInvoiceLine(P02, 10501, -60)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-50)
   })
 
@@ -38,7 +38,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P02, 10501, -50)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-50)
   })
 
@@ -46,7 +46,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P04, 10501, -120)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-100)
   })
 
@@ -55,7 +55,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(P01, 10501, -50)
     addInvoiceLine(P04, 10501, -60)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-50)
   })
 
@@ -63,7 +63,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P04, 10501, -50)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-50)
   })
 
@@ -72,7 +72,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(P02, 10501, -50)
     addInvoiceLine(P04, 10501, -60)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-50)
   })
 
@@ -81,7 +81,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(P02, 10501, -60)
     addInvoiceLine(P04, 10501, -60)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-40)
   })
 
@@ -90,7 +90,7 @@ describe('Calculate the correct BPS penalties', () => {
     addInvoiceLine(P02, 10501, -120)
     addInvoiceLine(P04, 10501, -120)
 
-    const result = calculateBPSPenalties(paymentRequest)
+    const result = recalculateBPSPenalties(paymentRequest)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
   })

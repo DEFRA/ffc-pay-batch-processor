@@ -1,4 +1,4 @@
-const calculateBPSPenalties = (paymentRequest) => {
+const recalculateBPSPenalties = (paymentRequest) => {
   // get all unique schemes
   const schemeCodes = [...new Set(paymentRequest.invoiceLines.map(invoiceLine => invoiceLine.schemeCode))] // [10501, 10502 ...]
 
@@ -36,5 +36,5 @@ const calculateGrossAfterPenalties = (paymentRequest, invoiceLinesByScheme) => {
 }
 
 module.exports = {
-  calculateBPSPenalties
+  recalculateBPSPenalties
 }
