@@ -10,7 +10,13 @@ const calculateBPSPenalties = (paymentRequest) => {
       const p04Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P04/gm))[0]
       const p02Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P02/gm))[0]
       // reduce P04 if present
-      if (p04Penalty) { p04Penalty.value -= calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme) }
+      if (p04Penalty) {
+        if (p04Penalty.value - calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme) > 0) {
+          p04Penalty.value = 0
+        } else {
+          p04Penalty.value -= calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme)
+        }
+      }
       // check if still < 0
       if (calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme) < 0) {
         // reduce P02 until grossPayment is 0

@@ -1,6 +1,6 @@
 const correctBPSPenalties = require('../cap-bps-penalties')
 const { bps } = require('../../../../schemes')
-const { P02, P04 } = require('../../../../constants/penalty-descriptions')
+const { P02, P04 } = require('../../../../constants/line-descriptions')
 
 const capBPSPenalties = (paymentRequest) => {
   // DONE

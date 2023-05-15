@@ -1,6 +1,6 @@
 const { capBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties')
 const { bps, sfi } = require('../../../../../app/schemes')
-const { P02 } = require('../../../../../app/constants/penalty-descriptions')
+const { P02 } = require('../../../../../app/constants/line-descriptions')
 
 describe('Correct BPS penalties', () => {
   let paymentRequest
