@@ -94,4 +94,30 @@ describe('Calculate the correct BPS penalties', () => {
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
   })
+
+  test('Multiple schemes: Should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
+    addInvoiceLine(G00, 10501, 100)
+    addInvoiceLine(P02, 10501, -120)
+    addInvoiceLine(G00, 10502, 100)
+    addInvoiceLine(P02, 10502, -120)
+
+    const result = recalculateBPSPenalties(paymentRequest)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10501).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
+  })
+
+  test('Multiple schemes: Should reduce P02 value to -100 and reduce P04 value to 0 when Gross value is 100, P02 value is -120 and P04 value -120', () => {
+    addInvoiceLine(G00, 10501, 100)
+    addInvoiceLine(P02, 10501, -120)
+    addInvoiceLine(P04, 10501, -120)
+    addInvoiceLine(G00, 10502, 100)
+    addInvoiceLine(P02, 10502, -120)
+    addInvoiceLine(P04, 10502, -120)
+
+    const result = recalculateBPSPenalties(paymentRequest)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10501).filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10501).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
+  })
 })
