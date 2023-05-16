@@ -3,28 +3,26 @@ const recalculateBPSPenalties = (paymentRequest) => {
 
   schemeCodes.forEach((schemeCode) => {
     const invoiceLinesByScheme = paymentRequest.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === schemeCode)
+    let grossAfterPenalties = calculateGrossAfterPenalties(invoiceLinesByScheme)
 
-    if (calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme) < 0) {
+    if (grossAfterPenalties < 0) {
       const p04Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P04/gm))[0]
       const p02Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P02/gm))[0]
 
       if (p04Penalty) {
-        if (p04Penalty.value - calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme) > 0) {
-          p04Penalty.value = 0
-        } else {
-          p04Penalty.value -= calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme)
-        }
+        p04Penalty.value = p04Penalty.value - grossAfterPenalties > 0 ? 0 : p04Penalty.value -= grossAfterPenalties
+        grossAfterPenalties = calculateGrossAfterPenalties(invoiceLinesByScheme)
       }
 
-      if (calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme) < 0) {
-        p02Penalty.value -= calculateGrossAfterPenalties(paymentRequest, invoiceLinesByScheme)
+      if (grossAfterPenalties < 0) {
+        p02Penalty.value -= grossAfterPenalties
       }
     }
   })
   return paymentRequest
 }
 
-const calculateGrossAfterPenalties = (paymentRequest, invoiceLinesByScheme) => {
+const calculateGrossAfterPenalties = (invoiceLinesByScheme) => {
   const penaltyInvoiceLines = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P0/gm))
   const totalPenalties = penaltyInvoiceLines.reduce((total, invoiceLine) => total + invoiceLine.value, 0)
   const grossPayment = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^G00/gm))[0].value
