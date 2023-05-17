@@ -1,6 +1,6 @@
+const { P02, P04 } = require('../../../../constants/line-descriptions')
 const { recalculateBPSPenalties } = require('../cap-bps-penalties/recalculate-bps-penalties')
 const { bps } = require('../../../../schemes')
-const { P02, P04 } = require('../../../../constants/line-descriptions')
 
 const capBPSPenalties = (paymentRequest) => {
   const penaltyInvoiceLines = paymentRequest.invoiceLines.filter(invoiceLine => invoiceLine.description === P02 || invoiceLine.description === P04)

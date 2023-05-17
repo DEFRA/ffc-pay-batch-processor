@@ -1,14 +1,15 @@
-const { capBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties')
-const { bps, sfi } = require('../../../../../app/schemes')
-const { P02, P04 } = require('../../../../../app/constants/line-descriptions')
-
 jest.mock('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 
-describe('Identify if bps penalties need correcting', () => {
-  let paymentRequest
-  let invoiceLine
+const { P02, P04 } = require('../../../../../app/constants/line-descriptions')
 
+const { bps, sfi } = require('../../../../../app/schemes')
+const { capBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties')
+
+let paymentRequest
+let invoiceLine
+
+describe('Identify if bps penalties need correcting', () => {
   beforeEach(() => {
     paymentRequest = JSON.parse(JSON.stringify(require('../../../../mocks/payment-request').paymentRequest))
     paymentRequest.sourceSystem = bps.sourceSystem
@@ -16,13 +17,13 @@ describe('Identify if bps penalties need correcting', () => {
     invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
   })
 
-  test('Should return paymentRequest unchanged when scheme is not BPS', () => {
+  test('Should return unchanged paymentRequest when scheme is not BPS', () => {
     paymentRequest.sourceSystem = sfi.sourceSystem
     const result = capBPSPenalties(paymentRequest)
     expect(result).toStrictEqual(paymentRequest)
   })
 
-  test('Should return paymentRequest unchanged when scheme is BPS but invoice lines do not contain P02 or P04 penalty', () => {
+  test('Should return unchanged paymentRequest when scheme is BPS but invoice lines do not contain P02 or P04 penalty', () => {
     const result = capBPSPenalties(paymentRequest)
     expect(result).toStrictEqual(paymentRequest)
   })

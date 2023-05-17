@@ -1,9 +1,11 @@
-const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 const { P01, P02, P04, G00 } = require('../../../../../app/constants/line-descriptions')
-describe('Calculate the correct BPS penalties', () => {
-  let paymentRequest
-  let invoiceLine
 
+const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
+
+let paymentRequest
+let invoiceLine
+
+describe('Calculate the correct BPS penalties', () => {
   const addInvoiceLine = (description, schemeCode, value) => {
     invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
     invoiceLine.description = description
@@ -95,7 +97,7 @@ describe('Calculate the correct BPS penalties', () => {
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
   })
 
-  test('Multiple schemes: Should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
+  test('For multiple schemes should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P02, 10501, -120)
     addInvoiceLine(G00, 10502, 100)
@@ -106,7 +108,7 @@ describe('Calculate the correct BPS penalties', () => {
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
   })
 
-  test('Multiple schemes: Should reduce P02 value to -100 and reduce P04 value to 0 when Gross value is 100, P02 value is -120 and P04 value -120', () => {
+  test('For multiple schemes should reduce P02 value to -100 and reduce P04 value to 0 when Gross value is 100, P02 value is -120 and P04 value -120', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P02, 10501, -120)
     addInvoiceLine(P04, 10501, -120)

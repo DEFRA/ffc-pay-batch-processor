@@ -1,3 +1,5 @@
+const { calculateGrossAfterPenalties } = require('./calculate-gross-after-penalties')
+
 const recalculateBPSPenalties = (paymentRequest) => {
   const schemeCodes = [...new Set(paymentRequest.invoiceLines.map(invoiceLine => invoiceLine.schemeCode))]
 
@@ -10,7 +12,7 @@ const recalculateBPSPenalties = (paymentRequest) => {
       const p02Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P02/gm))[0]
 
       if (p04Penalty) {
-        p04Penalty.value = p04Penalty.value - grossAfterPenalties > 0 ? 0 : p04Penalty.value -= grossAfterPenalties
+        p04Penalty.value = p04Penalty.value - grossAfterPenalties > 0 ? 0 : p04Penalty.value - grossAfterPenalties
         grossAfterPenalties = calculateGrossAfterPenalties(invoiceLinesByScheme)
       }
 
@@ -20,13 +22,6 @@ const recalculateBPSPenalties = (paymentRequest) => {
     }
   })
   return paymentRequest
-}
-
-const calculateGrossAfterPenalties = (invoiceLinesByScheme) => {
-  const penaltyInvoiceLines = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P0/gm))
-  const totalPenalties = penaltyInvoiceLines.reduce((total, invoiceLine) => total + invoiceLine.value, 0)
-  const grossPayment = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^G00/gm))[0].value
-  return Math.abs(grossPayment) - Math.abs(totalPenalties)
 }
 
 module.exports = {
