@@ -3,6 +3,7 @@ const { P01, P02, P04, G00 } = require('../../../../../app/constants/line-descri
 const { calculateGrossAfterPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/calculate-gross-after-penalties')
 
 const schemeCode = 10501
+
 let invoiceLinesByScheme
 let invoiceLine
 
