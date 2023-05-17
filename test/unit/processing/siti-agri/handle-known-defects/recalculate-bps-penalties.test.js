@@ -97,6 +97,14 @@ describe('Calculate the correct BPS penalties', () => {
     expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
   })
 
+  test('Should reduce P04 value only when no P02 value present', () => {
+    addInvoiceLine(G00, 10501, 100)
+    addInvoiceLine(P04, 10501, -120)
+
+    const result = recalculateBPSPenalties(paymentRequest)
+    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-100)
+  })
+
   test('For multiple schemes should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
     addInvoiceLine(G00, 10501, 100)
     addInvoiceLine(P02, 10501, -120)

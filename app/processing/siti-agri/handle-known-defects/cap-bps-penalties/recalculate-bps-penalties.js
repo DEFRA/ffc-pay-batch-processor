@@ -8,15 +8,15 @@ const recalculateBPSPenalties = (paymentRequest) => {
     let grossAfterPenalties = calculateGrossAfterPenalties(invoiceLinesByScheme)
 
     if (grossAfterPenalties < 0) {
-      const p04Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P04/gm))[0]
-      const p02Penalty = invoiceLinesByScheme.filter(invoiceLine => invoiceLine.description.match(/^P02/gm))[0]
+      const p04Penalty = invoiceLinesByScheme.find(invoiceLine => invoiceLine.description.match(/^P04/gm))
+      const p02Penalty = invoiceLinesByScheme.find(invoiceLine => invoiceLine.description.match(/^P02/gm))
 
       if (p04Penalty) {
         p04Penalty.value = p04Penalty.value - grossAfterPenalties > 0 ? 0 : p04Penalty.value - grossAfterPenalties
         grossAfterPenalties = calculateGrossAfterPenalties(invoiceLinesByScheme)
       }
 
-      if (grossAfterPenalties < 0) {
+      if (grossAfterPenalties < 0 && p02Penalty) {
         p02Penalty.value -= grossAfterPenalties
       }
     }
