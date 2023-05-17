@@ -29,14 +29,14 @@ describe('Identify if bps penalties need correcting', () => {
   })
 
   test('Should call recalculateBPSPenalties when payment request contains a P02 penalty', () => {
-    invoiceLine.description = P02
+    invoiceLine.description = `${P02} - Over declaration penalty`
     paymentRequest.invoiceLines.push(invoiceLine)
     capBPSPenalties(paymentRequest)
     expect(recalculateBPSPenalties).toHaveBeenCalled()
   })
 
   test('Should call recalculateBPSPenalties when payment request contains a P04 penalty', () => {
-    invoiceLine.description = P04
+    invoiceLine.description = `${P04} - Administrative penalty`
     paymentRequest.invoiceLines.push(invoiceLine)
     capBPSPenalties(paymentRequest)
     expect(recalculateBPSPenalties).toHaveBeenCalled()

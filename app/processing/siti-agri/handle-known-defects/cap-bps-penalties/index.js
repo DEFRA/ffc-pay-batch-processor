@@ -3,7 +3,7 @@ const { recalculateBPSPenalties } = require('../cap-bps-penalties/recalculate-bp
 const { bps } = require('../../../../schemes')
 
 const capBPSPenalties = (paymentRequest) => {
-  const penaltyInvoiceLines = paymentRequest.invoiceLines.filter(invoiceLine => invoiceLine.description === P02 || invoiceLine.description === P04)
+  const penaltyInvoiceLines = paymentRequest.invoiceLines.filter(invoiceLine => invoiceLine.description.startsWith(P02) || invoiceLine.description.startsWith(P04))
 
   if (paymentRequest.sourceSystem !== bps.sourceSystem || penaltyInvoiceLines.length === 0) {
     return paymentRequest
