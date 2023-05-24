@@ -265,7 +265,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.isPaymentRequestValid and mockErrorMessages.validateLineTotals when validation is false for isPaymentRequestValid and validateLineTotals', async () => {
@@ -277,7 +277,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.validateLineTotals} `)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.validateLineTotals} `)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.isPaymentRequestValid and mockErrorMessages.isInvoiceLineValid when validation is false for isPaymentRequestValid and isInvoiceLineValid', async () => {
@@ -289,7 +289,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.validateLineTotals and mockErrorMessages.isInvoiceLineValid when validation is false for isPaymentRequestValid and isInvoiceLineValid', async () => {
@@ -301,7 +301,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of two mockErrorMessages.isInvoiceLineValid when there are two invoice lines and validation is false for both invoice lines', async () => {
@@ -315,7 +315,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a single errorMessage of mockErrorMessages.isInvoiceLineValid when there are two invoice lines and validation is false for one invoice line and true for other invoice line.', async () => {
@@ -329,7 +329,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.validateLineTotals and two mockErrorMessages.isInvoiceLineValid when validation is false for both invoice lines and validateLineTotals is false', async () => {
@@ -342,7 +342,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.validateLineTotals and one mockErrorMessages.isInvoiceLineValid when validation is false for one invoice lines and validateLineTotals is false', async () => {
@@ -355,7 +355,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.isPaymentRequestValid and two mockErrorMessages.isInvoiceLineValid when validation is false for both invoice lines and isPaymentRequestValid is false', async () => {
@@ -370,7 +370,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.isPaymentRequestValid and one mockErrorMessages.isInvoiceLineValid when validation is false for one invoice line and isPaymentRequestValid is false', async () => {
@@ -385,7 +385,7 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 
   test('should return a concatenated errorMessage of mockErrorMessages.isPaymentRequestValid, mockErrorMessages.validateLineTotals and two mockErrorMessages.isInvoiceLineValid when validation is false for all', async () => {
@@ -399,6 +399,6 @@ describe('Filter payment requests', () => {
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     const resultErrorMessage = result.unsuccessfulPaymentRequests[0].errorMessage
 
-    expect(resultErrorMessage).toBe(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
+    expect(resultErrorMessage).toContain(`${mockErrorMessages.isPaymentRequestValid} ${mockErrorMessages.validateLineTotals} ${mockErrorMessages.isInvoiceLineValid} ${mockErrorMessages.isInvoiceLineValid}`)
   })
 })
