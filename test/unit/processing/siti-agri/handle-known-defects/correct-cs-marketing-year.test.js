@@ -33,4 +33,16 @@ describe('correct CS marketing year', () => {
     const result = correctCSMarketingYear(paymentRequest)
     expect(result).toStrictEqual(paymentRequest)
   })
+
+  test('Should return unchanged payment request when marketing year is null', () => {
+    paymentRequest.marketingYear = null
+    const result = correctCSMarketingYear(paymentRequest)
+    expect(result).toStrictEqual(paymentRequest)
+  })
+
+  test('should prefix marketing year with 20 when marketing year is greater than 16', () => {
+    paymentRequest.marketingYear = 17
+    const result = correctCSMarketingYear(paymentRequest)
+    expect(result.marketingYear).toBe(2017)
+  })
 })
