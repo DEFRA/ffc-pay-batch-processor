@@ -1,3 +1,4 @@
+const util = require('util')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const Joi = require('joi')
 const { v4: uuidv4 } = require('uuid')
@@ -8,6 +9,7 @@ const { SOURCE } = require('../constants/source')
 const { PAYMENT_REJECTED } = require('../constants/events')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
+  console.log('Publishing events for invalid payment requests', util.inspect(paymentRequests, false, null, true))
   if (config.useV1Events) {
     await sendV1PaymentRequestInvalidEvents(paymentRequests)
   }
