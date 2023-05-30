@@ -1,7 +1,7 @@
-asyncapi: 2.2.0
+asyncapi: 2.6.0
 info:
   title: Payment Hub Batch Processor
-  version: 1.1.0
+  version: 1.2.0
 channels:
   ffc-pay-request:
     publish:
@@ -11,7 +11,6 @@ channels:
     publish:
       message:
         $ref: '#/components/messages/Event'
-
 components:
   messages:
     Event:
@@ -25,9 +24,7 @@ components:
     PaymentRequest:
       contentType: application/json
       payload:
-        oneOf:
-          - $ref: '#/components/schemas/PaymentRequestSitiAgri'
-          - $ref: '#/components/schemas/PaymentRequest'
+        $ref: '#/components/schemas/PaymentRequest'
   schemas:
     BatchProcessedEvent:
       type: object
@@ -79,18 +76,20 @@ components:
                     sequence:
                       $ref: '#/components/schemas/Sequence'
                     paymentRequest:
-                      $ref: '#/components/schemas/PaymentRequestSitiAgri'
+                      $ref: '#/components/schemas/PaymentRequest'
           batchExportDate:
-              $ref: '#/components/schemas/BatchExportDate'
+            $ref: '#/components/schemas/BatchExportDate'
           filename:
             $ref: '#/components/schemas/Filename'
           paymentRequest:
-            $ref: '#/components/schemas/PaymentRequestSitiAgri'
+            $ref: '#/components/schemas/PaymentRequest'
           sequence:
             $ref: '#/components/schemas/Sequence'
     BatchProcessedErrorEvent:
       type: object
-      description: Error event raised when a payment request cannot be created from a batch file
+      description: >-
+        Error event raised when a payment request cannot be created from a batch
+        file
       required:
         - name
         - properties
@@ -176,10 +175,12 @@ components:
                   description: Further information for the event
                   properties:
                     paymentRequest:
-                      $ref: '#/components/schemas/PaymentRequestSitiAgri'
+                      $ref: '#/components/schemas/PaymentRequest'
     BatchProcessedQuarantineErrorEvent:
       type: object
-      description: Error event raised when a payment file cannot be processed and is moved into quarantine location
+      description: >-
+        Error event raised when a payment file cannot be processed and is moved
+        into quarantine location
       required:
         - name
         - properties
@@ -243,63 +244,6 @@ components:
         correlationId:
           $ref: '#/components/schemas/CorrelationId'
         currency:
-          $ref: '#/components/schemas/Currency' 
-        dueDate:
-          $ref: '#/components/schemas/DueDate'
-        frn:
-          $ref: '#/components/schemas/FRN'
-        invoiceLines:
-          type: array
-          description: List of Invoice lines that make up request
-          items:
-            type: object
-            required:
-              - accountCode
-              - description
-              - schemeCode
-              - value
-            properties:
-              accountCode:
-                $ref: '#/components/schemas/AccountCode'
-              description:
-                $ref: '#/components/schemas/Description'
-              schemeCode:
-                $ref: '#/components/schemas/SchemeCode'
-              value:
-                $ref: '#/components/schemas/ValueDecimal'
-        invoiceNumber:
-          $ref: '#/components/schemas/InvoiceNumber'
-        marketingYear:
-              $ref: '#/components/schemas/MarketingYear'
-        paymentRequestNumber:
-          $ref: '#/components/schemas/PaymentRequestNumber'
-        schedule:
-          $ref: '#/components/schemas/Schedule'
-        sourceSystem:
-          $ref: '#/components/schemas/SourceSystem'
-        value:
-          $ref: '#/components/schemas/ValueDecimal'
-    PaymentRequestSitiAgri:
-      type: object
-      description: SITI Agri payment object
-      required:
-        - agreementNumber
-        - frn
-        - invoiceLines
-        - invoiceNumber
-        - marketingYear
-        - paymentRequestNumber
-        - sbi
-        - sourceSystem
-        - value
-      properties:
-        agreementNumber:
-          $ref: '#/components/schemas/AgreementNumber'
-        contractNumber:
-          $ref: '#/components/schemas/ContractNumber'
-        correlationId:
-          $ref: '#/components/schemas/CorrelationId'
-        currency:
           $ref: '#/components/schemas/Currency'
         dueDate:
           $ref: '#/components/schemas/DueDate'
@@ -311,10 +255,24 @@ components:
           items:
             type: object
             required:
-              - accountCode
               - description
               - schemeCode
-      example: SFIP0000001
+              - value
+              - deliveryBody
+              - marketingYear
+            properties:
+              accountCode:
+                $ref: '#/components/schemas/AccountCode'
+              description:
+                $ref: '#/components/schemas/Description'
+              schemeCode:
+                $ref: '#/components/schemas/SchemeCode'
+              value:
+                $ref: '#/components/schemas/ValueDecimal'
+              deliveryBody:
+                $ref: '#/components/schemas/DeliveryBody'
+              marketingYear:
+                $ref: '#/components/schemas/MarketingYear'
     MarketingYear:
       type: number
       description: Scheme year for request
@@ -326,7 +284,9 @@ components:
       description: Event message
       enum:
         - others from error.message
-        - Payment request could not be processed. Error(s) $paymentRequest.errorMessage
+        - >-
+          Payment request could not be processed. Error(s)
+          $paymentRequest.errorMessage
         - Payment request created from batch file
         - Quarantined $filename
       example: Payment request created from batch file
@@ -341,7 +301,9 @@ components:
       example: batch-processing
     PaymentRequestNumber:
       type: number
-      description: Version of payment request starting with 1, anything greater than 1 is an adjustment
+      description: >-
+        Version of payment request starting with 1, anything greater than 1 is
+        an adjustment
       minimum: 1
       maximum: 99
       example: 1
@@ -369,32 +331,32 @@ components:
       type: string
       description: Unique scheme code
       enum:
-        - "80001"
-        - "80002"
-        - "80003"
-        - "80004"
-        - "80005"
-        - "80006"
-        - "80007"
-        - "80008"
-        - "80009"
-        - "80101"
-        - "80102"
-        - "80111"
-        - "80112"
-        - "80121"
-        - "80190"
-        - "80195"
-        - "10570"
-        - "18001"
-        - "18002"
-        - "18003"
-        - "18004"
-      example: "80001"
+        - '80001'
+        - '80002'
+        - '80003'
+        - '80004'
+        - '80005'
+        - '80006'
+        - '80007'
+        - '80008'
+        - '80009'
+        - '80101'
+        - '80102'
+        - '80111'
+        - '80112'
+        - '80121'
+        - '80190'
+        - '80195'
+        - '10570'
+        - '18001'
+        - '18002'
+        - '18003'
+        - '18004'
+      example: '80001'
     Sequence:
       type: string
       description: Sequence number
-      example: "0001"
+      example: '0001'
     SourceSystem:
       type: string
       description: System identifier request originates from
@@ -413,7 +375,7 @@ components:
     Timestamp:
       type: string
       description: Current datetime
-      example: "2022-01-01T00:00:00.000Z"
+      example: '2022-01-01T00:00:00.000Z'
     Type:
       type: string
       description: Type of the event
@@ -425,36 +387,9 @@ components:
       type: number
       format: decimal
       description: Decimal net value of request before enrichment
-      minimum: 0.00
+      minimum: 0
       maximum: 999999999999.99
       example: 500.99
-
-              - value
-            properties:
-              accountCode:
-                $ref: '#/components/schemas/AccountCode'
-              description:
-                $ref: '#/components/schemas/Description'
-              schemeCode:
-                $ref: '#/components/schemas/SchemeCode'
-              value:
-                $ref: '#/components/schemas/ValueDecimal'
-              deliveryBody:
-                $ref: '#/components/schemas/DeliveryBody'
-        invoiceNumber:
-          $ref: '#/components/schemas/InvoiceNumber'
-        marketingYear:
-              $ref: '#/components/schemas/MarketingYear'
-        paymentRequestNumber:
-          $ref: '#/components/schemas/PaymentRequestNumber'
-        paymentType:
-          $ref: '#/components/schemas/PaymentType'
-        schedule:
-          $ref: '#/components/schemas/Schedule'
-        sourceSystem:
-          $ref: '#/components/schemas/SourceSystem'
-        value:
-          $ref: '#/components/schemas/ValueDecimal'
     AccountCode:
       type: string
       description: Unique account code for budgeting
@@ -469,10 +404,10 @@ components:
       type: string
       format: DD-MM-YYYY
       description: Date SITI Agri exported payment file
-      example: "2022-06-28"
+      example: '2022-06-28'
     Checkpoint:
       type: string
-      description: Service which raised the event, differs per environment
+      description: 'Service which raised the event, differs per environment'
       enum:
         - ffc-pay-batch-processor-local
         - ffc-pay-batch-processor
@@ -513,9 +448,9 @@ components:
       example: G00 - Gross value of claim
     DueDate:
       type: string
-      format: DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD
+      format: 'DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD'
       description: Date request should be issued from
-      example: "2022-12-01"
+      example: '2022-12-01'
       default: Current date
     Filename:
       type: string
@@ -526,7 +461,7 @@ components:
       description: Firm Reference Number
       minimum: 1000000000
       maximum: 9999999999
-      example: "1000000001"
+      example: '1000000001'
     InvoiceNumber:
       type: string
       description: Unique identifier for payment request

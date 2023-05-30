@@ -14,7 +14,8 @@ describe('Build invoice lines', () => {
       description: 'G00 - Gross value of claim',
       value: 100,
       convergence: true,
-      deliveryBody: 'RP00'
+      deliveryBody: 'RP00',
+      marketingYear: 2023
     }]
   })
 
@@ -33,7 +34,8 @@ describe('Build invoice lines', () => {
         description: 'G00 - Gross value of claim',
         value: 100,
         convergence: true,
-        deliveryBody: 'RP00'
+        deliveryBody: 'RP00',
+        marketingYear: 2023
       }
     ])
   })
@@ -96,6 +98,13 @@ describe('Build invoice lines', () => {
     invoiceLines[0].deliveryBody = 'RP'
     const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
     expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "deliveryBody" with value "RP" fails to match the required pattern: /^[A-Z]{2}\\d{2}$/')
+    expect(invoiceLineIsValid.result).toBe(false)
+  })
+
+  test('Failed validation of invoice lines for marketingYear', async () => {
+    invoiceLines[0].marketingYear = 'ABC'
+    const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
+    expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "marketingYear" must be a number')
     expect(invoiceLineIsValid.result).toBe(false)
   })
 
