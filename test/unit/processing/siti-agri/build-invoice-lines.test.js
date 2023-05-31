@@ -2,9 +2,9 @@ global.console.error = jest.fn()
 
 const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
-describe('Build invoice lines', () => {
-  let invoiceLines
+let invoiceLines
 
+describe('Build invoice lines', () => {
   beforeEach(() => {
     invoiceLines = [{
       schemeCode: 'SITIELM',
