@@ -402,9 +402,9 @@ components:
       example: SIP001000000001
     BatchExportDate:
       type: string
-      format: DD-MM-YYYY
+      format: YYYY-MM-DD
       description: Date SITI Agri exported payment file
-      example: '2022-06-28'
+      example: 2022-06-28
     Checkpoint:
       type: string
       description: Service which raised the event, differs per environment
@@ -448,9 +448,9 @@ components:
       example: G00 - Gross value of claim
     DueDate:
       type: string
-      format: 'DD/MM/YYYY, YYYY/MM/DD, DD-MM-YYYY or YYYY-MM-DD'
+      format: YYYY-MM-DD
       description: Date request should be issued from
-      example: '2022-12-01'
+      example: 2022-12-01
       default: Current date
     Filename:
       type: string
