@@ -375,7 +375,7 @@ components:
     Timestamp:
       type: string
       description: Current datetime
-      example: '2022-01-01T00:00:00.000Z'
+      example: 2022-01-01T00:00:00.000Z
     Type:
       type: string
       description: Type of the event
