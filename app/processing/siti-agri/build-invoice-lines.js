@@ -13,7 +13,8 @@ const buildInvoiceLines = (invoiceLines) => {
         description: invoiceLine.description,
         value: invoiceLine.value,
         convergence: invoiceLine.convergence,
-        deliveryBody: invoiceLine.deliveryBody
+        deliveryBody: invoiceLine.deliveryBody,
+        marketingYear: invoiceLine.marketingYear
       })
       )
   } catch {
