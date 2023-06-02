@@ -26,5 +26,4 @@ data:
   DISABLE_SEQUENCE_VALIDATION: {{ quote .Values.container.disableSequenceValidation }}
   USE_V1_EVENTS: {{ quote .Values.container.useV1Events }}
   USE_V2_EVENTS: {{ quote .Values.container.useV2Events }}
-  HANDLE_DUE_DATE_DEFECT: {{ quote .Values.container.handleDueDateDefect }}
 {{- end -}}

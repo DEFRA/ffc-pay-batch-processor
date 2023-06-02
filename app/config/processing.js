@@ -6,8 +6,7 @@ const schema = Joi.object({
   maxProcessingTries: Joi.number().default(3),
   disableSequenceValidation: Joi.boolean().default(false),
   useV1Events: Joi.boolean().default(true),
-  useV2Events: Joi.boolean().default(true),
-  handleDueDateDefect: Joi.boolean().default(true)
+  useV2Events: Joi.boolean().default(true)
 })
 
 // Build config
@@ -16,8 +15,7 @@ const config = {
   maxProcessingTries: process.env.MAX_PROCESSING_TRIES,
   disableSequenceValidation: process.env.DISABLE_SEQUENCE_VALIDATION,
   useV1Events: process.env.USE_V1_EVENTS,
-  useV2Events: process.env.USE_V2_EVENTS,
-  handleDueDateDefect: process.env.HANDLE_DUE_DATE_DEFECT
+  useV2Events: process.env.USE_V2_EVENTS
 }
 
 // Validate config
