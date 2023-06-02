@@ -46,7 +46,6 @@ container:
   disableSequenceValidation: false
   useV1Events: true
   useV2Events: true
-  handleDueDateDefect: true
 
 postgresService:
   postgresDb: ffc_pay_batch_processor
