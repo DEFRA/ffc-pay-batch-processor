@@ -1,11 +1,4 @@
-const mockSendEvent = jest.fn()
 const mockPublishEvents = jest.fn()
-
-const MockPublishEvent = jest.fn().mockImplementation(() => {
-  return {
-    sendEvent: mockSendEvent
-  }
-})
 
 const MockEventPublisher = jest.fn().mockImplementation(() => {
   return {
@@ -15,7 +8,6 @@ const MockEventPublisher = jest.fn().mockImplementation(() => {
 
 jest.mock('ffc-pay-event-publisher', () => {
   return {
-    PublishEvent: MockPublishEvent,
     EventPublisher: MockEventPublisher
   }
 })
@@ -83,14 +75,19 @@ describe('V2 events for processed payment requests', () => {
     expect(mockPublishEvents.mock.calls[0][0][0].type).toBe(PAYMENT_EXTRACTED)
   })
 
-  test('should include payment request in event data', async () => {
+  test('should raise an event with filename as subject', async () => {
     await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
-    expect(mockPublishEvents.mock.calls[0][0][0].data).toMatchObject(paymentRequest)
+    expect(mockPublishEvents.mock.calls[0][0][0].subject).toBe(filename)
   })
 
   test('should include scheme in event data', async () => {
     await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
     expect(mockPublishEvents.mock.calls[0][0][0].data.schemeId).toBe(scheme.schemeId)
+  })
+
+  test('should include payment request in event data', async () => {
+    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(mockPublishEvents.mock.calls[0][0][0].data).toMatchObject(paymentRequest)
   })
 
   test('should send event for every payment request', async () => {

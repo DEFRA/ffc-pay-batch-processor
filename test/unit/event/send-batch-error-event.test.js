@@ -1,11 +1,4 @@
-const mockSendEvent = jest.fn()
 const mockPublishEvent = jest.fn()
-
-const MockPublishEvent = jest.fn().mockImplementation(() => {
-  return {
-    sendEvent: mockSendEvent
-  }
-})
 
 const MockEventPublisher = jest.fn().mockImplementation(() => {
   return {
@@ -15,7 +8,6 @@ const MockEventPublisher = jest.fn().mockImplementation(() => {
 
 jest.mock('ffc-pay-event-publisher', () => {
   return {
-    PublishEvent: MockPublishEvent,
     EventPublisher: MockEventPublisher
   }
 })
@@ -68,9 +60,14 @@ describe('V2 send batch error event for SITI payment file that cannot be parsed'
     expect(mockPublishEvent.mock.calls[0][0].source).toBe(SOURCE)
   })
 
-  test('should raise an event with batch rejected event', async () => {
+  test('should raise an event with batch rejected event type', async () => {
     await sendBatchErrorEvent(filename, error)
     expect(mockPublishEvent.mock.calls[0][0].type).toBe(BATCH_REJECTED)
+  })
+
+  test('should raise an event with filename as subject', async () => {
+    await sendBatchErrorEvent(filename, error)
+    expect(mockPublishEvent.mock.calls[0][0].subject).toBe(filename)
   })
 
   test('should include error message in the event data', async () => {
@@ -81,5 +78,9 @@ describe('V2 send batch error event for SITI payment file that cannot be parsed'
   test('should include filename in the event data', async () => {
     await sendBatchErrorEvent(filename, error)
     expect(mockPublishEvent.mock.calls[0][0].data.filename).toBe(filename)
+  })
+
+  test('should throw error if no error provided', async () => {
+    await expect(() => sendBatchErrorEvent(filename)).rejects.toThrow()
   })
 })

@@ -1,7 +1,7 @@
 const util = require('util')
-const { EventPublisher } = require('ffc-pay-event-publisher')
 const config = require('../config/processing')
 const messageConfig = require('../config/message')
+const { EventPublisher } = require('ffc-pay-event-publisher')
 const { SOURCE } = require('../constants/source')
 const { PAYMENT_REJECTED } = require('../constants/events')
 

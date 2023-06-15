@@ -1,11 +1,4 @@
-const mockSendEvent = jest.fn()
 const mockPublishEvents = jest.fn()
-
-const MockPublishEvent = jest.fn().mockImplementation(() => {
-  return {
-    sendEvent: mockSendEvent
-  }
-})
 
 const MockEventPublisher = jest.fn().mockImplementation(() => {
   return {
@@ -15,7 +8,6 @@ const MockEventPublisher = jest.fn().mockImplementation(() => {
 
 jest.mock('ffc-pay-event-publisher', () => {
   return {
-    PublishEvent: MockPublishEvent,
     EventPublisher: MockEventPublisher
   }
 })
@@ -77,14 +69,14 @@ describe('V2 events for processed payment requests', () => {
     expect(mockPublishEvents.mock.calls[0][0][0].type).toBe(PAYMENT_REJECTED)
   })
 
-  test('should include payment request in event data', async () => {
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(mockPublishEvents.mock.calls[0][0][0].data).toMatchObject(paymentRequest)
-  })
-
   test('should include error message in event data', async () => {
     await sendPaymentRequestInvalidEvents(paymentRequests)
     expect(mockPublishEvents.mock.calls[0][0][0].data.message).toBe(error)
+  })
+
+  test('should include payment request in event data', async () => {
+    await sendPaymentRequestInvalidEvents(paymentRequests)
+    expect(mockPublishEvents.mock.calls[0][0][0].data).toMatchObject(paymentRequest)
   })
 
   test('should send event for every payment request', async () => {

@@ -10,13 +10,8 @@ jest.mock('ffc-messaging', () => {
   }
 })
 
-const mockSendEvent = jest.fn()
 const mockPublishEvent = jest.fn()
-const MockPublishEvent = jest.fn().mockImplementation(() => {
-  return {
-    sendEvent: mockSendEvent
-  }
-})
+
 const MockEventPublisher = jest.fn().mockImplementation(() => {
   return {
     publishEvent: mockPublishEvent
@@ -24,7 +19,6 @@ const MockEventPublisher = jest.fn().mockImplementation(() => {
 })
 jest.mock('ffc-pay-event-publisher', () => {
   return {
-    PublishEvent: MockPublishEvent,
     EventPublisher: MockEventPublisher
   }
 })
@@ -415,5 +409,88 @@ describe('process batch files', () => {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI}`).length).toBe(0)
+  })
+
+  test('calls EventPublisher.publishEvent once when an invalid batch header number of payment requests to actual number of payment requests file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent).toHaveBeenCalledTimes(1)
+  })
+
+  test('calls EventPublisher.publishEvent with event.type "uk.gov.defra.ffc.pay.warning.batch.quarantined" when an invalid batch header number of payment requests to actual number of payment requests file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent.mock.calls[0][0].type).toBe('uk.gov.defra.ffc.pay.warning.batch.quarantined')
+  })
+
+  test('calls EventPublisher.publishEvent with event.data.message "Batch quarantined" when an invalid batch header number of payment requests to actual number of payment requests file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent.mock.calls[0][0].data.message).toBe('Batch quarantined')
+  })
+
+  test('calls EventPublisher.publishEvent once when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent).toHaveBeenCalledTimes(1)
+  })
+
+  test('calls EventPublisher.publishEvent with event.type "uk.gov.defra.ffc.pay.warning.batch.quarantined" when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent.mock.calls[0][0].type).toBe('uk.gov.defra.ffc.pay.warning.batch.quarantined')
+  })
+
+  test('calls EventPublisher.publishEvent with event.data.message "Batch quarantined" when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent.mock.calls[0][0].data.message).toBe('Batch quarantined')
+  })
+
+  test('calls EventPublisher.publishEvent twice when an invalid batch header payment amount to invoice lines payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent).toHaveBeenCalledTimes(2)
+  })
+
+  test('calls EventPublisher.publishEvent with event.type "uk.gov.defra.ffc.pay.warning.payment.rejected" for both invalid requests when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent.mock.calls[0][0].type).toBe('uk.gov.defra.ffc.pay.warning.payment.rejected')
+    expect(mockPublishEvent.mock.calls[1][0].type).toBe('uk.gov.defra.ffc.pay.warning.payment.rejected')
+  })
+
+  test('calls EventPublisher.publishEvent with event.data.message "..." for both invalid requests when an invalid batch header payment amount to header payment amount file is given', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI_PILOT}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
+
+    await pollInbound()
+
+    expect(mockPublishEvent.mock.calls[0][0].data.message).toBe('...')
+    expect(mockPublishEvent.mock.calls[1][0].data.message).toBe('...')
   })
 })
