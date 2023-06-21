@@ -485,7 +485,6 @@ describe('process batch files', () => {
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI_PILOT)
 
     await pollInbound()
-    console.log('******** mockPublishEvents', mockPublishEvents.mock.calls[0][0])
 
     expect(mockPublishEvents.mock.calls[0][0][0].type).toBe(PAYMENT_REJECTED)
     expect(mockPublishEvents.mock.calls[0][0][1].type).toBe(PAYMENT_REJECTED)
