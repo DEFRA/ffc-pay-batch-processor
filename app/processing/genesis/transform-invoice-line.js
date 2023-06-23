@@ -1,6 +1,5 @@
 const transformInvoiceLine = (lineData, schemeId) => {
   return [{
-    invoiceNumber: lineData[1],
     companyCode: lineData[2],
     costCentre: lineData[3],
     objectiveCode: lineData[4],
@@ -10,7 +9,6 @@ const transformInvoiceLine = (lineData, schemeId) => {
     value: !isNaN(lineData[8]) ? parseFloat(lineData[8]) : undefined,
     description: lineData[9]
   }, {
-    invoiceNumber: lineData[1],
     companyCode: lineData[10],
     costCentre: lineData[11],
     objectiveCode: lineData[12],
