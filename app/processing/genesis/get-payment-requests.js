@@ -4,7 +4,7 @@ const transformInvoiceLine = require('./transform-invoice-line')
 const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
 
-const readGenesisFile = async (readBatchLines, scheme, input, filename) => {
+const getPaymentRequestsFromGenesisFile = async (readBatchLines, scheme, input, filename) => {
   return new Promise((resolve, reject) => {
     const batch = createBatch()
     readBatchLines.on('line', (line) => {
@@ -58,4 +58,6 @@ const readLine = (batchLine, batch, scheme, filename) => {
   }
 }
 
-module.exports = readGenesisFile
+module.exports = {
+  getPaymentRequestsFromGenesisFile
+}
