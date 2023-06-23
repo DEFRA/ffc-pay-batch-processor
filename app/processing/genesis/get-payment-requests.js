@@ -43,7 +43,7 @@ const readLine = (batchLine, batch, scheme, filename) => {
     case 'D': {
       const invoiceLines = transformInvoiceLine(batchLine, scheme.schemeId)
       for (const invoiceLine of invoiceLines) {
-        if (invoiceLine.value && invoiceLine.value !== '0.00') {
+        if (invoiceLine.value) {
           batch.paymentRequests[batch.paymentRequests.length - 1]
             .invoiceLines
             .push(invoiceLine)
