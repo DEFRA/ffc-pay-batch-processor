@@ -1,31 +1,25 @@
 const transformInvoiceLine = (lineData, schemeId) => {
-  return {
+  return [{
     invoiceNumber: lineData[1],
-    companyCodeEARFD: lineData[2],
-    costCentreEARFD: lineData[3],
-    objectiveCodeEARFD: lineData[4],
-    accountCodeEARFD: lineData[5],
-    subAccountCodeEARFD: lineData[6],
-    projectCodeEARFD: lineData[7],
-    valueEARFD: !isNaN(lineData[8]) ? parseFloat(lineData[8]) : undefined,
-    descriptionEARFD: lineData[9],
-    companyCodeDefra: lineData[10],
-    costCentreDefra: lineData[11],
-    objectiveCodeDefra: lineData[12],
-    accountCodeDefra: lineData[13],
-    subAccountCodeDefra: lineData[14],
-    projectCodeDefra: lineData[15],
-    valueDefra: !isNaN(lineData[16]) ? parseFloat(lineData[16]) : undefined,
-    descriptionDefra: lineData[17],
-    marketingYear: !isNaN(lineData[3]) ? parseInt(lineData[3]) : undefined,
-    schemeCode: lineData[4],
-    fundCode: lineData[5],
-    agreementNumber: lineData[6],
-    deliveryBody: lineData[7],
-    description: lineData[10],
-    dueDate: lineData[11],
-    accountCode: lineData[13]
-  }
+    companyCode: lineData[2],
+    costCentre: lineData[3],
+    objectiveCode: lineData[4],
+    accountCode: lineData[5],
+    subAccountCode: lineData[6],
+    projectCode: lineData[7],
+    value: !isNaN(lineData[8]) ? parseFloat(lineData[8]) : undefined,
+    description: lineData[9]
+  }, {
+    invoiceNumber: lineData[1],
+    companyCode: lineData[10],
+    costCentre: lineData[11],
+    objectiveCode: lineData[12],
+    accountCode: lineData[13],
+    subAccountCode: lineData[14],
+    projectCode: lineData[15],
+    value: !isNaN(lineData[16]) ? parseFloat(lineData[16]) : undefined,
+    description: lineData[17]
+  }]
 }
 
 module.exports = transformInvoiceLine

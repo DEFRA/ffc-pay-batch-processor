@@ -40,11 +40,17 @@ const readLine = (batchLine, batch, scheme, filename) => {
     case 'I':
       batch.paymentRequests.push(transformHeader(batchLine, scheme.schemeId, filename))
       return true
-    case 'D':
-      batch.paymentRequests[batch.paymentRequests.length - 1]
-        .invoiceLines
-        .push(transformInvoiceLine(batchLine, scheme.schemeId))
+    case 'D': {
+      const invoiceLines = transformInvoiceLine(batchLine, scheme.schemeId)
+      for (const invoiceLine of invoiceLines) {
+        if (invoiceLine.value && invoiceLine.value !== '0.00') {
+          batch.paymentRequests[batch.paymentRequests.length - 1]
+            .invoiceLines
+            .push(invoiceLine)
+        }
+      }
       return true
+    }
     case 'T':
       return true
     default:

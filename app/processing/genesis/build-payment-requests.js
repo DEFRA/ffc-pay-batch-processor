@@ -1,5 +1,3 @@
-const { buildInvoiceLines } = require('./build-invoice-lines')
-
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }
 
@@ -13,7 +11,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     contractNumber: paymentRequest.contractNumber,
     value: paymentRequest.value,
     correlationId: paymentRequest.correlationId,
-    invoiceLines: buildInvoiceLines(paymentRequest.invoiceLines)
+    invoiceLines: paymentRequest.invoiceLines ?? []
   }))
 }
 
