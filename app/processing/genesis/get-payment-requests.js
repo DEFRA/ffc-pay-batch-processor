@@ -45,6 +45,8 @@ const readLine = (batchLine, batch, scheme, filename) => {
         .invoiceLines
         .push(transformInvoiceLine(batchLine, scheme.schemeId))
       return true
+    case 'T':
+      return true
     default:
       return false
   }
