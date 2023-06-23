@@ -1,5 +1,5 @@
 const transformInvoiceLine = require('../../../../app/processing/siti-agri/transform-invoice-line')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/constants/schemes')
 
 describe('Transform invoice lines', () => {
   test('transforms SFI invoice line', async () => {

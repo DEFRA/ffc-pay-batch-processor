@@ -8,7 +8,7 @@ jest.mock('../../../app/processing/get-payment-requests-from-file')
 const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
 
 const parsePaymentFile = require('../../../app/processing/parse-payment-file')
-const { sfiPilot } = require('../../../app/schemes')
+const { sfiPilot } = require('../../../app/constants/schemes')
 
 let sequence
 let filename

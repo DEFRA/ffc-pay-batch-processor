@@ -11,7 +11,7 @@ const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
 jest.mock('../../../app/processing/download-and-parse')
 const downloadAndParse = require('../../../app/processing/download-and-parse')
-const { sfiPilot } = require('../../../app/schemes')
+const { sfiPilot } = require('../../../app/constants/schemes')
 
 let filename
 

@@ -1,5 +1,5 @@
 const { P02, P04 } = require('../../../../constants/line-descriptions')
-const { bps } = require('../../../../schemes')
+const { bps } = require('../../../../constants/schemes')
 const { recalculateBPSPenalties } = require('../cap-bps-penalties/recalculate-bps-penalties')
 
 const capBPSPenalties = (paymentRequest) => {

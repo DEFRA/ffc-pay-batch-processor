@@ -1,6 +1,6 @@
 let batch
 let validateSequence
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../app/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../app/constants/schemes')
 
 const setupMocks = (mockDisableSequenceValidation = false) => {
   jest.mock('../../../app/processing/batch')

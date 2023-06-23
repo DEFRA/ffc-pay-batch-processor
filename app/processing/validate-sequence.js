@@ -1,6 +1,6 @@
 const batch = require('./batch')
 const { disableSequenceValidation } = require('../config/processing')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../constants/schemes')
 
 const validateSequence = async (schemeId, filename) => {
   const sequence = getSequence(schemeId, filename)

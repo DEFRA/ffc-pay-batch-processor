@@ -1,5 +1,5 @@
 const removeDefunctParticipationFund = require('../../../../../app/processing/siti-agri/handle-known-defects/remove-defunct-participation-fund')
-const { sfiPilot } = require('../../../../../app/schemes')
+const { sfiPilot } = require('../../../../../app/constants/schemes')
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 
