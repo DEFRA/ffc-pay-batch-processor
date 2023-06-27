@@ -34,5 +34,11 @@ module.exports = {
     name: 'FDMR',
     sourceSystem: 'FDMR',
     fileMask: /^FDMR_\d{4}_AP_\d*.dat$/
+  },
+  fc: {
+    schemeId: 10,
+    name: 'FC',
+    sourceSystem: 'GLOS',
+    fileMask: /^FCAP_\d{4}_\d*\.dat$/
   }
 }
