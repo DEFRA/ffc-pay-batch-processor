@@ -1,6 +1,6 @@
 const batch = require('./batch')
 const { disableSequenceValidation } = require('../config/processing')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, fc } = require('../schemes')
 
 const validateSequence = async (schemeId, filename) => {
   const sequence = getSequence(schemeId, filename)
@@ -18,6 +18,7 @@ const getSequence = (schemeId, filename) => {
       return Number(filename.substr(6, 4))
     case bps.schemeId:
     case fdmr.schemeId:
+    case fc.schemeId:
       return Number(filename.substr(5, 4))
     default:
       throw new Error(`Unknown schemeId: ${schemeId}`)
