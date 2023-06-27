@@ -39,6 +39,6 @@ module.exports = {
     schemeId: 9,
     name: 'ES',
     sourceSystem: 'Genesis',
-    fileMask: /^GENESISPayReq_\d*._\d{4}.gne$/
+    fileMask: /^GENESISPayReq_\d{8}_\d{4}.gne$/
   }
 }
