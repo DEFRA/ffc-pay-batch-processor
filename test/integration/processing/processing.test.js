@@ -76,6 +76,9 @@ const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH
 const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI = 'SITISFI0001_AP_4.dat'
 const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_SFI = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES__PAYMENT_AMOUNT_FILE_SFI)
 
+const TEST_FILE_ES = 'GENESISPayReq_20230101_0001.gne'
+const TEST_FILEPATH_ES = path.resolve(__dirname, '../../files', TEST_FILE_ES)
+
 describe('process batch files', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -89,6 +92,9 @@ describe('process batch files', () => {
     }, {
       schemeId: 3,
       scheme: 'Lump Sums'
+    }, {
+      schemeId: 9,
+      scheme: 'ES'
     }])
     await db.sequence.bulkCreate([{
       schemeId: 1,
@@ -98,6 +104,9 @@ describe('process batch files', () => {
       next: 1
     }, {
       schemeId: 3,
+      next: 1
+    }, {
+      schemeId: 9,
       next: 1
     }])
     await db.status.bulkCreate([{
@@ -498,5 +507,49 @@ describe('process batch files', () => {
 
     expect(mockPublishEvents.mock.calls[0][0][0].source).toBe(SOURCE)
     expect(mockPublishEvents.mock.calls[0][0][1].source).toBe(SOURCE)
+  })
+
+  test('sends all payment requests for ES', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_ES}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_ES)
+
+    await pollInbound()
+
+    expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
+  })
+
+  test('sends invoice numbers for ES for all payment requests', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_ES}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_ES)
+
+    await pollInbound()
+
+    console.log(mockSendBatchMessages.mock.calls[0])
+
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('1000001')
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('1000002')
+  })
+
+  test('sends payment request with correctly split lines for ES', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_ES}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_ES)
+
+    await pollInbound()
+
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceLines.length).toBe(2)
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceLines.length).toBe(2)
+  })
+
+  test('archives file on success for ES', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_ES}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_ES)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_ES}`).length).toBe(1)
   })
 })
