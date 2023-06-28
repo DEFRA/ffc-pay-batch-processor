@@ -8,7 +8,7 @@ let paymentRequest
 
 describe('Validate batch', () => {
   beforeEach(() => {
-    batchHeader = JSON.parse(JSON.stringify(require('../../../mocks/batch-header')))
+    batchHeader = JSON.parse(JSON.stringify(require('../../../mocks/es-batch-header')))
     paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
 
     convertToPence.mockImplementation(() => batchHeader.batchValue)
@@ -66,8 +66,8 @@ describe('Validate batch', () => {
     expect(result).toBeFalsy()
   })
 
-  test('returns false if export date DD/MM/YYYY', async () => {
-    batchHeader.exportDate = '28/06/2022'
+  test('returns false if export date yyyy-mm-dd', async () => {
+    batchHeader.exportDate = '2022-06-28'
     const result = await validateBatch([batchHeader], [paymentRequest])
     expect(result).toBeFalsy()
   })
