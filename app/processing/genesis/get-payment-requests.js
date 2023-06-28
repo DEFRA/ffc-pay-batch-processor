@@ -38,10 +38,10 @@ const readLine = (batchLine, batch, scheme, filename) => {
       batch.batchHeaders.push(transformBatch(batchLine))
       return true
     case 'I':
-      batch.paymentRequests.push(transformHeader(batchLine, scheme.schemeId, filename))
+      batch.paymentRequests.push(transformHeader(batchLine, filename))
       return true
     case 'D': {
-      const invoiceLines = transformInvoiceLine(batchLine, scheme.schemeId)
+      const invoiceLines = transformInvoiceLine(batchLine)
       for (const invoiceLine of invoiceLines) {
         if (invoiceLine.value) {
           batch.paymentRequests[batch.paymentRequests.length - 1]

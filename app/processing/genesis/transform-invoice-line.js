@@ -1,4 +1,4 @@
-const transformInvoiceLine = (lineData, schemeId) => {
+const transformInvoiceLine = (lineData) => {
   return [{
     companyCode: lineData[2],
     costCentre: lineData[3],

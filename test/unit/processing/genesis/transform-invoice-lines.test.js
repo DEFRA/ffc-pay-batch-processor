@@ -1,10 +1,9 @@
 const transformInvoiceLine = require('../../../../app/processing/genesis/transform-invoice-line')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/constants/schemes')
 
-describe('Transform invoice lines', () => {
-  test('transforms SFI invoice line', async () => {
-    const lineData = ['L', 'SFI0000001', '100', '2022', '80001', 'DRD10', 'SIP00000000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, sfi.schemeId)
+describe('transform genesis invoice lines', () => {
+  test('transforms invoice line', async () => {
+    const lineData = ['D', '1096514', '32', '40121', '01372', '0197', '221', '', '10767.74', 'Payment for ESS P1 to P2 Transfer Other objective in North West', '', '', '', '', '', '', '', '', '']
+    const result = transformInvoiceLine(lineData)
     expect(result).toEqual({
       invoiceNumber: 'SFI0000001',
       value: 100,
@@ -17,21 +16,5 @@ describe('Transform invoice lines', () => {
       dueDate: '2022-12-01',
       accountCode: 'SOS273'
     })
-  })
-
-  test('returns undefined values if line empty', async () => {
-    const lineData = []
-    const result = transformInvoiceLine(lineData, lumpSums.schemeId)
-    Object.values(result).forEach(value => expect(value).toBeUndefined())
-  })
-
-  test('throws error if no scheme', async () => {
-    const lineData = []
-    expect(() => transformInvoiceLine(lineData)).toThrowError('Unknown scheme: undefined')
-  })
-
-  test('throws error if unknown scheme', async () => {
-    const lineData = []
-    expect(() => transformInvoiceLine(lineData, 99)).toThrowError('Unknown scheme: 99')
   })
 })
