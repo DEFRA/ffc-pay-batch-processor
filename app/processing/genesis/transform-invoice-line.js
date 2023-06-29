@@ -1,4 +1,6 @@
 const transformInvoiceLine = (lineData) => {
+  // Line data contains two invoices lines for each co-financing element.
+  // Need to split these into two invoice lines for downstream processing.
   return [{
     companyCode: lineData[2],
     costCentre: lineData[3],
