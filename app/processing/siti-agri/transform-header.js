@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../constants/schemes')
 
 const transformHeader = (headerData, schemeId, filename) => {
   switch (schemeId) {

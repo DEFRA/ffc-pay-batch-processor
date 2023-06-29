@@ -3,7 +3,7 @@ const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-
 
 const { P02, P04 } = require('../../../../../app/constants/line-descriptions')
 
-const { bps, sfi } = require('../../../../../app/schemes')
+const { bps, sfi } = require('../../../../../app/constants/schemes')
 const { capBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties')
 
 let paymentRequest

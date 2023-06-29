@@ -1,4 +1,5 @@
 const mockPublishEvent = jest.fn()
+
 const MockEventPublisher = jest.fn().mockImplementation(() => {
   return {
     publishEvent: mockPublishEvent
@@ -24,16 +25,16 @@ const sendBatchSuccessEvent = require('../../../app/event/send-batch-success-eve
 
 const filename = 'SITIELM0001_AP_20210812105407541.dat'
 
-beforeEach(async () => {
-  processingConfig.useV2Events = true
-  messageConfig.eventsTopic = 'v2-events'
-})
+describe('V2 send batch error event for SITI payment file that cannot be parsed', () => {
+  beforeEach(async () => {
+    processingConfig.useV2Events = true
+    messageConfig.eventsTopic = 'v2-events'
+  })
 
-afterEach(async () => {
-  jest.clearAllMocks()
-})
+  afterEach(async () => {
+    jest.clearAllMocks()
+  })
 
-describe('V2 send batch success event', () => {
   test('send V2 events when v2 events enabled ', async () => {
     processingConfig.useV2Events = true
     await sendBatchSuccessEvent(filename)
@@ -48,7 +49,6 @@ describe('V2 send batch success event', () => {
 
   test('should send event to V2 topic', async () => {
     await sendBatchSuccessEvent(filename)
-    console.log(MockEventPublisher.mock.calls[0][0])
     expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
   })
 
@@ -57,12 +57,12 @@ describe('V2 send batch success event', () => {
     expect(mockPublishEvent.mock.calls[0][0].source).toBe(SOURCE)
   })
 
-  test('should raise an event with batch rejected event', async () => {
+  test('should raise an event with batch rejected event type', async () => {
     await sendBatchSuccessEvent(filename)
     expect(mockPublishEvent.mock.calls[0][0].type).toBe(BATCH_PROCESSED)
   })
 
-  test('should include filename as event subject', async () => {
+  test('should raise an event with filename as subject', async () => {
     await sendBatchSuccessEvent(filename)
     expect(mockPublishEvent.mock.calls[0][0].subject).toBe(filename)
   })

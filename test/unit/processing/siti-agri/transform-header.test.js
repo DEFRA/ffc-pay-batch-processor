@@ -1,7 +1,7 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
 const { M12 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/constants/schemes')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')

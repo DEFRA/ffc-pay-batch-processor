@@ -1,5 +1,5 @@
 const { convertToPence } = require('../../../currency-convert')
-const { sfiPilot } = require('../../../schemes')
+const { sfiPilot } = require('../../../constants/schemes')
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 

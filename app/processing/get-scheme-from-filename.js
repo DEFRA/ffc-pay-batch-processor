@@ -1,4 +1,4 @@
-const schemes = require('../schemes')
+const schemes = require('../constants/schemes')
 
 const getSchemeFromFilename = (filename) => {
   const scheme = Object.entries(schemes)

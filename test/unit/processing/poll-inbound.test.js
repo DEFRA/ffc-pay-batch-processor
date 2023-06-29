@@ -13,7 +13,7 @@ const mockProcessPaymentFile = require('../../../app/processing/process-payment-
 const mockCommit = jest.fn()
 const mockRollback = jest.fn()
 
-const { sfi } = require('../../../app/schemes')
+const { sfi } = require('../../../app/constants/schemes')
 
 const pollInbound = require('../../../app/processing/poll-inbound')
 

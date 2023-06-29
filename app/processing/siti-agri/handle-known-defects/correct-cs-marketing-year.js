@@ -1,4 +1,4 @@
-const { cs } = require('../../../schemes')
+const { cs } = require('../../../constants/schemes')
 
 const correctCSMarketingYear = (paymentRequest) => {
   if (paymentRequest.sourceSystem !== cs.sourceSystem) {

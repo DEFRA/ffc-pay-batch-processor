@@ -1,5 +1,5 @@
 const { AP } = require('../../app/constants/ledger')
-const { sfiPilot } = require('../../app/schemes')
+const { sfiPilot } = require('../../app/constants/schemes')
 
 const batchHeader = {
   batchValue: 100,

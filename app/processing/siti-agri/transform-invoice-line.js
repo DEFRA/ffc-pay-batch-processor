@@ -1,4 +1,4 @@
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../constants/schemes')
 
 const transformInvoiceLine = (lineData, schemeId) => {
   switch (schemeId) {

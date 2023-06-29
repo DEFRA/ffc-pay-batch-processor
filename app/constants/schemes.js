@@ -35,6 +35,12 @@ module.exports = {
     sourceSystem: 'FDMR',
     fileMask: /^FDMR_\d{4}_AP_\d*.dat$/
   },
+  es: {
+    schemeId: 9,
+    name: 'ES',
+    sourceSystem: 'Genesis',
+    fileMask: /^GENESISPayReq_\d{8}_\d{4}.gne$/
+  },
   fc: {
     schemeId: 10,
     name: 'FC',

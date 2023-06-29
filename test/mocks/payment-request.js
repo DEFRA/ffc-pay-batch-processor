@@ -1,6 +1,6 @@
 const { GBP } = require('../../app/constants/currency')
 const { Q4 } = require('../../app/constants/schedule')
-const { sfiPilot } = require('../../app/schemes')
+const { sfiPilot } = require('../../app/constants/schemes')
 const { invoiceLines, mappedInvoiceLines } = require('./invoice-lines')
 const correlationId = require('./correlation-id')
 
