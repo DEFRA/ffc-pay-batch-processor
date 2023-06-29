@@ -45,6 +45,6 @@ module.exports = {
     schemeId: 11,
     name: 'IMPS',
     sourceSystem: 'IMPS',
-    fileMask: /^FIN_IMPS_AP_\d{4}.int$/
+    fileMask: /^FIN_IMPS_A[P|R]_\d{4}.INT$/
   }
 }
