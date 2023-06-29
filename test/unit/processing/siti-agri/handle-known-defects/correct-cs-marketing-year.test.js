@@ -1,4 +1,4 @@
-const { cs, sfi } = require('../../../../../app/schemes')
+const { cs, sfi } = require('../../../../../app/constants/schemes')
 
 const { correctCSMarketingYear } = require('../../../../../app/processing/siti-agri/handle-known-defects/correct-cs-marketing-year')
 

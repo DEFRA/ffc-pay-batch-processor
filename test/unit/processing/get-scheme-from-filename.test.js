@@ -1,5 +1,5 @@
 const getSchemeFromFilename = require('../../../app/processing/get-scheme-from-filename')
-const { sfi, sfiPilot, lumpSums } = require('../../../app/schemes')
+const { sfi, sfiPilot, lumpSums } = require('../../../app/constants/schemes')
 
 describe('Get scheme', () => {
   test('returns SFI for SFI filename', async () => {
