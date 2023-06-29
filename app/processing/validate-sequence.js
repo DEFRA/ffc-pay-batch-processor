@@ -20,7 +20,7 @@ const getSequence = (schemeId, filename) => {
     case fdmr.schemeId:
       return Number(filename.substr(5, 4))
     case es.schemeId:
-      return Number(filename.substr(24, 4))
+      return Number(filename.substr(23, 4))
     default:
       throw new Error(`Unknown schemeId: ${schemeId}`)
   }
