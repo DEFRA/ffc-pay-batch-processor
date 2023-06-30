@@ -6,7 +6,6 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     batch: paymentRequest.batch,
     invoiceNumber: paymentRequest.invoiceNumber,
     vendor: paymentRequest.vendor,
-    marketingYear: paymentRequest.invoiceLines?.[0]?.marketingYear,
     paymentRequestNumber: paymentRequest.paymentRequestNumber,
     contractNumber: paymentRequest.contractNumber,
     value: paymentRequest.value,
