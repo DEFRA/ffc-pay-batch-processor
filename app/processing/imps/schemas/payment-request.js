@@ -11,6 +11,7 @@ module.exports = Joi.object({
   paymentRequestNumber: Joi.number().integer().required(),
   contractNumber: Joi.string().required(),
   exchangeRate: Joi.number().optional(),
+  eventDate: Joi.string().optional(),
   value: Joi.number().required(),
   correlationId: Joi.string().required(),
   invoiceLines: Joi.array().min(1).required()
