@@ -1,13 +1,11 @@
 const transformInvoiceLine = (lineData) => {
   return {
-    companyCode: lineData[2],
-    costCentre: lineData[3],
-    standardCode: lineData[4],
-    accountCode: lineData[5],
-    subAccountCode: lineData[6],
-    projectCode: lineData[7].length > 0 ? lineData[7] : undefined,
-    value: !isNaN(lineData[8]) ? parseFloat(lineData[8]) : undefined,
-    description: lineData[9]
+    value: !isNaN(lineData[4]) ? parseFloat(lineData[4]) : undefined,
+    productCode: lineData[14],
+    marketingYear: !isNaN(lineData[15]) ? parseInt(lineData[15]) : undefined,
+    description: lineData[23],
+    exchangeRate: !isNaN(lineData[10]) ? parseFloat(lineData[10]) : undefined,
+    eventDate: lineData[17]
   }
 }
 
