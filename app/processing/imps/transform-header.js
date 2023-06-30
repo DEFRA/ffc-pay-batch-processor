@@ -5,7 +5,6 @@ const transformHeader = (headerData, filename) => {
     correlationId: uuidv4(),
     batch: filename,
     paymentRequestNumber: 1,
-    transactionType: headerData[3],
     ledger: headerData[4],
     trader: headerData[5],
     invoiceNumber: headerData[6],
