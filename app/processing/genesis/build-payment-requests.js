@@ -7,6 +7,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     invoiceNumber: paymentRequest.invoiceNumber,
     vendor: paymentRequest.vendor,
     paymentRequestNumber: paymentRequest.paymentRequestNumber,
+    marketingYear: paymentRequest.marketingYear,
     contractNumber: paymentRequest.contractNumber,
     value: paymentRequest.value,
     correlationId: paymentRequest.correlationId,

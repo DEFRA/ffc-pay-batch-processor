@@ -2,15 +2,10 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }
 
   return paymentRequests.map(paymentRequest => ({
+    ...paymentRequest,
     sourceSystem,
-    batch: paymentRequest.batch,
-    invoiceNumber: paymentRequest.invoiceNumber,
-    vendor: paymentRequest.vendor,
     marketingYear: paymentRequest.invoiceLines?.[0]?.marketingYear,
-    paymentRequestNumber: paymentRequest.paymentRequestNumber,
-    contractNumber: paymentRequest.contractNumber,
-    value: paymentRequest.value,
-    correlationId: paymentRequest.correlationId,
+    value: paymentRequest.invoiceLines?.reduce((acc, curr) => acc + curr.value, 0),
     invoiceLines: paymentRequest.invoiceLines ?? []
   }))
 }
