@@ -1,12 +1,11 @@
-const { es } = require('../../constants/schemes')
+const { imps } = require('../../constants/schemes')
 
 const transformBatch = (batchHeader) => {
   return {
-    exportDate: batchHeader[1],
-    numberOfPaymentRequests: !isNaN(batchHeader[2]) ? parseInt(batchHeader[2]) : undefined,
-    batchValue: !isNaN(batchHeader[4]) ? parseFloat(batchHeader[4]) : undefined,
-    sequence: !isNaN(batchHeader[5]) ? parseInt(batchHeader[5]) : undefined,
-    sourceSystem: es.sourceSystem
+    sequence: !isNaN(batchHeader[2]) ? parseInt(batchHeader[2]) : undefined,
+    numberOfPaymentRequests: !isNaN(batchHeader[3]) ? parseInt(batchHeader[3]) : undefined,
+    batchValue: !isNaN(batchHeader[5]) ? parseFloat(batchHeader[5]) : undefined,
+    sourceSystem: imps.sourceSystem
   }
 }
 

@@ -34,24 +34,16 @@ const readLine = (batchLine, batch, scheme, filename) => {
   const lineType = batchLine[0]
 
   switch (lineType) {
-    case 'H':
+    case 'B':
       batch.batchHeaders.push(transformBatch(batchLine))
       return true
-    case 'I':
+    case 'H':
       batch.paymentRequests.push(transformHeader(batchLine, filename))
       return true
-    case 'D': {
-      const invoiceLines = transformInvoiceLine(batchLine)
-      for (const invoiceLine of invoiceLines) {
-        if (invoiceLine.value) {
-          batch.paymentRequests[batch.paymentRequests.length - 1]
-            .invoiceLines
-            .push(invoiceLine)
-        }
-      }
-      return true
-    }
-    case 'T':
+    case 'L':
+      batch.paymentRequests[batch.paymentRequests.length - 1]
+        .invoiceLines
+        .push(transformInvoiceLine(batchLine))
       return true
     default:
       return false
