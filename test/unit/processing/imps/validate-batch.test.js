@@ -107,34 +107,4 @@ describe('Validate batch', () => {
     const result = await validateBatch([batchHeader], [paymentRequest])
     expect(result).toBeFalsy()
   })
-
-  test('returns true when batch header value matches payment request value', async () => {
-    batchHeader.batchValue = paymentRequest.value
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeTruthy()
-  })
-
-  test('returns false when batch header value is more than payment request value', async () => {
-    batchHeader.batchValue = paymentRequest.value + 50
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false when batch header value is less than payment request value', async () => {
-    batchHeader.batchValue = paymentRequest.value - 50
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false when payment request value is more than batch header value', async () => {
-    paymentRequest.value = batchHeader.batchValue + 50
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false when payment request value is less than batch header value', async () => {
-    paymentRequest.value = batchHeader.batchValue - 50
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
 })

@@ -45,7 +45,7 @@ const getInboundFileList = async () => {
 
   const fileList = []
   for await (const file of container.listBlobsFlat({ prefix: config.inboundFolder })) {
-    if (file.name.endsWith('.dat') || file.name.endsWith('.gne')) {
+    if (file.name.endsWith('.dat') || file.name.endsWith('.gne') || file.name.endsWith('.INT')) {
       fileList.push(file.name.replace(`${config.inboundFolder}/`, ''))
     }
   }

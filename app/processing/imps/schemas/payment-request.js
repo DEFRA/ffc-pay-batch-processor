@@ -10,7 +10,7 @@ module.exports = Joi.object({
   marketingYear: Joi.number().integer().min(1993).less(2099).optional(),
   paymentRequestNumber: Joi.number().integer().required(),
   contractNumber: Joi.string().required(),
-  exchangeRate: Joi.number().optional(),
+  exchangeRate: Joi.string().optional(),
   eventDate: Joi.string().optional(),
   value: Joi.number().required(),
   correlationId: Joi.string().required(),

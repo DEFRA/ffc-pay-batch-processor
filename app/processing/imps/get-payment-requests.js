@@ -8,7 +8,7 @@ const getPaymentRequestsFromImpsFile = async (readBatchLines, scheme, input, fil
   return new Promise((resolve, reject) => {
     const batch = createBatch()
     readBatchLines.on('line', (line) => {
-      const batchLine = line.split('^')
+      const batchLine = line.split(',')
       !readLine(batchLine, batch, scheme, filename) &&
         reject(new Error('Invalid file - Unknown line'))
     })
