@@ -3,8 +3,8 @@ const transformInvoiceLine = (lineData) => {
     value: !isNaN(lineData[4]) ? parseFloat(lineData[4]) : undefined,
     productCode: lineData[14],
     marketingYear: !isNaN(lineData[15]) ? parseInt(lineData[15]) : undefined,
-    description: lineData[23],
-    exchangeRate: !isNaN(lineData[10]) ? parseFloat(lineData[10]) : undefined,
+    description: lineData[22],
+    exchangeRate: lineData[10],
     eventDate: lineData[17]
   }
 }
