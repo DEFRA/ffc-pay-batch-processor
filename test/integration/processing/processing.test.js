@@ -91,14 +91,8 @@ const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_F
 const TEST_FILE_IMPS = 'FIN_IMPS_AP_0001.INT'
 const TEST_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_FILE_IMPS)
 
-const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS = 'FIN_IMPS_AP_0001.INT'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS = 'FIN_IMPS_AP_0002.INT'
 const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS)
-
-const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_IMPS = 'FIN_IMPS_AP_0001.INT'
-const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_IMPS)
-
-const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_IMPS = 'FIN_IMPS_AP_0001.INT'
-const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_IMPS)
 
 describe('process batch files', () => {
   beforeEach(async () => {
@@ -649,18 +643,8 @@ describe('process batch files', () => {
 
     console.log(mockSendBatchMessages.mock.calls[0])
 
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('1000001')
-    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('1000002')
-  })
-
-  test('sends payment request with correctly split lines for IMPS', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_IMPS}`)
-    await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)
-
-    await pollInbound()
-
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceLines.length).toBe(2)
-    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceLines.length).toBe(2)
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('FVR/J00001001')
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('FVR/J00002001')
   })
 
   test('archives file on success for IMPS', async () => {
@@ -677,6 +661,7 @@ describe('process batch files', () => {
   })
 
   test('quarantines invalid batch header number of payment requests to actual number of payment requests for IMPS', async () => {
+    await db.sequence.update({ next: 2 }, { where: { schemeId: 11 } })
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_IMPS)
 
@@ -687,44 +672,5 @@ describe('process batch files', () => {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS}`).length).toBe(1)
-  })
-
-  test('quarantines invalid batch header payment amount to header payment amount file for IMPS', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_IMPS}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH_IMPS)
-
-    await pollInbound()
-
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILE_IMPS}`).length).toBe(1)
-  })
-
-  test('archives invalid batch header payment amount to invoice lines payment amount file for IMPS', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_IMPS}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_IMPS)
-
-    await pollInbound()
-
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_IMPS}`).length).toBe(1)
-  })
-
-  test('does not quarantine invalid batch header payment amount to invoice lines payment amount file for IMPS', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_IMPS}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_IMPS)
-
-    await pollInbound()
-
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_IMPS}`).length).toBe(0)
   })
 })
