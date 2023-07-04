@@ -1,5 +1,18 @@
 const invoiceLineSchema = require('./schemas/invoice-line')
 
+const buildInvoiceLines = (invoiceLines) => {
+  try {
+    return invoiceLines
+      .map(invoiceLine => ({
+        ...invoiceLine,
+        standardCode: `${invoiceLine.invoiceNumber?.substring(0, 3)}^${invoiceLine.productCode}`
+      })
+      )
+  } catch {
+    return []
+  }
+}
+
 const isInvoiceLineValid = (invoiceLine) => {
   const validationResult = invoiceLineSchema.validate(invoiceLine, { abortEarly: false })
   if (validationResult.error) {
@@ -11,5 +24,6 @@ const isInvoiceLineValid = (invoiceLine) => {
 }
 
 module.exports = {
+  buildInvoiceLines,
   isInvoiceLineValid
 }
