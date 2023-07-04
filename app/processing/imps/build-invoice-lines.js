@@ -5,7 +5,7 @@ const buildInvoiceLines = (invoiceLines) => {
     return invoiceLines
       .map(invoiceLine => ({
         ...invoiceLine,
-        standardCode: `${invoiceLine.invoiceNumber?.substring(0, 3)}^${invoiceLine.productCode}`
+        standardCode: `${invoiceLine.invoiceNumber?.substring(0, 3)}_${invoiceLine.productCode}`
       })
       )
   } catch {
