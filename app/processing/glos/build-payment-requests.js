@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
 const { buildInvoiceLines } = require('./build-invoice-lines')
-const handleKnownDefects = require('./handle-known-defects')
 
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }
@@ -22,7 +21,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     value: paymentRequest.value,
     correlationId: uuidv4(),
     invoiceLines: buildInvoiceLines(paymentRequest.invoiceLines)
-  })).map(x => handleKnownDefects(x))
+  }))
 }
 
 module.exports = buildPaymentRequests
