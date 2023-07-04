@@ -1,6 +1,8 @@
+const { fc } = require('../constants/schemes')
 const db = require('../data')
 const storage = require('../storage')
 const getSchemeFromFilename = require('./get-scheme-from-filename')
+const { findGlosControlFile } = require('./glos/find-glos-control-file')
 const processPaymentFile = require('./process-payment-file')
 
 const pollInbound = async () => {
@@ -14,6 +16,9 @@ const pollInbound = async () => {
 
       if (scheme) {
         console.log(`Identified payment file as scheme: ${scheme.name}`)
+        if (scheme === fc) {
+          await findGlosControlFile(inboundFile)
+        }
         await processPaymentFile(inboundFile, scheme)
       }
     }
