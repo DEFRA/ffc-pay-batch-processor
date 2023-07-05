@@ -9,7 +9,7 @@ const { es } = require('../constants/schemes')
 const getPaymentRequestsFromFile = (fileBuffer, scheme, filename) => {
   const input = Readable.from(fileBuffer)
   const readBatchLines = readline.createInterface(input)
-  if (scheme.schemeId === fc) {
+  if (scheme.schemeId === fc.schemeId) {
     return getPaymentRequestsFromGlosFile(readBatchLines, scheme, input, filename)
   }
 
