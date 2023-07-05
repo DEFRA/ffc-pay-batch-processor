@@ -88,6 +88,12 @@ const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH
 const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_ES = 'GENESISPayReq_20230104_0001.gne'
 const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_ES = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_ES)
 
+const TEST_FILE_IMPS = 'FIN_IMPS_AP_0001.INT'
+const TEST_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_FILE_IMPS)
+
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS = 'FIN_IMPS_AP_0002.INT'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS)
+
 describe('process batch files', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -104,6 +110,9 @@ describe('process batch files', () => {
     }, {
       schemeId: 9,
       scheme: 'ES'
+    }, {
+      schemeId: 11,
+      scheme: 'IMPS'
     }])
     await db.sequence.bulkCreate([{
       schemeId: 1,
@@ -116,6 +125,9 @@ describe('process batch files', () => {
       next: 1
     }, {
       schemeId: 9,
+      next: 1
+    }, {
+      schemeId: 11,
       next: 1
     }])
     await db.status.bulkCreate([{
@@ -612,5 +624,53 @@ describe('process batch files', () => {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_ES}`).length).toBe(0)
+  })
+
+  test('sends all payment requests for IMPS', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_IMPS}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)
+
+    await pollInbound()
+
+    expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
+  })
+
+  test('sends invoice numbers for IMPS for all payment requests', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_IMPS}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)
+
+    await pollInbound()
+
+    console.log(mockSendBatchMessages.mock.calls[0])
+
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('FVR/J00001001')
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('FVR/J00002001')
+  })
+
+  test('archives file on success for IMPS', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_IMPS}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_IMPS}`).length).toBe(1)
+  })
+
+  test('quarantines invalid batch header number of payment requests to actual number of payment requests for IMPS', async () => {
+    await db.sequence.update({ next: 2 }, { where: { schemeId: 11 } })
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_IMPS)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS}`).length).toBe(1)
   })
 })
