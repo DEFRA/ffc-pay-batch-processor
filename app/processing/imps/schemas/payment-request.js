@@ -7,7 +7,7 @@ module.exports = Joi.object({
   invoiceNumber: Joi.string().required(),
   trader: Joi.string().required(),
   ledger: Joi.string().allow(AP, AR).required(),
-  marketingYear: Joi.number().integer().min(2015).less(2099).optional(),
+  marketingYear: Joi.number().integer().min(2003).less(2099).optional(),
   paymentRequestNumber: Joi.number().integer().required(),
   contractNumber: Joi.string().required(),
   exchangeRate: Joi.string().optional(),
