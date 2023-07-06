@@ -8,7 +8,7 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
   return new Promise((resolve, reject) => {
     const batch = createBatch()
     readBatchLines.on('line', (line) => {
-      const batchLine = line.split('^')
+      const batchLine = line.split(',')
       !readLine(batchLine, batch, scheme, filename) &&
         reject(new Error('Invalid file - Unknown line'))
     })
