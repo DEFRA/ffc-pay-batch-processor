@@ -46,5 +46,11 @@ module.exports = {
     name: 'FC',
     sourceSystem: 'GLOS',
     fileMask: /^FCAP_\d{4}_\d*\.dat$/
+  imps: {
+    schemeId: 11,
+    name: 'IMPS',
+    sourceSystem: 'IMPS',
+    fileMask: /^FIN_IMPS_A[P|R]_\d{4}.INT$/
+
   }
 }
