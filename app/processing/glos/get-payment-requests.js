@@ -3,8 +3,10 @@ const transformHeader = require('./transform-header')
 const transformInvoiceLine = require('./transform-invoice-line')
 const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
+const { validateGlosControlFile } = require('./validate-glos-control-file')
 
 const readGlosFile = async (readBatchLines, scheme, input, filename) => {
+  await validateGlosControlFile(readBatchLines, filename)
   return new Promise((resolve, reject) => {
     const batch = createBatch()
     readBatchLines.on('line', (line) => {

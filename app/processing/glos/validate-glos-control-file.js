@@ -12,7 +12,6 @@ const validateGlosControlFile = async (readGlosPaymentFile, filename) => {
     throw new Error('Glos payment file has failed control file validation')
   }
   console.log('Glos payment file sucessfully validated against control file')
-  // archive the ctrl file at this point?
 }
 
 module.exports = {

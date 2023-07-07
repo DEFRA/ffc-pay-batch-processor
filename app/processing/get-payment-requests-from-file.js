@@ -5,7 +5,6 @@ const getPaymentRequestsFromSitiAgriFile = require('./siti-agri/get-payment-requ
 const getPaymentRequestsFromGlosFile = require('./glos/get-payment-requests')
 const { getPaymentRequestsFromGenesisFile } = require('./genesis/get-payment-requests')
 const { getPaymentRequestsFromImpsFile } = require('./imps/get-payment-requests')
-const { validateGlosControlFile } = require('./glos/validate-glos-control-file')
 
 const getPaymentRequestsFromFile = (fileBuffer, scheme, filename) => {
   const input = Readable.from(fileBuffer)
@@ -16,7 +15,6 @@ const getPaymentRequestsFromFile = (fileBuffer, scheme, filename) => {
   }
 
   if (scheme.schemeId === fc.schemeId) {
-    validateGlosControlFile(readBatchLines, filename)
     return getPaymentRequestsFromGlosFile(readBatchLines, scheme, input, filename)
   }
 
