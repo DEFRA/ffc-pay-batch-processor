@@ -1,7 +1,7 @@
 const { fc } = require('../../constants/schemes')
-// const transformBatch = require('./transform-batch')
-// const transformHeader = require('./transform-header')
-// const transformInvoiceLine = require('./transform-invoice-line')
+const transformBatch = require('./transform-batch')
+const transformHeader = require('./transform-header')
+const transformInvoiceLine = require('./transform-invoice-line')
 const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
 
