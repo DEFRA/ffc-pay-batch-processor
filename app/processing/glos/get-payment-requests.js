@@ -1,7 +1,7 @@
 const { fc } = require('../../constants/schemes')
-const transformBatch = require('./transform-batch')
-const transformHeader = require('./transform-header')
-const transformInvoiceLine = require('./transform-invoice-line')
+// const transformBatch = require('./transform-batch')
+// const transformHeader = require('./transform-header')
+// const transformInvoiceLine = require('./transform-invoice-line')
 const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
 
@@ -20,9 +20,9 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
     })
 
     readBatchLines.on('close', () => {
-      groupByInvoiceNumber(batchLines)
+      const groupedBatchLines = groupByInvoiceNumber(batchLines)
 
-      console.log(batchLines)
+      console.log(groupedBatchLines)
 
       validateBatch(batch.batchHeaders, batch.paymentRequests)
         ? resolve({ paymentRequestsCollection: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
