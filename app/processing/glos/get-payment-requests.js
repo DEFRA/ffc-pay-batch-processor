@@ -13,8 +13,9 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
     })
 
     readBatchLines.on('close', () => {
-      const paymentRequests = groupByInvoiceNumber(batchLines)
-      console.log(paymentRequests)
+      const groupedBatchLines = groupByInvoiceNumber(batchLines)
+      console.log(groupedBatchLines)
+
       validateBatch(batch.batchHeaders, batch.paymentRequests)
         ? resolve({ paymentRequestsCollection: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
         : reject(new Error('Invalid file'))
