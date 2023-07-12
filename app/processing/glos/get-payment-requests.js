@@ -1,7 +1,4 @@
 const { fc } = require('../../constants/schemes')
-const transformBatch = require('./transform-batch')
-const transformHeader = require('./transform-header')
-const transformInvoiceLine = require('./transform-invoice-line')
 const filterPaymentRequests = require('./filter-payment-requests')
 const validateBatch = require('./validate-batch')
 
@@ -11,19 +8,13 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
     const batchLines = []
     readBatchLines.on('line', (line) => {
       const batchLine = line.split(',')
-      batchLines.push(transformLines(batchLine, filename))
-      console.log(batchLines)
-      /*
-      !readLine(batchLine, batch, scheme, filename) &&
+      !batchLines.push(transformLines(batchLine, filename)) &&
         reject(new Error('Invalid file - Unknown line'))
-      */
     })
 
     readBatchLines.on('close', () => {
-      groupByInvoiceNumber(batchLines)
-
-      console.log(batchLines)
-
+      const paymentRequests = groupByInvoiceNumber(batchLines)
+      console.log(paymentRequests)
       validateBatch(batch.batchHeaders, batch.paymentRequests)
         ? resolve({ paymentRequestsCollection: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
         : reject(new Error('Invalid file'))
@@ -68,11 +59,20 @@ const groupByInvoiceNumber = (batchLines) => {
       frn: y.frn,
       sbi: y.sbi,
       claimDate: y.claimDate,
-      standardCode: y.standardCode,
-      description: y.description,
-      value: y.value
+      invoiceLines: [{
+        standardCode: y.standardCode,
+        description: y.description,
+        value: y.value
+      }]
     })
-
+    // if existing key found then add the invoice line details
+    if (x.get(key)) {
+      item.invoiceLines.push({
+        standardCode: y.standardCode,
+        description: y.description,
+        value: y.value
+      })
+    }
     return x.set(key, item)
   }, new Map()).values()]
 }
