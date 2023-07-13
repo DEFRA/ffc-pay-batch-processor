@@ -1,6 +1,5 @@
 let batch
 let validateSequence
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, es } = require('../../../app/constants/schemes')
 
 const setupMocks = (mockDisableSequenceValidation = false) => {
   jest.mock('../../../app/processing/batch')
@@ -10,6 +9,8 @@ const setupMocks = (mockDisableSequenceValidation = false) => {
   }))
   validateSequence = require('../../../app/processing/validate-sequence')
 }
+
+const { sfi, sfiPilot, lumpSums, cs, bps, fdmr, es, fc, imps } = require('../../../app/constants/schemes')
 
 describe('validate sequence', () => {
   beforeEach(() => {
@@ -97,33 +98,6 @@ describe('validate sequence', () => {
     expect(result.currentSequence).toBe(2)
   })
 
-  test('returns success if next sequence matches expected for BPS', async () => {
-    setupMocks()
-    batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(bps.schemeId, 'SITI_0001_AP_20230315123734837.dat')
-    expect(result.success).toBeTruthy()
-    expect(result.expectedSequence).toBe(1)
-    expect(result.currentSequence).toBe(1)
-  })
-
-  test('returns failure if next lower than expected for BPS', async () => {
-    setupMocks()
-    batch.nextSequenceId.mockResolvedValue(2)
-    const result = await validateSequence(bps.schemeId, 'SITI_0001_AP_20230315123734837.dat')
-    expect(result.success).toBeFalsy()
-    expect(result.expectedSequence).toBe(2)
-    expect(result.currentSequence).toBe(1)
-  })
-
-  test('returns failure if next higher than expected for BPS', async () => {
-    setupMocks()
-    batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(bps.schemeId, 'SITI_0002_AP_20230315123734837.dat')
-    expect(result.success).toBeFalsy()
-    expect(result.expectedSequence).toBe(1)
-    expect(result.currentSequence).toBe(2)
-  })
-
   test('returns success if next sequence matches expected for CS', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
@@ -146,6 +120,33 @@ describe('validate sequence', () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
     const result = await validateSequence(cs.schemeId, 'SITICS0002_AP_20230315124537408.dat')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(2)
+  })
+
+  test('returns success if next sequence matches expected for BPS', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(bps.schemeId, 'SITI_0001_AP_20230315123734837.dat')
+    expect(result.success).toBeTruthy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next lower than expected for BPS', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(2)
+    const result = await validateSequence(bps.schemeId, 'SITI_0001_AP_20230315123734837.dat')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(2)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next higher than expected for BPS', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(bps.schemeId, 'SITI_0002_AP_20230315123734837.dat')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)
@@ -178,28 +179,28 @@ describe('validate sequence', () => {
     expect(result.currentSequence).toBe(2)
   })
 
-  test('returns success if next sequence matches expected for BPS', async () => {
+  test('returns success if next sequence matches expected for FC', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(bps.schemeId, 'SITI_0001_AP_20230315123734837.dat')
+    const result = await validateSequence(fc.schemeId, 'FCAP_0001_230607220141.dat')
     expect(result.success).toBeTruthy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(1)
   })
 
-  test('returns failure if next lower than expected for BPS', async () => {
+  test('returns failure if next lower than expected for FC', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(2)
-    const result = await validateSequence(bps.schemeId, 'SITI_0001_AP_20230315123734837.dat')
+    const result = await validateSequence(fc.schemeId, 'FCAP_0001_230607220141.dat')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(2)
     expect(result.currentSequence).toBe(1)
   })
 
-  test('returns failure if next higher than expected for BPS', async () => {
+  test('returns failure if next higher than expected for FC', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(bps.schemeId, 'SITI_0002_AP_20230315123734837.dat')
+    const result = await validateSequence(fc.schemeId, 'FCAP_0002_230607220141.dat')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)
@@ -227,6 +228,33 @@ describe('validate sequence', () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
     const result = await validateSequence(es.schemeId, 'GENESISPayReq_20230101_0002.gne')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(2)
+  })
+
+  test('returns success if next sequence matches expected for IMPS', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(imps.schemeId, 'FIN_IMPS_AR_0001.INT')
+    expect(result.success).toBeTruthy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next lower than expected for IMPS', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(2)
+    const result = await validateSequence(imps.schemeId, 'FIN_IMPS_AR_0001.INT')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(2)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next higher than expected for IMPS', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(imps.schemeId, 'FIN_IMPS_AR_0002.INT')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)

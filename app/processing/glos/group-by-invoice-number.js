@@ -6,6 +6,7 @@ const groupByInvoiceNumber = (batchLines) => {
     const item = x.get(key) || Object.assign({}, {
       correlationId: y.correlationId,
       batch: y.batch,
+      batchExportDate: y.batchExportDate,
       invoiceNumber: y.invoiceNumber,
       paymentRequestNumber: y.paymentRequestNumber,
       frn: y.frn,

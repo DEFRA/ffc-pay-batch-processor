@@ -1,13 +1,16 @@
-const { v4: uuidv4 } = require('uuid')
-const { buildInvoiceLines } = require('./build-invoice-lines')
-
-const buildPaymentRequests = (paymentRequests) => {
+const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }
 
   return paymentRequests.map(paymentRequest => ({
-    ...paymentRequest,
-    correlationId: uuidv4(),
-    invoiceLines: buildInvoiceLines(paymentRequest.invoiceLines)
+    correlationId: paymentRequest.correlationId,
+    sourceSystem,
+    batch: paymentRequest.batch,
+    invoiceNumber: paymentRequest.invoiceNumber,
+    paymentRequestNumber: paymentRequest.paymentRequestNumber,
+    frn: paymentRequest.frn,
+    sbi: paymentRequest.sbi,
+    claimDate: paymentRequest.claimDate,
+    invoiceLines: paymentRequest.invoiceLines ?? []
   }))
 }
 

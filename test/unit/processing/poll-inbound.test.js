@@ -10,13 +10,10 @@ const mockGetSchemeFromFilename = require('../../../app/processing/get-scheme-fr
 jest.mock('../../../app/processing/process-payment-file')
 const mockProcessPaymentFile = require('../../../app/processing/process-payment-file')
 
-jest.mock('../../../app/processing/glos/find-glos-control-file')
-const { findGlosControlFile: mockFindGlosControlFile } = require('../../../app/processing/glos/find-glos-control-file')
-
 const mockCommit = jest.fn()
 const mockRollback = jest.fn()
 
-const { sfi, fc } = require('../../../app/constants/schemes')
+const { sfi } = require('../../../app/constants/schemes')
 
 const pollInbound = require('../../../app/processing/poll-inbound')
 
@@ -75,11 +72,5 @@ describe('poll inbound', () => {
     mockStorage.getInboundFileList.mockRejectedValue(new Error('Test error'))
     await expect(pollInbound()).rejects.toThrow('Test error')
     expect(mockRollback).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call findGlosControlFile if scheme is fc', async () => {
-    mockGetSchemeFromFilename.mockReturnValueOnce(fc)
-    await pollInbound()
-    expect(mockFindGlosControlFile).toHaveBeenCalledTimes(1)
   })
 })

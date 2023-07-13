@@ -4,7 +4,6 @@ const filterPaymentRequests = require('./filter-payment-requests')
 
 const readGlosFile = async (readBatchLines, scheme, input, filename) => {
   return new Promise((resolve, reject) => {
-    const batch = createBatch()
     const batchLines = []
     readBatchLines.on('line', (line) => {
       const batchLine = line.split(',')
@@ -15,19 +14,12 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
     readBatchLines.on('close', () => {
       const paymentRequests = groupByInvoiceNumber(batchLines)
       paymentRequests
-        ? resolve({ paymentRequestsCollection: filterPaymentRequests(paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
+        ? resolve({ paymentRequestsCollection: filterPaymentRequests(paymentRequests, scheme.sourceSystem), batchExportDate: paymentRequests[0]?.batchExportDate })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()
     })
   })
-}
-
-const createBatch = () => {
-  return {
-    batchHeaders: [],
-    paymentRequests: []
-  }
 }
 
 const readLine = (batchLines, batchLine, filename) => {

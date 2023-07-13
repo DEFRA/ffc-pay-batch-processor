@@ -1,5 +1,5 @@
-const buildPaymentRequests = require('./build-payment-requests')
 const paymentRequestSchema = require('./schemas/payment-request')
+const buildPaymentRequests = require('./build-payment-requests')
 const { isInvoiceLineValid } = require('./build-invoice-lines')
 
 const filterPaymentRequest = (paymentRequests, sourceSystem) => {

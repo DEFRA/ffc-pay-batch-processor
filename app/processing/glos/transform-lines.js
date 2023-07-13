@@ -4,6 +4,7 @@ const transformLines = (batchLine, filename) => {
   return {
     correlationId: uuidv4(),
     batch: filename,
+    batchExportDate: batchLine[3],
     invoiceNumber: batchLine[7],
     paymentRequestNumber: 1,
     frn: batchLine[21],
