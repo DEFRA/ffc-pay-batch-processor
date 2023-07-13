@@ -1,6 +1,5 @@
-const { fc } = require('../../constants/schemes')
 const filterPaymentRequests = require('./filter-payment-requests')
-const validateBatch = require('./validate-batch')
+// const validateBatch = require('./validate-batch')
 
 const readGlosFile = async (readBatchLines, scheme, input, filename) => {
   return new Promise((resolve, reject) => {
@@ -8,16 +7,14 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
     const batchLines = []
     readBatchLines.on('line', (line) => {
       const batchLine = line.split(',')
-      !batchLines.push(transformLines(batchLine, filename)) &&
+      !batchLines.push(transformLines(batchLine, filename, scheme)) &&
         reject(new Error('Invalid file - Unknown line'))
     })
 
     readBatchLines.on('close', () => {
-      const groupedBatchLines = groupByInvoiceNumber(batchLines)
-      console.log(groupedBatchLines)
-
-      validateBatch(batch.batchHeaders, batch.paymentRequests)
-        ? resolve({ paymentRequestsCollection: filterPaymentRequests(batch.paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
+      const paymentRequests = groupByInvoiceNumber(batchLines)
+      paymentRequests
+        ? resolve({ paymentRequestsCollection: filterPaymentRequests(paymentRequests, scheme.sourceSystem), batchExportDate: batch.batchHeaders[0]?.exportDate })
         : reject(new Error('Invalid file'))
       readBatchLines.close()
       input.destroy()
@@ -32,9 +29,9 @@ const createBatch = () => {
   }
 }
 
-const transformLines = (batchLine, filename) => {
+const transformLines = (batchLine, filename, scheme) => {
   return {
-    sourceSystem: fc.sourceSystem,
+    sourceSystem: scheme.sourceSystem,
     batch: filename,
     invoiceNumber: batchLine[7],
     paymentRequestNumber: 1,
