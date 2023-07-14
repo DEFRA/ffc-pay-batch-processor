@@ -1,4 +1,4 @@
 module.exports = {
-  controlFile: 'FCAP_0723_230524220145.ctl',
-  paymentFile: 'FCAP_0723_230524220145.dat'
+  filename1: 'FCAP_0001_230607220141.dat',
+  filename2: 'FCAP_0002_230607220141.dat'
 }

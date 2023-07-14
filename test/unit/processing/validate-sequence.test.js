@@ -10,6 +10,8 @@ const setupMocks = (mockDisableSequenceValidation = false) => {
   validateSequence = require('../../../app/processing/validate-sequence')
 }
 
+const { filename1, filename2 } = require('../../mocks/glos-filenames')
+
 const { sfi, sfiPilot, lumpSums, cs, bps, fdmr, es, fc, imps } = require('../../../app/constants/schemes')
 
 describe('validate sequence', () => {
@@ -182,7 +184,7 @@ describe('validate sequence', () => {
   test('returns success if next sequence matches expected for FC', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(fc.schemeId, 'FCAP_0001_230607220141.dat')
+    const result = await validateSequence(fc.schemeId, filename1)
     expect(result.success).toBeTruthy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(1)
@@ -191,7 +193,7 @@ describe('validate sequence', () => {
   test('returns failure if next lower than expected for FC', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(2)
-    const result = await validateSequence(fc.schemeId, 'FCAP_0001_230607220141.dat')
+    const result = await validateSequence(fc.schemeId, filename1)
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(2)
     expect(result.currentSequence).toBe(1)
@@ -200,7 +202,7 @@ describe('validate sequence', () => {
   test('returns failure if next higher than expected for FC', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(fc.schemeId, 'FCAP_0002_230607220141.dat')
+    const result = await validateSequence(fc.schemeId, filename2)
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)

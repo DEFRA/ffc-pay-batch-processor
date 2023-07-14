@@ -88,6 +88,12 @@ const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_HEADER_PAYMENT_AMOUNT_FILEPATH
 const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_ES = 'GENESISPayReq_20230104_0001.gne'
 const TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILEPATH_ES = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_ES)
 
+const TEST_FILE_FC = 'FCAP_0001_230531220142.dat'
+const TEST_FILEPATH_FC = path.resolve(__dirname, '../../files', TEST_FILE_FC)
+
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_FC = 'FCAP_0002_230531220142.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_FC = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_FC)
+
 const TEST_FILE_IMPS = 'FIN_IMPS_AP_0001.INT'
 const TEST_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_FILE_IMPS)
 
@@ -111,6 +117,9 @@ describe('process batch files', () => {
       schemeId: 9,
       scheme: 'ES'
     }, {
+      schemeId: 10,
+      scheme: 'FC'
+    }, {
       schemeId: 11,
       scheme: 'IMPS'
     }])
@@ -126,6 +135,9 @@ describe('process batch files', () => {
     }, {
       schemeId: 9,
       next: 1
+    }, {
+      schemeId: 10,
+      scheme: 'FC'
     }, {
       schemeId: 11,
       next: 1
@@ -624,6 +636,54 @@ describe('process batch files', () => {
       fileList.push(item.name)
     }
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_PAYMENT_AMOUNT_TO_INVOICE_LINES_PAYMENT_AMOUNT_FILE_ES}`).length).toBe(0)
+  })
+
+  test('sends all payment requests for FC', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_FC}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_FC)
+
+    await pollInbound()
+
+    expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
+  })
+
+  test('sends invoice numbers for FC for all payment requests', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_FC}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_FC)
+
+    await pollInbound()
+
+    console.log(mockSendBatchMessages.mock.calls[0])
+
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('')
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('')
+  })
+
+  test('archives file on success for FC', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_FC}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_FC)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_FC}`).length).toBe(1)
+  })
+
+  test('quarantines invalid payment requests for FC', async () => {
+    await db.sequence.update({ next: 2 }, { where: { schemeId: 11 } })
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_FC}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_FC)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_FC}`).length).toBe(1)
   })
 
   test('sends all payment requests for IMPS', async () => {

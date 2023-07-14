@@ -45,7 +45,7 @@ const getInboundFileList = async () => {
 
   const fileList = []
   for await (const file of container.listBlobsFlat({ prefix: config.inboundFolder })) {
-    if (file.name.endsWith('.dat') || file.name.endsWith('.gne') || file.name.endsWith('.ctl') || file.name.endsWith('.INT')) {
+    if (file.name.endsWith('.dat') || file.name.endsWith('.gne') || file.name.endsWith('.INT')) {
       fileList.push(file.name.replace(`${config.inboundFolder}/`, ''))
     }
   }
@@ -85,20 +85,11 @@ const quarantinePaymentFile = async (filename, quarantineFilename) => {
   return moveFile(config.inboundFolder, config.quarantineFolder, filename, quarantineFilename)
 }
 
-const getFile = async (filename) => {
-  console.log(`Searching for ${filename}`)
-  const blob = await getBlob(config.inboundFolder, filename)
-  const downloaded = await blob.downloadToBuffer()
-  console.log(`Found ${filename}`)
-  return downloaded.toString()
-}
-
 module.exports = {
   getInboundFileList,
   getInboundFileDetails,
   downloadPaymentFile,
   archivePaymentFile,
   quarantinePaymentFile,
-  blobServiceClient,
-  getFile
+  blobServiceClient
 }

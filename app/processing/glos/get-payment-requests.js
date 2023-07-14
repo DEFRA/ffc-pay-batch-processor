@@ -1,4 +1,4 @@
-const transformLines = require('./transform-lines')
+const transformLines = require('./transform-line')
 const groupByInvoiceNumber = require('./group-by-invoice-number')
 const filterPaymentRequests = require('./filter-payment-requests')
 

@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
 
-const transformLines = (batchLine, filename) => {
+const transformLine = (batchLine, filename) => {
   return {
     correlationId: uuidv4(),
     batch: filename,
@@ -16,4 +16,4 @@ const transformLines = (batchLine, filename) => {
   }
 }
 
-module.exports = transformLines
+module.exports = transformLine

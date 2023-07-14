@@ -9,11 +9,13 @@ const validateBatch = require('../../../app/processing/siti-agri/validate-batch'
 
 const mockCorrelationId = require('../../mocks/correlation-id')
 const mockFileName = require('../../mocks/filename')
-const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
+
 const { lumpSums, sfiPilot, sfi } = require('../../../app/constants/schemes')
 const { M12 } = require('../../../app/constants/schedule')
 const { GBP } = require('../../../app/constants/currency')
 const { AP } = require('../../../app/constants/ledger')
+
+const getPaymentRequestsFromFile = require('../../../app/processing/get-payment-requests-from-file')
 
 let filename
 let fileBuffer
