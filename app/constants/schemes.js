@@ -41,6 +41,12 @@ module.exports = {
     sourceSystem: 'Genesis',
     fileMask: /^GENESISPayReq_\d{8}_\d{4}.gne$/
   },
+  fc: {
+    schemeId: 10,
+    name: 'FC',
+    sourceSystem: 'GLOS',
+    fileMask: /^FCAP_\d{4}_\d*\.dat$/
+  },
   imps: {
     schemeId: 11,
     name: 'IMPS',
