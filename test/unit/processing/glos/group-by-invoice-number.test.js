@@ -31,8 +31,9 @@ describe('group by invoice number', () => {
       value: 32
     }]
 
-    const lineDeltas = groupByInvoiceNumber(paymentRequests)
-    expect(lineDeltas.find(x => x.invoiceLines.length).value).toBe(2)
+    const groupedPayments = groupByInvoiceNumber(paymentRequests)
+
+    expect(groupedPayments.find(x => x.invoiceNumber === '33315 16').invoiceLines.length).toBe(2)
   })
 
   test('should group by invoice number with multiple unique invoice numbers', () => {
@@ -86,8 +87,9 @@ describe('group by invoice number', () => {
       value: 32
     }]
 
-    const lineDeltas = groupByInvoiceNumber(paymentRequests)
-    expect(lineDeltas.find(x => x.invoiceLines.length).value).toBe(3)
-    expect(lineDeltas.find(x => x.invoiceLines.length).value).toBe(1)
+    const groupedPayments = groupByInvoiceNumber(paymentRequests)
+
+    expect(groupedPayments.find(x => x.invoiceNumber === '33315 16').invoiceLines.length).toBe(3)
+    expect(groupedPayments.find(x => x.invoiceNumber === '23747 13').invoiceLines.length).toBe(1)
   })
 })

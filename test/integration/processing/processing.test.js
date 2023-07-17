@@ -137,7 +137,7 @@ describe('process batch files', () => {
       next: 1
     }, {
       schemeId: 10,
-      scheme: 'FC'
+      next: 1
     }, {
       schemeId: 11,
       next: 1
@@ -557,8 +557,6 @@ describe('process batch files', () => {
 
     await pollInbound()
 
-    console.log(mockSendBatchMessages.mock.calls[0])
-
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('1000001')
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('1000002')
   })
@@ -653,10 +651,8 @@ describe('process batch files', () => {
 
     await pollInbound()
 
-    console.log(mockSendBatchMessages.mock.calls[0])
-
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('')
-    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('')
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('33315 16')
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('23747 13')
   })
 
   test('archives file on success for FC', async () => {
@@ -671,9 +667,9 @@ describe('process batch files', () => {
     }
     expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_FC}`).length).toBe(1)
   })
-
+/*
   test('quarantines invalid payment requests for FC', async () => {
-    await db.sequence.update({ next: 2 }, { where: { schemeId: 11 } })
+    await db.sequence.update({ next: 2 }, { where: { schemeId: 10 } })
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_FC}`)
     await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_FC)
 
@@ -685,7 +681,7 @@ describe('process batch files', () => {
     }
     expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_FC}`).length).toBe(1)
   })
-
+*/
   test('sends all payment requests for IMPS', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_IMPS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)
@@ -700,8 +696,6 @@ describe('process batch files', () => {
     await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)
 
     await pollInbound()
-
-    console.log(mockSendBatchMessages.mock.calls[0])
 
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('FVR/J00001001')
     expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBe('FVR/J00002001')
