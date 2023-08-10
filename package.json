@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-batch-processor",
-  "version": "1.38.0",
+  "version": "1.39.0",
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
@@ -23,14 +23,15 @@
     "Marc Templeton m.templeton@kainos.com",
     "Simon Dunn simon.dunn1@defra.gov.uk",
     "Callum Leighton callum.leighton@kainos.com",
-    "Kirsten Williamson kirsten.williamson@kainos.com"
+    "Kirsten Williamson kirsten.williamson@kainos.com",
+    "Sam Plackett samuel.plackett@eviden.com"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@azure/identity": "2.0.5",
     "@azure/storage-blob": "12.13.0",
     "@joi/date": "2.1.0",
-    "applicationinsights": "2.5.1",
+    "applicationinsights": "2.7.0",
     "ffc-messaging": "2.6.5",
     "ffc-pay-event-publisher": "1.2.0",
     "joi": "17.6.0",
@@ -42,11 +43,11 @@
   },
   "devDependencies": {
     "@azure/service-bus": "7.8.1",
-    "@cucumber/cucumber": "9.0.0",
+    "@cucumber/cucumber": "9.3.0",
+    "hamjest": "3.7.3",
     "jest": "28.1.1",
     "jest-junit": "13.2.0",
-    "nodemon": "2.0.21",
-    "hamjest": "3.7.3",
+    "nodemon": "3.0.1",
     "standard": "17.0.0"
   },
   "standard": {

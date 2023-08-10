@@ -1,7 +1,7 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
 const { M12 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23 } = require('../../../../app/constants/schemes')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
@@ -188,6 +188,39 @@ describe('Transform header', () => {
     const filename = 'FDMR_0001_AP_20230315081841316.dat'
     const headerData = ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
     const result = transformHeader(headerData, fdmr.schemeId, filename)
+    expect(result.value).toBe(undefined)
+  })
+
+  test('transforms SFI23 header', async () => {
+    const filename = 'SITISFIA0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12']
+    const result = transformHeader(headerData, sfi23.schemeId, filename)
+    expect(result).toEqual({
+      correlationId,
+      batch: filename,
+      invoiceNumber: 'SFIA0000001',
+      paymentRequestNumber: 1,
+      contractNumber: 'Z000001',
+      frn: '1000000001',
+      currency: GBP,
+      value: 100,
+      deliveryBody: 'RP00',
+      schedule: M12,
+      invoiceLines: []
+    })
+  })
+
+  test('for SFI23 return undefined if paymentRequestNumber is NaN', async () => {
+    const filename = 'SITISFIA0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'SFIA0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12']
+    const result = transformHeader(headerData, sfi23.schemeId, filename)
+    expect(result.paymentRequestNumber).toBe(undefined)
+  })
+
+  test('for SFI23 return undefined if value is NaN', async () => {
+    const filename = 'SITISFIA0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFIA', 'M12']
+    const result = transformHeader(headerData, sfi23.schemeId, filename)
     expect(result.value).toBe(undefined)
   })
 
