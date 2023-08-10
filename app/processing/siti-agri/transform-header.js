@@ -1,10 +1,11 @@
 const { v4: uuidv4 } = require('uuid')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23 } = require('../../constants/schemes')
 
 const transformHeader = (headerData, schemeId, filename) => {
   switch (schemeId) {
     case sfi.schemeId:
     case sfiPilot.schemeId:
+    case sfi23.schemeId:
       return transformSFIHeader(headerData, filename)
     case lumpSums.schemeId:
       return transformLumpSumsHeader(headerData, filename)
