@@ -12,7 +12,7 @@ const setupMocks = (mockDisableSequenceValidation = false) => {
 
 const { filename1, filename2 } = require('../../mocks/glos-filenames')
 
-const { sfi, sfiPilot, lumpSums, cs, bps, fdmr, es, fc, imps } = require('../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, cs, bps, fdmr, es, fc, imps, sfi23 } = require('../../../app/constants/schemes')
 
 describe('validate sequence', () => {
   beforeEach(() => {
@@ -257,6 +257,33 @@ describe('validate sequence', () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
     const result = await validateSequence(imps.schemeId, 'FIN_IMPS_AR_0002.INT')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(2)
+  })
+
+  test('returns success if next sequence matches expected for SFI23', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(sfi23.schemeId, 'SITISFIA0001_AP_20220622120000000.dat')
+    expect(result.success).toBeTruthy()
+    expect(result.expectedSequence).toBe(1)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next lower than expected for SFI23', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(2)
+    const result = await validateSequence(sfi23.schemeId, 'SITISFIA0001_AP_20220622120000000.dat')
+    expect(result.success).toBeFalsy()
+    expect(result.expectedSequence).toBe(2)
+    expect(result.currentSequence).toBe(1)
+  })
+
+  test('returns failure if next higher than expected for SFI23', async () => {
+    setupMocks()
+    batch.nextSequenceId.mockResolvedValue(1)
+    const result = await validateSequence(sfi23.schemeId, 'SITISFIA0002_AP_20220622120000000.dat')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)
