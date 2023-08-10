@@ -32,7 +32,7 @@
     "@azure/storage-blob": "12.13.0",
     "@joi/date": "2.1.0",
     "applicationinsights": "2.7.0",
-    "ffc-messaging": "2.6.5",
+    "ffc-messaging": "2.7.0",
     "ffc-pay-event-publisher": "1.2.0",
     "joi": "17.6.0",
     "log-timestamp": "0.3.0",
