@@ -23,7 +23,8 @@
     "Marc Templeton m.templeton@kainos.com",
     "Simon Dunn simon.dunn1@defra.gov.uk",
     "Callum Leighton callum.leighton@kainos.com",
-    "Kirsten Williamson kirsten.williamson@kainos.com"
+    "Kirsten Williamson kirsten.williamson@kainos.com",
+    "Sam Plackett samuel.plackett@eviden.com"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
@@ -50,7 +51,7 @@
     "standard": "17.0.0"
   },
   "standard": {
-    "globals": [ 
+    "globals": [
       "describe",
       "beforeEach",
       "expect",
