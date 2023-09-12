@@ -11,6 +11,7 @@ const groupByInvoiceNumber = (batchLines) => {
       paymentRequestNumber: y.paymentRequestNumber,
       frn: y.frn,
       sbi: y.sbi,
+      schemeId: y.schemeId,
       claimDate: y.claimDate,
       invoiceLines: [{
         standardCode: y.standardCode,
