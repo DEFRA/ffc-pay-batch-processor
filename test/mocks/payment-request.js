@@ -6,6 +6,7 @@ const correlationId = require('./correlation-id')
 
 const paymentRequest = {
   sourceSystem: sfiPilot.sourceSystem,
+  schemeId: sfiPilot.schemeId,
   batch: 'SITISFI0001_AP_20230306115413497.dat',
   frn: 1234567890,
   paymentRequestNumber: 1,
@@ -31,7 +32,7 @@ const mappedPaymentRequest = {
 
 const unsuccessfulMappedPaymentRequest = {
   ...mappedPaymentRequest,
-  errorMessage: 'Payment request for FRN: 1234567890 - SITI1234567 is invalid, Example error'
+  errorMessage: 'Payment request for FRN: 1234567890 - SITI1234567 from batch SITISFI0001_AP_20230306115413497.dat is invalid, Example error'
 }
 
 const mappedPaymentRequests = [mappedPaymentRequest]

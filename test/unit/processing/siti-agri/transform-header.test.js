@@ -16,6 +16,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, sfi.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: sfi.schemeId,
       batch: filename,
       invoiceNumber: 'SFI0000001',
       paymentRequestNumber: 1,
@@ -49,6 +50,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, sfiPilot.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: sfiPilot.schemeId,
       batch: filename,
       invoiceNumber: 'SFIP0000001',
       paymentRequestNumber: 1,
@@ -68,6 +70,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, lumpSums.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: lumpSums.schemeId,
       batch: filename,
       invoiceNumber: 'LSES0000001',
       paymentRequestNumber: 1,
@@ -86,6 +89,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, bps.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: bps.schemeId,
       batch: filename,
       invoiceNumber: 'SITI0000001',
       paymentRequestNumber: 1,
@@ -118,6 +122,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, cs.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: cs.schemeId,
       batch: filename,
       invoiceNumber: 'CS000000001',
       paymentRequestNumber: 1,
@@ -165,6 +170,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, fdmr.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: fdmr.schemeId,
       batch: filename,
       invoiceNumber: 'FDMR0000001',
       paymentRequestNumber: 1,
@@ -197,6 +203,7 @@ describe('Transform header', () => {
     const result = transformHeader(headerData, sfi23.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: sfi23.schemeId,
       batch: filename,
       invoiceNumber: 'SFIA0000001',
       paymentRequestNumber: 1,
@@ -224,10 +231,17 @@ describe('Transform header', () => {
     expect(result.value).toBe(undefined)
   })
 
-  test('returns undefined values if line empty', async () => {
+  test('returns undefined values if line empty, except for schemeId', async () => {
     const headerData = []
     const result = transformHeader(headerData, lumpSums.schemeId)
+    delete result.schemeId
     Object.values(result).forEach(value => expect(value === undefined || value.length === 0 || value === uuidv4()).toBeTruthy())
+  })
+
+  test('returns schemeId correctly even if line empty', async () => {
+    const headerData = []
+    const result = transformHeader(headerData, lumpSums.schemeId)
+    expect(result.schemeId === lumpSums.schemeId).toBeTruthy()
   })
 
   test('throws error if no scheme', async () => {

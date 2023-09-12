@@ -22,6 +22,7 @@ let fileBuffer
 
 let batchHeaders
 let batchPaymentRequestsSFI
+let batchPaymentRequestsSFIPilot
 let batchPaymentRequestsLumpSums
 
 describe('Get payment request from payment file content', () => {
@@ -40,7 +41,7 @@ describe('Get payment request from payment file content', () => {
       sourceSystem: 'SFIP'
     }]
 
-    batchPaymentRequestsSFI = [{
+    batchPaymentRequestsSFIPilot = [{
       batch: filename,
       contractNumber: 'SFIP000001',
       correlationId: mockCorrelationId,
@@ -50,6 +51,7 @@ describe('Get payment request from payment file content', () => {
       invoiceNumber: 'SFI00000001',
       paymentRequestNumber: 1,
       schedule: M12,
+      schemeId: sfiPilot.schemeId,
       value: 100,
       invoiceLines: [{
         accountCode: 'SOS27',
@@ -74,6 +76,58 @@ describe('Get payment request from payment file content', () => {
       invoiceNumber: 'SFI00000002',
       paymentRequestNumber: 3,
       schedule: M12,
+      schemeId: sfiPilot.schemeId,
+      value: 100,
+      invoiceLines: [{
+        accountCode: 'SOS273',
+        agreementNumber: 'SIP00000000002',
+        deliveryBody: 'RP00',
+        description: 'G00 - Gross value of claim',
+        dueDate: '2022-12-01',
+        fundCode: 'DRD10',
+        invoiceNumber: 'SFI00000002',
+        marketingYear: 2022,
+        schemeCode: '80001',
+        value: 100
+      }]
+    }]
+
+    batchPaymentRequestsSFI = [{
+      batch: filename,
+      contractNumber: 'SFIP000001',
+      correlationId: mockCorrelationId,
+      currency: GBP,
+      deliveryBody: 'RP00',
+      frn: '1000000001',
+      invoiceNumber: 'SFI00000001',
+      paymentRequestNumber: 1,
+      schedule: M12,
+      schemeId: sfi.schemeId,
+      value: 100,
+      invoiceLines: [{
+        accountCode: 'SOS27',
+        agreementNumber: 'SIP00000000001',
+        deliveryBody: 'RP00',
+        description: 'G00 - Gross value of claim',
+        dueDate: '2022-12-01',
+        fundCode: 'DRD10',
+        invoiceNumber: 'SFI00000001',
+        marketingYear: 2022,
+        schemeCode: '80001',
+        value: 100
+      }]
+    },
+    {
+      batch: filename,
+      contractNumber: 'SFIP000002',
+      correlationId: mockCorrelationId,
+      currency: GBP,
+      deliveryBody: 'RP00',
+      frn: '1000000002',
+      invoiceNumber: 'SFI00000002',
+      paymentRequestNumber: 3,
+      schedule: M12,
+      schemeId: sfi.schemeId,
       value: 100,
       invoiceLines: [{
         accountCode: 'SOS273',
@@ -98,6 +152,7 @@ describe('Get payment request from payment file content', () => {
       frn: '1000000001',
       invoiceNumber: 'LSES0000001',
       paymentRequestNumber: 1,
+      schemeId: lumpSums.schemeId,
       value: 100,
       invoiceLines: [{
         deliveryBody: 'RP00',
@@ -119,6 +174,7 @@ describe('Get payment request from payment file content', () => {
       frn: '1000000002',
       invoiceNumber: 'LSES0000002',
       paymentRequestNumber: 2,
+      schemeId: lumpSums.schemeId,
       value: 100,
       invoiceLines: [{
         deliveryBody: 'RP00',
@@ -146,7 +202,7 @@ describe('Get payment request from payment file content', () => {
 
   test('should call validate with batchHeader and payment requests when valid fileBuffer and scheme are received', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot, filename)
-    expect(validateBatch).toHaveBeenCalledWith(batchHeaders, batchPaymentRequestsSFI)
+    expect(validateBatch).toHaveBeenCalledWith(batchHeaders, batchPaymentRequestsSFIPilot)
   })
 
   test('should call filterPaymentRequests when valid fileBuffer and scheme are received', async () => {
@@ -156,7 +212,7 @@ describe('Get payment request from payment file content', () => {
 
   test('should call filterPaymentRequests with paymentRequests and SFI Pilot source system', async () => {
     await getPaymentRequestsFromFile(fileBuffer, sfiPilot, filename)
-    expect(filterPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFI, sfiPilot.sourceSystem)
+    expect(filterPaymentRequests).toHaveBeenCalledWith(batchPaymentRequestsSFIPilot, sfiPilot.sourceSystem)
   })
 
   test('should call filterPaymentRequests with batchPaymentRequests and SFI source system', async () => {

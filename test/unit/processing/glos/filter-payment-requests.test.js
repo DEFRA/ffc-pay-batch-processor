@@ -233,7 +233,7 @@ describe('Filter payment requests', () => {
 
   test('should return unsuccessfulMappedPaymentRequest under unsuccessfulPaymentRequests when paymentRequestSchema.validate returns with an error key', async () => {
     paymentRequestSchema.validate.mockReturnValue({ ...paymentRequestSchema.validate(), error: { message: 'Example error' } })
-    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request for FRN: 1102294241 - 33315 16 is invalid, Payment request content is invalid, Example error. '
+    unsuccessfulMappedPaymentRequest.errorMessage = 'Payment request for FRN: 1102294241 - 33315 16 from batch FCAP_0001_230607220141.dat is invalid, Payment request content is invalid, Example error. '
     const result = filterPaymentRequest(paymentRequests, sourceSystem)
     expect(result.unsuccessfulPaymentRequests).toContainEqual(unsuccessfulMappedPaymentRequest)
   })
