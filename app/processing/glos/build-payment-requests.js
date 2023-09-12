@@ -4,6 +4,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   return paymentRequests.map(paymentRequest => ({
     correlationId: paymentRequest.correlationId,
     sourceSystem,
+    schemeId: paymentRequest.schemeId,
     batch: paymentRequest.batch,
     invoiceNumber: paymentRequest.invoiceNumber,
     paymentRequestNumber: paymentRequest.paymentRequestNumber,

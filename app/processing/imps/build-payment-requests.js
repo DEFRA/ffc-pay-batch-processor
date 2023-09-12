@@ -6,6 +6,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   return paymentRequests.map(paymentRequest => ({
     ...paymentRequest,
     sourceSystem,
+    schemeId: paymentRequest.schemeId,
     marketingYear: paymentRequest.invoiceLines?.[0]?.marketingYear,
     exchangeRate: paymentRequest.invoiceLines?.[0]?.exchangeRate,
     eventDate: paymentRequest.invoiceLines?.filter(x => x.eventDate !== undefined)?.[0]?.eventDate,

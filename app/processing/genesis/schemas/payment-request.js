@@ -2,6 +2,7 @@ const Joi = require('joi')
 
 module.exports = Joi.object({
   sourceSystem: Joi.string().required(),
+  schemeId: Joi.number().integer().positive().required(),
   batch: Joi.string().required(),
   invoiceNumber: Joi.string().required(),
   vendor: Joi.string().required(),

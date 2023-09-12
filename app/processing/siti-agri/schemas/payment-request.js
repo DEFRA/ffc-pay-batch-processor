@@ -5,6 +5,7 @@ const Joi = require('joi').extend(require('@joi/date'))
 
 module.exports = Joi.object({
   sourceSystem: Joi.string().required(),
+  schemeId: Joi.number().integer().positive().required(),
   batch: Joi.string().required(),
   deliveryBody: Joi.string().regex(/^[A-Z]{2}\d{2}$/).required(),
   invoiceNumber: Joi.string().required(),

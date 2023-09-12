@@ -38,7 +38,7 @@ const readLine = (batchLine, batch, scheme, filename) => {
       batch.batchHeaders.push(transformBatch(batchLine))
       return true
     case 'H':
-      batch.paymentRequests.push(transformHeader(batchLine, filename))
+      batch.paymentRequests.push(transformHeader(batchLine, scheme.schemeId, filename))
       return true
     case 'L':
       batch.paymentRequests[batch.paymentRequests.length - 1]

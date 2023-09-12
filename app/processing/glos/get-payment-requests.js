@@ -7,7 +7,7 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
     const batchLines = []
     readBatchLines.on('line', (line) => {
       const batchLine = line.split(',')
-      !readLine(batchLines, batchLine, filename) &&
+      !readLine(batchLines, batchLine, scheme.schemeId, filename) &&
         reject(new Error('Invalid file - Unknown line'))
     })
 
@@ -22,9 +22,9 @@ const readGlosFile = async (readBatchLines, scheme, input, filename) => {
   })
 }
 
-const readLine = (batchLines, batchLine, filename) => {
+const readLine = (batchLines, batchLine, schemeId, filename) => {
   if (batchLine) {
-    batchLines.push(transformLines(batchLine, filename))
+    batchLines.push(transformLines(batchLine, schemeId, filename))
     return true
   } else {
     return false
