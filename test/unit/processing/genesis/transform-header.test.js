@@ -3,6 +3,7 @@ const transformHeader = require('../../../../app/processing/genesis/transform-he
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
 const filename = require('../../../mocks/filename')
+const { es } = require('../../../../app/constants/schemes')
 
 describe('transform genesis header', () => {
   const correlationId = require('../../../mocks/correlation-id')
@@ -10,9 +11,10 @@ describe('transform genesis header', () => {
 
   test('transforms ES header', async () => {
     const headerData = ['I', '1096514', 'AG00679935', 'ESS', '612456', 'null', '2022', '100.00']
-    const result = transformHeader(headerData, filename)
+    const result = transformHeader(headerData, es.schemeId, filename)
     expect(result).toEqual({
       correlationId,
+      schemeId: es.schemeId,
       batch: filename,
       invoiceNumber: '1096514',
       paymentRequestNumber: 1,

@@ -1,9 +1,10 @@
 const { v4: uuidv4 } = require('uuid')
 
-const transformLine = (batchLine, filename) => {
+const transformLine = (batchLine, schemeId, filename) => {
   return {
     correlationId: uuidv4(),
     batch: filename,
+    schemeId,
     batchExportDate: batchLine[3],
     invoiceNumber: batchLine[7],
     paymentRequestNumber: 1,

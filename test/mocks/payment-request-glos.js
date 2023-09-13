@@ -5,6 +5,7 @@ const correlationId = require('./correlation-id')
 
 const paymentRequest = {
   correlationId,
+  schemeId: fc.schemeId,
   sourceSystem: fc.sourceSystem,
   batch: filename1,
   invoiceNumber: '33315 16',
@@ -24,7 +25,7 @@ const mappedPaymentRequest = {
 
 const unsuccessfulMappedPaymentRequest = {
   ...mappedPaymentRequest,
-  errorMessage: 'Payment request for FRN: 1102294241 - 33315 16 is invalid, Example error'
+  errorMessage: 'Payment request for FRN: 1102294241 - 33315 16 from batch FCAP_0001_230607220141.dat is invalid, Example error'
 }
 
 const mappedPaymentRequests = [mappedPaymentRequest]

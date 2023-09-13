@@ -3,6 +3,7 @@ const Joi = require('joi').extend(require('@joi/date'))
 module.exports = Joi.object({
   correlationId: Joi.string().required(),
   sourceSystem: Joi.string().required(),
+  schemeId: Joi.number().integer().positive().required(),
   batch: Joi.string().required(),
   invoiceNumber: Joi.string().required(),
   paymentRequestNumber: Joi.number().integer().required(),

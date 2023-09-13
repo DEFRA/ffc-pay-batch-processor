@@ -3,6 +3,7 @@ const { AP, AR } = require('../../../constants/ledger')
 
 module.exports = Joi.object({
   sourceSystem: Joi.string().required(),
+  schemeId: Joi.number().integer().positive().required(),
   batch: Joi.string().required(),
   invoiceNumber: Joi.string().required(),
   trader: Joi.string().required(),

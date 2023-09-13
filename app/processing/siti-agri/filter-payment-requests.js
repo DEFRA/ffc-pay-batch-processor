@@ -55,7 +55,7 @@ const addErrorMessage = (paymentRequest, errorMessage) => {
   if (paymentRequest.errorMessage) {
     paymentRequest.errorMessage += errorMessage
   } else {
-    paymentRequest.errorMessage = `Payment request for FRN: ${paymentRequest.frn} - ${paymentRequest.invoiceNumber} is invalid, ${errorMessage}`
+    paymentRequest.errorMessage = `Payment request for FRN: ${paymentRequest.frn} - ${paymentRequest.invoiceNumber} from batch ${paymentRequest.batch} is invalid, ${errorMessage}`
   }
 }
 

@@ -6,21 +6,22 @@ const transformHeader = (headerData, schemeId, filename) => {
     case sfi.schemeId:
     case sfiPilot.schemeId:
     case sfi23.schemeId:
-      return transformSFIHeader(headerData, filename)
+      return transformSFIHeader(headerData, schemeId, filename)
     case lumpSums.schemeId:
-      return transformLumpSumsHeader(headerData, filename)
+      return transformLumpSumsHeader(headerData, schemeId, filename)
     case bps.schemeId:
     case fdmr.schemeId:
-      return transformBPSHeader(headerData, filename)
+      return transformBPSHeader(headerData, schemeId, filename)
     case cs.schemeId:
-      return transformCSHeader(headerData, filename)
+      return transformCSHeader(headerData, schemeId, filename)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
 }
 
-const transformSFIHeader = (headerData, filename) => ({
+const transformSFIHeader = (headerData, schemeId, filename) => ({
   correlationId: uuidv4(),
+  schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
@@ -33,8 +34,9 @@ const transformSFIHeader = (headerData, filename) => ({
   invoiceLines: []
 })
 
-const transformLumpSumsHeader = (headerData, filename) => ({
+const transformLumpSumsHeader = (headerData, schemeId, filename) => ({
   correlationId: uuidv4(),
+  schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
@@ -46,8 +48,9 @@ const transformLumpSumsHeader = (headerData, filename) => ({
   invoiceLines: []
 })
 
-const transformBPSHeader = (headerData, filename) => ({
+const transformBPSHeader = (headerData, schemeId, filename) => ({
   correlationId: uuidv4(),
+  schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,
@@ -59,8 +62,9 @@ const transformBPSHeader = (headerData, filename) => ({
   invoiceLines: []
 })
 
-const transformCSHeader = (headerData, filename) => ({
+const transformCSHeader = (headerData, schemeId, filename) => ({
   correlationId: uuidv4(),
+  schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,

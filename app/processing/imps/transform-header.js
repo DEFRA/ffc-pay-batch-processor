@@ -1,8 +1,9 @@
 const { v4: uuidv4 } = require('uuid')
 
-const transformHeader = (headerData, filename) => {
+const transformHeader = (headerData, schemeId, filename) => {
   return {
     correlationId: uuidv4(),
+    schemeId,
     batch: filename,
     paymentRequestNumber: 1,
     ledger: headerData[4],
