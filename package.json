@@ -34,7 +34,7 @@
     "applicationinsights": "2.7.0",
     "ffc-messaging": "2.6.5",
     "ffc-pay-event-publisher": "1.2.0",
-    "joi": "17.6.0",
+    "joi": "17.9.2",
     "log-timestamp": "0.3.0",
     "pg": "8.7.3",
     "pg-hstore": "2.3.4",
