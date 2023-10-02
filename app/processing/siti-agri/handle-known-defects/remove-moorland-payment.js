@@ -1,9 +1,9 @@
 const { sfi } = require('../../../constants/schemes')
+const { MOORLAND_SCHEME_CODE } = require('../../../constants/scheme-codes')
+const { GROSS_LINE_DESCRIPTION } = require('../../../constants/line-descriptions')
 const { convertToPence } = require('../../../currency-convert')
-const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
-const MOORLAND_SCHEME_CODE = '80190'
 
-const removeMoorlandPayments = (paymentRequest) => {
+const removeMoorlandPayment = (paymentRequest) => {
   if (paymentRequest.sourceSystem !== sfi.sourceSystem) {
     return paymentRequest
   }
@@ -34,4 +34,4 @@ const groupBySchemeCode = (invoiceLines) => {
   }, new Map()).values()]
 }
 
-module.exports = { removeMoorlandPayments }
+module.exports = { removeMoorlandPayment }
