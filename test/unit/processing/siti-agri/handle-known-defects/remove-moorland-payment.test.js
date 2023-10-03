@@ -80,4 +80,11 @@ describe('Remove moorland payments', () => {
     const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
     expect(updatedPaymentRequest).toStrictEqual(paymentRequest)
   })
+
+  test('does not alter payment request when sourceSystem is SFI22 but no moorland payment', () => {
+    paymentRequest.value = 0
+    paymentRequest.invoiceLines = [{ ...invoiceLine, value: 500 }, { ...invoiceLine, value: -500 }]
+    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
+    expect(updatedPaymentRequest).toStrictEqual(paymentRequest)
+  })
 })
