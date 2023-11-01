@@ -31,7 +31,7 @@ deployment:
 container:
   requestMemory: 100Mi
   requestCpu: 60m
-  limitMemory: 200Mi
+  limitMemory: 300Mi
   limitCpu: 200m
   azureStorageAccountName: ffcpay
   messageQueueHost: namespace.servicebus.windows.net
