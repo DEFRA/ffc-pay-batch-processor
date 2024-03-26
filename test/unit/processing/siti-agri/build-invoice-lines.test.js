@@ -76,7 +76,7 @@ describe('Build invoice lines', () => {
   test('Failed validation of invoice lines for description', async () => {
     invoiceLines[0].description = 'Gross value of claim'
     const invoiceLineIsValid = isInvoiceLineValid(invoiceLines[0])
-    expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "description" with value "Gross value of claim" fails to match the required pattern: /^[A-Z]{1}\\d{2}\\s-\\s.+$/')
+    expect(console.error).toHaveBeenLastCalledWith('Invoice line is invalid. "description" with value "Gross value of claim" fails to match the required pattern: /^[A-Z]\\d{2}\\s-\\s.+$/')
     expect(invoiceLineIsValid.result).toBe(false)
   })
 
