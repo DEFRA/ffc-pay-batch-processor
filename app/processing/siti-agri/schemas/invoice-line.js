@@ -5,7 +5,7 @@ module.exports = Joi.object({
   accountCode: Joi.string().regex(/^[A-Z]{3}\d{3}$/).optional(),
   fundCode: Joi.string().regex(/^[A-Z]{3}\d{2}$/).required(),
   agreementNumber: Joi.string().optional(),
-  description: Joi.string().regex(/^[A-Z]{1}\d{2}\s-\s.+$/).required(),
+  description: Joi.string().regex(/^[A-Z]\d{2}\s-\s.+$/).required(),
   value: Joi.number().required(),
   convergence: Joi.boolean().optional(),
   deliveryBody: Joi.string().regex(/^[A-Z]{2}\d{2}$/).required(),
