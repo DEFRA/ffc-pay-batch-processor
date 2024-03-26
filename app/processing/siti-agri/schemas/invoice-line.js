@@ -9,5 +9,5 @@ module.exports = Joi.object({
   value: Joi.number().required(),
   convergence: Joi.boolean().optional(),
   deliveryBody: Joi.string().regex(/^[A-Z]{2}\d{2}$/).required(),
-  marketingYear: Joi.number().integer().greater(2015).less(2099).required()
+  marketingYear: Joi.number().integer().greater(2014).less(2099).required()
 })
