@@ -1,4 +1,3 @@
-
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
 jest.mock('../../../app/processing/batch')
