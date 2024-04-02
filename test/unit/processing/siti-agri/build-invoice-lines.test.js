@@ -1,5 +1,6 @@
 global.console.error = jest.fn()
 
+const { sfi23, cs } = require('../../../../app/constants/schemes')
 const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
 let invoiceLines
@@ -24,13 +25,30 @@ describe('Build invoice lines', () => {
   })
 
   test('build invoice lines', async () => {
-    const invoiceLinesParse = buildInvoiceLines(invoiceLines)
+    const invoiceLinesParse = buildInvoiceLines(sfi23.schemeId, invoiceLines, 'C123')
     expect(invoiceLinesParse).toMatchObject([
       {
         schemeCode: 'SITIELM',
         accountCode: 'ABC123',
         fundCode: 'ABC12',
         agreementNumber: 'SIP123456789012',
+        description: 'G00 - Gross value of claim',
+        value: 100,
+        convergence: true,
+        deliveryBody: 'RP00',
+        marketingYear: 2023
+      }
+    ])
+  })
+
+  test('should overwrite agreement number for invoice lines to provided contract number if CS', async () => {
+    const invoiceLinesParse = buildInvoiceLines(cs.schemeId, invoiceLines, 'C123')
+    expect(invoiceLinesParse).toMatchObject([
+      {
+        schemeCode: 'SITIELM',
+        accountCode: 'ABC123',
+        fundCode: 'ABC12',
+        agreementNumber: 'C123',
         description: 'G00 - Gross value of claim',
         value: 100,
         convergence: true,
@@ -118,7 +136,7 @@ describe('Build invoice lines', () => {
       convergence: true,
       deliveryBody: 'RP00'
     })
-    const invoiceLinesParse = buildInvoiceLines(invoiceLines)
+    const invoiceLinesParse = buildInvoiceLines(sfi23.schemeId, invoiceLines, 'C123')
     expect(invoiceLinesParse).toMatchObject([
       {
         schemeCode: 'SITIELM',
