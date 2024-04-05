@@ -41,6 +41,11 @@ describe('Build invoice lines', () => {
     ])
   })
 
+  test('should not overwrite agreement number for invoice lines to provided contract number if not CS', async () => {
+    const invoiceLinesParse = buildInvoiceLines(sfi23.schemeId, invoiceLines, 'C123')
+    expect(invoiceLinesParse[0].agreementNumber).toBe(invoiceLines[0].agreementNumber)
+  })
+
   test('should overwrite agreement number for invoice lines to provided contract number if CS', async () => {
     const invoiceLinesParse = buildInvoiceLines(cs.schemeId, invoiceLines, 'C123')
     expect(invoiceLinesParse).toMatchObject([
