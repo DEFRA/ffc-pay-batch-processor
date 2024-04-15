@@ -77,7 +77,7 @@ describe('Build payment requests', () => {
 
   test('should call buildInvoiceLines with paymentRequest.invoiceLines when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(buildInvoiceLines).toBeCalledWith(paymentRequest.schemeId, paymentRequest.invoiceLines, paymentRequest.contractNumber)
+    expect(buildInvoiceLines).toBeCalledWith(paymentRequest)
   })
 
   test('should call buildInvoiceLines twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
@@ -91,8 +91,8 @@ describe('Build payment requests', () => {
 
     buildPaymentRequests(paymentRequests, sourceSystem)
 
-    expect(buildInvoiceLines).toHaveBeenNthCalledWith(1, paymentRequests[0].schemeId, paymentRequests[0].invoiceLines, paymentRequests[0].contractNumber)
-    expect(buildInvoiceLines).toHaveBeenNthCalledWith(2, paymentRequests[1].schemeId, paymentRequests[1].invoiceLines, paymentRequests[1].contractNumber)
+    expect(buildInvoiceLines).toHaveBeenNthCalledWith(1, paymentRequests[0])
+    expect(buildInvoiceLines).toHaveBeenNthCalledWith(2, paymentRequests[1])
   })
 
   test('should not call buildInvoiceLines when an empty paymentRequests array and valid sourceSystem are given', async () => {
