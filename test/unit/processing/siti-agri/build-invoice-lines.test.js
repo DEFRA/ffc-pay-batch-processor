@@ -1,6 +1,6 @@
 global.console.error = jest.fn()
 
-const { sfi23, cs } = require('../../../../app/constants/schemes')
+const { cs } = require('../../../../app/constants/schemes')
 const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
 let paymentRequest
