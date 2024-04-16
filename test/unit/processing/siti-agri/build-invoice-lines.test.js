@@ -49,14 +49,21 @@ describe('Build invoice lines', () => {
 
   test('should overwrite agreement number for invoice lines to header level contract number if CS', async () => {
     paymentRequest.schemeId = cs.schemeId
+    paymentRequest.contractNumber = 'C0NTRACT'
     const invoiceLinesParse = buildInvoiceLines(paymentRequest)
-    expect(invoiceLinesParse[0].agreementNumber).toBe(paymentRequest.contractNumber)
+    expect(invoiceLinesParse[0].agreementNumber).toBe('C0NTRACT')
+  })
+
+  test('should not overwrite delivery body for invoice lines if not CS', async () => {
+    const invoiceLinesParse = buildInvoiceLines(paymentRequest)
+    expect(invoiceLinesParse[0].deliveryBody).toBe(paymentRequest.invoiceLines[0].deliveryBody)
   })
 
   test('should overwrite delivery body for invoice lines to header level delivery body if CS', async () => {
     paymentRequest.schemeId = cs.schemeId
+    paymentRequest.deliveryBody = 'DB99'
     const invoiceLinesParse = buildInvoiceLines(paymentRequest)
-    expect(invoiceLinesParse[0].deliveryBody).toBe(paymentRequest.deliveryBody)
+    expect(invoiceLinesParse[0].deliveryBody).toBe('DB99')
   })
 
   test('Successful validation of invoice lines', async () => {
