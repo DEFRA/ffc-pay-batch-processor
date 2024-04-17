@@ -22,7 +22,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     dueDate: paymentRequest.invoiceLines?.[0]?.dueDate,
     value: paymentRequest.value,
     correlationId: uuidv4(),
-    invoiceLines: buildInvoiceLines(paymentRequest.schemeId, paymentRequest.invoiceLines, paymentRequest.contractNumber)
+    invoiceLines: buildInvoiceLines(paymentRequest)
   })).map(x => handleKnownDefects(x))
 }
 
