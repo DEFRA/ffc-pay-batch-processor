@@ -10,6 +10,7 @@ const { buildInvoiceLines } = require('../../../../app/processing/siti-agri/buil
 const correlationId = require('../../../mocks/correlation-id')
 
 const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
+const { cs } = require('../../../../app/constants/schemes')
 
 let paymentRequest
 let paymentRequests
@@ -183,5 +184,20 @@ describe('Build payment requests', () => {
     const result = buildPaymentRequests(defunctParticipationDefectPaymentRequests, sourceSystem)
 
     expect(result).toMatchObject(mappedDefunctParticipationDefectPaymentRequests)
+  })
+
+  test('should overwrite delivery body to that present in invoice lines if CS', async () => {
+    paymentRequest.sourceSystem = cs.sourceSystem
+    sourceSystem = cs.sourceSystem
+    paymentRequest.schemeId = cs.schemeId
+    paymentRequest.invoiceLines[0].deliveryBody = 'DB99'
+    const invoiceLinesParse = buildPaymentRequests([paymentRequest], sourceSystem)
+    expect(invoiceLinesParse[0].deliveryBody).toBe('DB99')
+  })
+
+  test('should not overwrite delivery body to that present in invoice lines if not CS', async () => {
+    paymentRequest.invoiceLines[0].deliveryBody = 'DB99'
+    const invoiceLinesParse = buildPaymentRequests([paymentRequest], sourceSystem)
+    expect(invoiceLinesParse[0].deliveryBody).toBe(paymentRequest.deliveryBody)
   })
 })

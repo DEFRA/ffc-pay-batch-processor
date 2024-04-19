@@ -3,7 +3,7 @@ const { isNetLine } = require('./is-net-line')
 const invoiceLineSchema = require('./schemas/invoice-line')
 
 const buildInvoiceLines = (paymentRequest) => {
-  const { schemeId, invoiceLines, contractNumber, deliveryBody } = paymentRequest
+  const { schemeId, invoiceLines, contractNumber } = paymentRequest
   try {
     return invoiceLines
       .filter(x => !isNetLine(x))
@@ -15,7 +15,7 @@ const buildInvoiceLines = (paymentRequest) => {
         description: invoiceLine.description,
         value: invoiceLine.value,
         convergence: invoiceLine.convergence,
-        deliveryBody: schemeId === cs.schemeId ? deliveryBody : invoiceLine.deliveryBody,
+        deliveryBody: invoiceLine.deliveryBody,
         marketingYear: invoiceLine.marketingYear
       })
       )
