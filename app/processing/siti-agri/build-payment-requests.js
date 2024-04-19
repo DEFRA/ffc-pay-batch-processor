@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const { buildInvoiceLines } = require('./build-invoice-lines')
 const handleKnownDefects = require('./handle-known-defects')
+const { cs } = require('../../constants/schemes')
 
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }
@@ -9,7 +10,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     sourceSystem,
     schemeId: paymentRequest.schemeId,
     batch: paymentRequest.batch,
-    deliveryBody: paymentRequest.deliveryBody,
+    deliveryBody: paymentRequest.schemeId === cs.schemeId ? paymentRequest.invoiceLines?.[0]?.deliveryBody : paymentRequest.deliveryBody,
     invoiceNumber: paymentRequest.invoiceNumber,
     frn: paymentRequest.frn,
     marketingYear: paymentRequest.invoiceLines?.[0]?.marketingYear,
