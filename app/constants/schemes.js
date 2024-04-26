@@ -61,7 +61,7 @@ module.exports = {
   },
   delinked: {
     schemeId: 13,
-    name: 'DP',
+    name: 'Delinked',
     sourceSystem: 'DP',
     fileMask: /^SITIDP\d{4}_AP_\d*.dat$/
   }
