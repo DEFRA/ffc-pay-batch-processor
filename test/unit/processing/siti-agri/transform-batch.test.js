@@ -93,6 +93,19 @@ describe('Transform batch', () => {
     })
   })
 
+  test('transforms Delinked batch', async () => {
+    const headerData = ['B', '2021-08-12', '2', '200', '1', 'DP', 'AP']
+    const result = transformBatch(headerData)
+    expect(result).toMatchObject({
+      exportDate: '2021-08-12',
+      numberOfPaymentRequests: 2,
+      batchValue: 200,
+      sequence: 1,
+      sourceSystem: 'DP',
+      ledger: AP
+    })
+  })
+
   test('returns undefined values if line empty', async () => {
     const headerData = []
     const result = transformBatch(headerData)

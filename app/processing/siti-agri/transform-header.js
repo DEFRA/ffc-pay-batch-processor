@@ -1,12 +1,13 @@
 const { v4: uuidv4 } = require('uuid')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23 } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked } = require('../../constants/schemes')
 
 const transformHeader = (headerData, schemeId, filename) => {
   switch (schemeId) {
     case sfi.schemeId:
     case sfiPilot.schemeId:
     case sfi23.schemeId:
-      return transformSFIHeader(headerData, schemeId, filename)
+    case delinked.schemeId:
+      return transformSFIOrDPHeader(headerData, schemeId, filename)
     case lumpSums.schemeId:
       return transformLumpSumsHeader(headerData, schemeId, filename)
     case bps.schemeId:
@@ -19,7 +20,7 @@ const transformHeader = (headerData, schemeId, filename) => {
   }
 }
 
-const transformSFIHeader = (headerData, schemeId, filename) => ({
+const transformSFIOrDPHeader = (headerData, schemeId, filename) => ({
   correlationId: uuidv4(),
   schemeId,
   batch: filename,

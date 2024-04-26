@@ -1,11 +1,12 @@
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23 } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked } = require('../../constants/schemes')
 
 const transformInvoiceLine = (lineData, schemeId) => {
   switch (schemeId) {
     case sfi.schemeId:
     case sfiPilot.schemeId:
     case sfi23.schemeId:
-      return transformSFIInvoiceLine(lineData)
+    case delinked.schemeId:
+      return transformSFIOrDPInvoiceLine(lineData)
     case lumpSums.schemeId:
     case bps.schemeId:
     case fdmr.schemeId:
@@ -17,7 +18,7 @@ const transformInvoiceLine = (lineData, schemeId) => {
   }
 }
 
-const transformSFIInvoiceLine = (lineData) => ({
+const transformSFIOrDPInvoiceLine = (lineData) => ({
   invoiceNumber: lineData[1],
   value: !isNaN(lineData[2]) ? parseFloat(lineData[2]) : undefined,
   marketingYear: !isNaN(lineData[3]) ? parseInt(lineData[3]) : undefined,
