@@ -58,5 +58,11 @@ module.exports = {
     name: 'SFI23',
     sourceSystem: 'SFIA',
     fileMask: /^SITISFIA\d{4}_AP_\d*.dat$/
+  },
+  delinked: {
+    schemeId: 13,
+    name: 'Delinked',
+    sourceSystem: 'DP',
+    fileMask: /^SITIDP\d{4}_AP_\d*.dat$/
   }
 }

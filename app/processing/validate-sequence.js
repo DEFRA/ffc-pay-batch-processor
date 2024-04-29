@@ -1,5 +1,5 @@
 const { disableSequenceValidation } = require('../config/processing')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, es, fc, imps, sfi23 } = require('../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, es, fc, imps, sfi23, delinked } = require('../constants/schemes')
 const batch = require('./batch')
 
 const validateSequence = async (schemeId, filename) => {
@@ -16,6 +16,7 @@ const getSequence = (schemeId, filename) => {
     case sfi23.schemeId:
       return Number(filename.substr(8, 4))
     case cs.schemeId:
+    case delinked.schemeId:
       return Number(filename.substr(6, 4))
     case bps.schemeId:
     case fdmr.schemeId:
