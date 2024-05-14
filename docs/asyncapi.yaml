@@ -327,6 +327,7 @@ components:
         - M12
         - T4
         - Y2
+        - T2
       example: Q4
     SchemeCode:
       type: string
