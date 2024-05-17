@@ -3,22 +3,24 @@ const groupByInvoiceNumber = (batchLines) => {
     const key = y.invoiceNumber
 
     // if key doesn't exist then first instance so create new group
-    const item = x.get(key) || Object.assign({}, {
-      correlationId: y.correlationId,
-      batch: y.batch,
-      batchExportDate: y.batchExportDate,
-      invoiceNumber: y.invoiceNumber,
-      paymentRequestNumber: y.paymentRequestNumber,
-      frn: y.frn,
-      sbi: y.sbi,
-      schemeId: y.schemeId,
-      claimDate: y.claimDate,
-      invoiceLines: [{
-        standardCode: y.standardCode,
-        description: y.description,
-        value: y.value
-      }]
-    })
+    const item = x.get(key) || {
+      ...{
+        correlationId: y.correlationId,
+        batch: y.batch,
+        batchExportDate: y.batchExportDate,
+        invoiceNumber: y.invoiceNumber,
+        paymentRequestNumber: y.paymentRequestNumber,
+        frn: y.frn,
+        sbi: y.sbi,
+        schemeId: y.schemeId,
+        claimDate: y.claimDate,
+        invoiceLines: [{
+          standardCode: y.standardCode,
+          description: y.description,
+          value: y.value
+        }]
+      }
+    }
     // if existing key found then add the invoice line details
     if (x.get(key)) {
       item.invoiceLines.push({
