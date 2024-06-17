@@ -337,7 +337,7 @@ describe('validate sequence', () => {
   test('returns failure if next higher than expected for SFI expanded', async () => {
     setupMocks()
     batch.nextSequenceId.mockResolvedValue(1)
-    const result = await validateSequence(sfiExpanded.schemeId, 'ESFIO0001_AP_20220622120000000.dat')
+    const result = await validateSequence(sfiExpanded.schemeId, 'ESFIO0002_AP_20220622120000000.dat')
     expect(result.success).toBeFalsy()
     expect(result.expectedSequence).toBe(1)
     expect(result.currentSequence).toBe(2)

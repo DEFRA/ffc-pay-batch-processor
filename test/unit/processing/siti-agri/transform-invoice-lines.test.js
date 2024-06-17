@@ -147,7 +147,7 @@ describe('Transform invoice lines', () => {
       deliveryBody: 'RP00',
       description: 'G00 - Gross value of claim',
       dueDate: '2022-12-01',
-      accountCode: 'SOS276'
+      accountCode: 'SOS273'
     })
   })
 
