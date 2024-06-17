@@ -1,7 +1,7 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
-const { M12, Y2 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked } = require('../../../../app/constants/schemes')
+const { M12, Y2, Q4 } = require('../../../../app/constants/schedule')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, sfiExpanded } = require('../../../../app/constants/schemes')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
@@ -262,6 +262,40 @@ describe('Transform header', () => {
     const filename = 'SITIDP0001_AP_20230315083522081.dat'
     const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'DP', 'Y2']
     const result = transformHeader(headerData, delinked.schemeId, filename)
+    expect(result.value).toBe(undefined)
+  })
+
+  test('transforms SFI Expanded header', async () => {
+    const filename = 'ESFIO0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4']
+    const result = transformHeader(headerData, sfiExpanded.schemeId, filename)
+    expect(result).toEqual({
+      correlationId,
+      schemeId: sfiExpanded.schemeId,
+      batch: filename,
+      invoiceNumber: 'ESFIO0000001',
+      paymentRequestNumber: 1,
+      contractNumber: 'E000001',
+      frn: '1000000001',
+      currency: GBP,
+      value: 100,
+      deliveryBody: 'RP00',
+      schedule: Q4,
+      invoiceLines: []
+    })
+  })
+
+  test('for SFI expanded, return undefined if paymentRequestNumber is NaN', async () => {
+    const filename = 'ESFIO0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'ESFIO0000001', 'abc', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4']
+    const result = transformHeader(headerData, sfiExpanded.schemeId, filename)
+    expect(result.paymentRequestNumber).toBe(undefined)
+  })
+
+  test('for SFI Expanded return undefined if value is NaN', async () => {
+    const filename = 'ESFIO0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'ESFIO', 'Q4']
+    const result = transformHeader(headerData, sfiExpanded.schemeId, filename)
     expect(result.value).toBe(undefined)
   })
 

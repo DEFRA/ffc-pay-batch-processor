@@ -1,5 +1,5 @@
 const transformInvoiceLine = require('../../../../app/processing/siti-agri/transform-invoice-line')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked } = require('../../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, sfiExpanded } = require('../../../../app/constants/schemes')
 
 describe('Transform invoice lines', () => {
   test('transforms SFI invoice line', async () => {
@@ -131,6 +131,23 @@ describe('Transform invoice lines', () => {
       description: 'G00 - Gross value of claim',
       dueDate: '2022-12-01',
       accountCode: 'SOS210'
+    })
+  })
+
+  test('transforms SFI Expanded invoice line', async () => {
+    const lineData = ['L', 'ESFIO0000001', '100', '2022', '80001', 'DOM10', 'E000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
+    const result = transformInvoiceLine(lineData, sfiExpanded.schemeId)
+    expect(result).toEqual({
+      invoiceNumber: 'ESFIO0000001',
+      value: 100,
+      marketingYear: 2022,
+      schemeCode: '80001',
+      fundCode: 'DOM10',
+      agreementNumber: 'E000001',
+      deliveryBody: 'RP00',
+      description: 'G00 - Gross value of claim',
+      dueDate: '2022-12-01',
+      accountCode: 'SOS276'
     })
   })
 
