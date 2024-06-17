@@ -27,9 +27,10 @@ const groupBySchemeCode = (invoiceLines) => {
     const key = y.schemeCode
 
     // if key doesn't exist then first instance so create new group
-    const item = x.get(key) || Object.assign({}, { schemeCode: y.schemeCode, value: 0 })
+    const item = x.get(key) || {
+      ...{ schemeCode: y.schemeCode, value: 0 }
+    }
     item.value += convertToPence(y.value)
-
     return x.set(key, item)
   }, new Map()).values()]
 }
