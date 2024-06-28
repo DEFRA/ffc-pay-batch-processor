@@ -64,5 +64,11 @@ module.exports = {
     name: 'Delinked',
     sourceSystem: 'DP',
     fileMask: /^SITIDP\d{4}_AP_\d*.dat$/
+  },
+  sfiExpanded: {
+    schemeId: 14,
+    name: 'SFI Expanded',
+    sourceSystem: 'ESFIO',
+    fileMask: /^ESFIO\d{4}_AP_\d*.dat$/
   }
 }
