@@ -353,7 +353,7 @@ through the Docker Compose
 [build](https://docs.docker.com/compose/reference/build/) command:
 
 ```
-docker-compose build
+docker compose build
 ```
 
 ## How to start the Batch Processor
@@ -394,10 +394,10 @@ This serivice can be stopped in different ways:
 - [Bring the service down and clear its data](#bring-the-service-down-and-clear-its-data)
 
 ### Bring the service down  
-`docker-compose down`  
+`docker compose down`  
 
 ### Bring the service down and clear its data  
-`docker-compose down -v`  
+`docker compose down -v`  
 
 ## How to test the Batch Processor
 
