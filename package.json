@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-batch-processor",
-  "version": "1.40.13",
+  "version": "1.40.14",
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
@@ -46,7 +46,7 @@
     "@azure/service-bus": "7.8.1",
     "@cucumber/cucumber": "9.3.0",
     "hamjest": "3.7.3",
-    "jest": "28.1.1",
+    "jest": "29.6.4",
     "jest-junit": "13.2.0",
     "nodemon": "3.0.1",
     "standard": "17.0.0"
