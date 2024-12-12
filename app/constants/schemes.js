@@ -51,7 +51,7 @@ module.exports = {
     schemeId: 11,
     name: 'IMPS',
     sourceSystem: 'IMPS',
-    fileMask: /^FIN_IMPS_A[P|R]_\d{4}.INT$/
+    fileMask: /^FIN_IMPS_A[P|R]_\d*.INT$/
   },
   sfi23: {
     schemeId: 12,
