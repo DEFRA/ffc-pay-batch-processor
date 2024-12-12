@@ -26,7 +26,7 @@ const getSequence = (schemeId, filename) => {
     case es.schemeId:
       return Number(filename.substr(23, 4))
     case imps.schemeId:
-      return Number(filename.substr(12, 4))
+      return Number(filename.substring(filename.lastIndexOf('_') + 1, filename.lastIndexOf('.')))
     default:
       throw new Error(`Unknown schemeId: ${schemeId}`)
   }
