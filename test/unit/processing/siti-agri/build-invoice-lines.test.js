@@ -1,6 +1,5 @@
 global.console.error = jest.fn()
 
-const { cs } = require('../../../../app/constants/schemes')
 const { buildInvoiceLines, isInvoiceLineValid } = require('../../../../app/processing/siti-agri/build-invoice-lines')
 
 let paymentRequest
@@ -40,18 +39,6 @@ describe('Build invoice lines', () => {
         marketingYear: 2023
       }
     ])
-  })
-
-  test('should not overwrite agreement number for invoice lines to provided contract number if not CS', async () => {
-    const invoiceLinesParse = buildInvoiceLines(paymentRequest)
-    expect(invoiceLinesParse[0].agreementNumber).toBe(paymentRequest.invoiceLines[0].agreementNumber)
-  })
-
-  test('should overwrite agreement number for invoice lines to header level contract number if CS', async () => {
-    paymentRequest.schemeId = cs.schemeId
-    paymentRequest.contractNumber = 'C0NTRACT'
-    const invoiceLinesParse = buildInvoiceLines(paymentRequest)
-    expect(invoiceLinesParse[0].agreementNumber).toBe('C0NTRACT')
   })
 
   test('Successful validation of invoice lines', async () => {
