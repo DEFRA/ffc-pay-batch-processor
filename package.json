@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-batch-processor",
-  "version": "1.41.1",
+  "version": "1.41.2",
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
@@ -29,7 +29,7 @@
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@azure/identity": "4.2.1",
+    "@azure/identity": "4.6.0",
     "@azure/storage-blob": "12.13.0",
     "@joi/date": "2.1.0",
     "applicationinsights": "2.9.6",
