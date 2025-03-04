@@ -7,7 +7,8 @@ const mqSchema = joi.object({
     type: joi.string(),
     appInsights: joi.object(),
     username: joi.string(),
-    password: joi.string()
+    password: joi.string(),
+    managedIdentityClientId: Joi.string().optional()
   },
   paymentBatchTopic: {
     address: joi.string()
@@ -26,7 +27,8 @@ const mqConfig = {
     type: 'Topic',
     appInsights: process.env.NODE_ENV === 'production' ? require('applicationinsights') : undefined,
     username: process.env.MESSAGE_QUEUE_USER,
-    password: process.env.MESSAGE_QUEUE_PASSWORD
+    password: process.env.MESSAGE_QUEUE_PASSWORD,
+    managedIdentityClientId: process.env.AZURE_CLIENT_ID
   },
   paymentBatchTopic: {
     address: process.env.PAYMENT_TOPIC_ADDRESS
