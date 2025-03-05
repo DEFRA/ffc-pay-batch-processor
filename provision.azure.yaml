@@ -1,4 +1,9 @@
 resources:
+  identity: pay-batch-processor
+  postgreSql:
+    name: ffc-pay-batch-processor
   topics:
-    - name: payment
-    - name: event
+    - name: ffc-pay-request
+      role: sender
+    - name: ffc-pay-events
+      role: sender
