@@ -2,6 +2,7 @@ const Joi = require('joi')
 
 // Define config schema
 const schema = Joi.object({
+  processingActive: Joi.boolean().default(true),
   pollingInterval: Joi.number().default(10000), // 10 seconds
   maxProcessingTries: Joi.number().default(3),
   disableSequenceValidation: Joi.boolean().default(false),
@@ -10,6 +11,7 @@ const schema = Joi.object({
 
 // Build config
 const config = {
+  processingActive: process.env.PROCESSING_ACTIVE,
   pollingInterval: process.env.POLLING_INTERVAL,
   maxProcessingTries: process.env.MAX_PROCESSING_TRIES,
   disableSequenceValidation: process.env.DISABLE_SEQUENCE_VALIDATION,

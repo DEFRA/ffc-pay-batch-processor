@@ -5,6 +5,7 @@ data:
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   AZURE_STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  PROCESSING_ACTIVE: {{ quote .Values.container.processingActive }}
   {{- if and (.Values.environmentCode) (not .Values.pr) }}
   PAYMENT_TOPIC_ADDRESS: {{ .Values.container.paymentTopicAddress }}-{{ .Values.environmentCode }}
   EVENT_TOPIC_ADDRESS: {{ .Values.container.eventTopicAddress }}-{{ .Values.environmentCode }}
