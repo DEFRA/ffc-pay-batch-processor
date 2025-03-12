@@ -45,6 +45,7 @@ container:
   maxProcessingTries: 500
   disableSequenceValidation: false
   useV2Events: true
+  processingActive: true
 
 postgresService:
   postgresDb: ffc_pay_batch_processor
