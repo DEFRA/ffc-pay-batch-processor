@@ -33,6 +33,7 @@ container:
   requestCpu: 60m
   limitMemory: 500Mi
   limitCpu: 200m
+  port: 3017
   azureStorageAccountName: ffcpay
   messageQueueHost: namespace.servicebus.windows.net
   paymentTopicAddress: ffc-pay-request
@@ -53,5 +54,21 @@ postgresService:
   postgresPort: 5432
   postgresSchema: public
   postgresUser: postgres
+
+readinessProbe:
+  path: /healthy
+  port: 3017
+  initialDelaySeconds: 60
+  periodSeconds: 120
+  failureThreshold: 5
+  timeoutSeconds: 30
+
+livenessProbe:
+  path: /healthz
+  port: 3017
+  initialDelaySeconds: 70
+  periodSeconds: 120
+  failureThreshold: 5
+  timeoutSeconds: 30
 
 workloadIdentity: true
