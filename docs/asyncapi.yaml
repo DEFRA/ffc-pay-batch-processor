@@ -6,25 +6,25 @@ channels:
   ffc-pay-request:
     publish:
       message:
-        $ref: '#/components/messages/PaymentRequest'
+        $ref: "#/components/messages/PaymentRequest"
   ffc-pay-event:
     publish:
       message:
-        $ref: '#/components/messages/Event'
+        $ref: "#/components/messages/Event"
 components:
   messages:
     Event:
       contentType: application/json
       payload:
         oneOf:
-          - $ref: '#/components/schemas/BatchProcessedEvent'
-          - $ref: '#/components/schemas/BatchProcessedErrorEvent'
-          - $ref: '#/components/schemas/BatchProcessedPaymentRequestInvalidEvent'
-          - $ref: '#/components/schemas/BatchProcessedQuarantineErrorEvent'
+          - $ref: "#/components/schemas/BatchProcessedEvent"
+          - $ref: "#/components/schemas/BatchProcessedErrorEvent"
+          - $ref: "#/components/schemas/BatchProcessedPaymentRequestInvalidEvent"
+          - $ref: "#/components/schemas/BatchProcessedQuarantineErrorEvent"
     PaymentRequest:
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/PaymentRequest'
+        $ref: "#/components/schemas/PaymentRequest"
   schemas:
     BatchProcessedEvent:
       type: object
@@ -34,7 +34,7 @@ components:
         - properties
       properties:
         name:
-          $ref: '#/components/schemas/Name'
+          $ref: "#/components/schemas/Name"
         properties:
           type: object
           description: Event properties
@@ -45,11 +45,11 @@ components:
             - action
           properties:
             checkpoint:
-              $ref: '#/components/schemas/Checkpoint'
+              $ref: "#/components/schemas/Checkpoint"
             id:
-              $ref: '#/components/schemas/CorrelationId'
+              $ref: "#/components/schemas/CorrelationId"
             status:
-              $ref: '#/components/schemas/Status'
+              $ref: "#/components/schemas/Status"
             action:
               type: object
               description: Event properties
@@ -60,31 +60,31 @@ components:
                 - data
               properties:
                 message:
-                  $ref: '#/components/schemas/Message'
+                  $ref: "#/components/schemas/Message"
                 timestamp:
-                  $ref: '#/components/schemas/Timestamp'
+                  $ref: "#/components/schemas/Timestamp"
                 type:
-                  $ref: '#/components/schemas/Type'
+                  $ref: "#/components/schemas/Type"
                 data:
                   type: object
                   description: Further information for the event
                   properties:
                     batchExportDate:
-                      $ref: '#/components/schemas/BatchExportDate'
+                      $ref: "#/components/schemas/BatchExportDate"
                     filename:
-                      $ref: '#/components/schemas/Filename'
+                      $ref: "#/components/schemas/Filename"
                     sequence:
-                      $ref: '#/components/schemas/Sequence'
+                      $ref: "#/components/schemas/Sequence"
                     paymentRequest:
-                      $ref: '#/components/schemas/PaymentRequest'
+                      $ref: "#/components/schemas/PaymentRequest"
           batchExportDate:
-            $ref: '#/components/schemas/BatchExportDate'
+            $ref: "#/components/schemas/BatchExportDate"
           filename:
-            $ref: '#/components/schemas/Filename'
+            $ref: "#/components/schemas/Filename"
           paymentRequest:
-            $ref: '#/components/schemas/PaymentRequest'
+            $ref: "#/components/schemas/PaymentRequest"
           sequence:
-            $ref: '#/components/schemas/Sequence'
+            $ref: "#/components/schemas/Sequence"
     BatchProcessedErrorEvent:
       type: object
       description: >-
@@ -95,7 +95,7 @@ components:
         - properties
       properties:
         name:
-          $ref: '#/components/schemas/Name'
+          $ref: "#/components/schemas/Name"
         properties:
           type: object
           description: Event properties
@@ -106,11 +106,11 @@ components:
             - action
           properties:
             checkpoint:
-              $ref: '#/components/schemas/Checkpoint'
+              $ref: "#/components/schemas/Checkpoint"
             id:
-              $ref: '#/components/schemas/CorrelationId'
+              $ref: "#/components/schemas/CorrelationId"
             status:
-              $ref: '#/components/schemas/Status'
+              $ref: "#/components/schemas/Status"
             action:
               type: object
               description: Event properties
@@ -121,17 +121,17 @@ components:
                 - data
               properties:
                 message:
-                  $ref: '#/components/schemas/Message'
+                  $ref: "#/components/schemas/Message"
                 timestamp:
-                  $ref: '#/components/schemas/Timestamp'
+                  $ref: "#/components/schemas/Timestamp"
                 type:
-                  $ref: '#/components/schemas/Type'
+                  $ref: "#/components/schemas/Type"
                 data:
                   type: object
                   description: Further information for the event
                   properties:
                     filename:
-                      $ref: '#/components/schemas/Filename'
+                      $ref: "#/components/schemas/Filename"
     BatchProcessedPaymentRequestInvalidEvent:
       type: object
       description: Error event raised when a payment request cannot be processed
@@ -140,7 +140,7 @@ components:
         - properties
       properties:
         name:
-          $ref: '#/components/schemas/Name'
+          $ref: "#/components/schemas/Name"
         properties:
           type: object
           description: Event properties
@@ -150,11 +150,11 @@ components:
             - action
           properties:
             checkpoint:
-              $ref: '#/components/schemas/Checkpoint'
+              $ref: "#/components/schemas/Checkpoint"
             id:
-              $ref: '#/components/schemas/CorrelationId'
+              $ref: "#/components/schemas/CorrelationId"
             status:
-              $ref: '#/components/schemas/Status'
+              $ref: "#/components/schemas/Status"
             action:
               type: object
               description: Event properties
@@ -165,17 +165,17 @@ components:
                 - data
               properties:
                 message:
-                  $ref: '#/components/schemas/Message'
+                  $ref: "#/components/schemas/Message"
                 timestamp:
-                  $ref: '#/components/schemas/Timestamp'
+                  $ref: "#/components/schemas/Timestamp"
                 type:
-                  $ref: '#/components/schemas/Type'
+                  $ref: "#/components/schemas/Type"
                 data:
                   type: object
                   description: Further information for the event
                   properties:
                     paymentRequest:
-                      $ref: '#/components/schemas/PaymentRequest'
+                      $ref: "#/components/schemas/PaymentRequest"
     BatchProcessedQuarantineErrorEvent:
       type: object
       description: >-
@@ -186,7 +186,7 @@ components:
         - properties
       properties:
         name:
-          $ref: '#/components/schemas/Name'
+          $ref: "#/components/schemas/Name"
         properties:
           type: object
           description: Event properties
@@ -197,11 +197,11 @@ components:
             - action
           properties:
             checkpoint:
-              $ref: '#/components/schemas/Checkpoint'
+              $ref: "#/components/schemas/Checkpoint"
             id:
-              $ref: '#/components/schemas/CorrelationId'
+              $ref: "#/components/schemas/CorrelationId"
             status:
-              $ref: '#/components/schemas/Status'
+              $ref: "#/components/schemas/Status"
             action:
               type: object
               description: Event properties
@@ -212,17 +212,17 @@ components:
                 - data
               properties:
                 message:
-                  $ref: '#/components/schemas/Message'
+                  $ref: "#/components/schemas/Message"
                 timestamp:
-                  $ref: '#/components/schemas/Timestamp'
+                  $ref: "#/components/schemas/Timestamp"
                 type:
-                  $ref: '#/components/schemas/Type'
+                  $ref: "#/components/schemas/Type"
                 data:
                   type: object
                   description: Further information for the event
                   properties:
                     filename:
-                      $ref: '#/components/schemas/Filename'
+                      $ref: "#/components/schemas/Filename"
     PaymentRequest:
       type: object
       description: Payment request object
@@ -238,17 +238,17 @@ components:
         - value
       properties:
         agreementNumber:
-          $ref: '#/components/schemas/AgreementNumber'
+          $ref: "#/components/schemas/AgreementNumber"
         contractNumber:
-          $ref: '#/components/schemas/ContractNumber'
+          $ref: "#/components/schemas/ContractNumber"
         correlationId:
-          $ref: '#/components/schemas/CorrelationId'
+          $ref: "#/components/schemas/CorrelationId"
         currency:
-          $ref: '#/components/schemas/Currency'
+          $ref: "#/components/schemas/Currency"
         dueDate:
-          $ref: '#/components/schemas/DueDate'
+          $ref: "#/components/schemas/DueDate"
         frn:
-          $ref: '#/components/schemas/FRN'
+          $ref: "#/components/schemas/FRN"
         invoiceLines:
           type: array
           description: List of Invoice lines that make up request
@@ -262,17 +262,17 @@ components:
               - marketingYear
             properties:
               accountCode:
-                $ref: '#/components/schemas/AccountCode'
+                $ref: "#/components/schemas/AccountCode"
               description:
-                $ref: '#/components/schemas/Description'
+                $ref: "#/components/schemas/Description"
               schemeCode:
-                $ref: '#/components/schemas/SchemeCode'
+                $ref: "#/components/schemas/SchemeCode"
               value:
-                $ref: '#/components/schemas/ValueDecimal'
+                $ref: "#/components/schemas/ValueDecimal"
               deliveryBody:
-                $ref: '#/components/schemas/DeliveryBody'
+                $ref: "#/components/schemas/DeliveryBody"
               marketingYear:
-                $ref: '#/components/schemas/MarketingYear'
+                $ref: "#/components/schemas/MarketingYear"
     MarketingYear:
       type: number
       description: Scheme year for request
@@ -326,6 +326,7 @@ components:
         - Q4
         - M12
         - T4
+          Y1
         - Y2
         - T2
       example: Q4
@@ -333,32 +334,32 @@ components:
       type: string
       description: Unique scheme code
       enum:
-        - '80001'
-        - '80002'
-        - '80003'
-        - '80004'
-        - '80005'
-        - '80006'
-        - '80007'
-        - '80008'
-        - '80009'
-        - '80101'
-        - '80102'
-        - '80111'
-        - '80112'
-        - '80121'
-        - '80190'
-        - '80195'
-        - '10570'
-        - '18001'
-        - '18002'
-        - '18003'
-        - '18004'
-      example: '80001'
+        - "80001"
+        - "80002"
+        - "80003"
+        - "80004"
+        - "80005"
+        - "80006"
+        - "80007"
+        - "80008"
+        - "80009"
+        - "80101"
+        - "80102"
+        - "80111"
+        - "80112"
+        - "80121"
+        - "80190"
+        - "80195"
+        - "10570"
+        - "18001"
+        - "18002"
+        - "18003"
+        - "18004"
+      example: "80001"
     Sequence:
       type: string
       description: Sequence number
-      example: '0001'
+      example: "0001"
     SourceSystem:
       type: string
       description: System identifier request originates from
