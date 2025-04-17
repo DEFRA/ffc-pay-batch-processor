@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-batch-processor",
-  "version": "1.41.4",
+  "version": "1.41.5",
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
@@ -25,7 +25,7 @@
     "Callum Leighton callum.leighton@kainos.com",
     "Kirsten Williamson kirsten.williamson@kainos.com",
     "Sam Plackett samuel.plackett@eviden.com",
-    "Leigh Godson leigh.godson.external@eviden.com",
+    "Leigh Godson leigh.godson@eviden.com",
     "Oliver Lewington oliver.lewington@eviden.com"
   ],
   "license": "OGL-UK-3.0",

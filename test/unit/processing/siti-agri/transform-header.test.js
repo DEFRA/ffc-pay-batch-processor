@@ -1,6 +1,6 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
-const { M12, Y2, Q4 } = require('../../../../app/constants/schedule')
+const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
 const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, sfiExpanded } = require('../../../../app/constants/schemes')
 
 jest.mock('uuid')
@@ -233,7 +233,7 @@ describe('Transform header', () => {
 
   test('transforms Delinked header', async () => {
     const filename = 'SITIDP0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y2']
+    const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1']
     const result = transformHeader(headerData, delinked.schemeId, filename)
     expect(result).toEqual({
       correlationId,
@@ -246,21 +246,21 @@ describe('Transform header', () => {
       currency: GBP,
       value: 100,
       deliveryBody: 'RP00',
-      schedule: Y2,
+      schedule: Y1,
       invoiceLines: []
     })
   })
 
   test('for Delinked return undefined if paymentRequestNumber is NaN', async () => {
     const filename = 'SITIDP0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'DP0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y2']
+    const headerData = ['H', 'DP0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1']
     const result = transformHeader(headerData, delinked.schemeId, filename)
     expect(result.paymentRequestNumber).toBe(undefined)
   })
 
   test('for Delinked return undefined if value is NaN', async () => {
     const filename = 'SITIDP0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'DP', 'Y2']
+    const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'DP', 'Y1']
     const result = transformHeader(headerData, delinked.schemeId, filename)
     expect(result.value).toBe(undefined)
   })
