@@ -10,7 +10,8 @@ const { buildInvoiceLines } = require('../../../../app/processing/siti-agri/buil
 const correlationId = require('../../../mocks/correlation-id')
 
 const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
-const { cs } = require('../../../../app/constants/schemes')
+const { cs, combinedOffer } = require('../../../../app/constants/schemes')
+const { sfiExpanded, csHigherTier } = require('../../../../app/constants/combined-offer-schemes')
 
 let paymentRequest
 let paymentRequests
@@ -199,5 +200,26 @@ describe('Build payment requests', () => {
     paymentRequest.invoiceLines[0].deliveryBody = 'DB99'
     const invoiceLinesParse = buildPaymentRequests([paymentRequest], sourceSystem)
     expect(invoiceLinesParse[0].deliveryBody).toBe(paymentRequest.deliveryBody)
+  })
+
+  describe('Source System Logic in Payment Requests', () => {
+    test('should use provided sourceSystem when not combined offer', async () => {
+      const sourceSystem = cs.sourceSystem
+      paymentRequest.schemeId = cs.schemeId
+      const result = buildPaymentRequests([paymentRequest], sourceSystem)
+      expect(result[0].sourceSystem).toBe(sourceSystem)
+    })
+
+    test('should use csHigherTier source system for csHigherTier schemeId', async () => {
+      paymentRequest.schemeId = csHigherTier.schemeId
+      const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
+      expect(result[0].sourceSystem).toBe(csHigherTier.sourceSystem)
+    })
+
+    test('should use sfiExpanded source system for default combinedOffer schemeId', async () => {
+      paymentRequest.schemeId = combinedOffer.schemeId
+      const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
+      expect(result[0].sourceSystem).toBe(sfiExpanded.sourceSystem)
+    })
   })
 })
