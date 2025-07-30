@@ -65,10 +65,10 @@ module.exports = {
     sourceSystem: 'DP',
     fileMask: /^SITIDP\d{4}_AP_\d*.dat$/
   },
-  sfiExpanded: {
+  combinedOffer: {
     schemeId: 14,
-    name: 'SFI Expanded',
-    sourceSystem: 'ESFIO',
+    name: 'Combined Offer',
+    sourceSystem: 'Multiple',
     fileMask: /^ESFIO\d{4}_AP_\d*.dat$/
   }
 }

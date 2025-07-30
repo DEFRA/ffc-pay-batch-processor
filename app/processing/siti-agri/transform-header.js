@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, sfiExpanded } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer } = require('../../constants/schemes')
+const combinedOfferSchemes = require('../../constants/combined-offer-schemes')
 
 const transformHeader = (headerData, schemeId, filename) => {
   switch (schemeId) {
@@ -7,7 +8,7 @@ const transformHeader = (headerData, schemeId, filename) => {
     case sfiPilot.schemeId:
     case sfi23.schemeId:
     case delinked.schemeId:
-    case sfiExpanded.schemeId:
+    case combinedOffer.schemeId:
       return transformSFIOrDPHeader(headerData, schemeId, filename)
     case lumpSums.schemeId:
       return transformLumpSumsHeader(headerData, schemeId, filename)
@@ -21,9 +22,18 @@ const transformHeader = (headerData, schemeId, filename) => {
   }
 }
 
+const getSchemeId = (headerData, schemeId) => {
+  const sourceSystem = headerData[10]
+  if (sourceSystem === combinedOfferSchemes.csHigherTier.sourceSystem) {
+    return combinedOfferSchemes.csHigherTier.schemeId
+  }
+  // default to first schemeId of combined offer (SFI Expanded - 14)
+  return schemeId
+}
+
 const transformSFIOrDPHeader = (headerData, schemeId, filename) => ({
   correlationId: uuidv4(),
-  schemeId,
+  schemeId: schemeId === combinedOffer.schemeId ? getSchemeId(headerData, schemeId) : schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
   paymentRequestNumber: !isNaN(headerData[2]) ? parseInt(headerData[2]) : undefined,

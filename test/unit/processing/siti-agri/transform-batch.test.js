@@ -119,6 +119,19 @@ describe('Transform batch', () => {
     })
   })
 
+  test('transforms CS Higher Tier batch', async () => {
+    const headerData = ['B', '2021-08-12', '2', '200', '1', 'CSHTR', 'AP']
+    const result = transformBatch(headerData)
+    expect(result).toMatchObject({
+      exportDate: '2021-08-12',
+      numberOfPaymentRequests: 2,
+      batchValue: 200,
+      sequence: 1,
+      sourceSystem: 'CSHTR',
+      ledger: AP
+    })
+  })
+
   test('returns undefined values if line empty', async () => {
     const headerData = []
     const result = transformBatch(headerData)
