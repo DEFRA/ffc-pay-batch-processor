@@ -6,7 +6,7 @@
   <changeSet author="Sam Plackett" id="2">
     <update tableName="schemes">
         <column name="scheme" value="Combined Offer"/>
-        <where>schemeId = 14</where>
+        <where>"schemeId" = 14</where>
     </update>
   </changeSet>
 </databaseChangeLog>
