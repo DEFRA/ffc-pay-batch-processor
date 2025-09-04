@@ -27,6 +27,7 @@ deployment:
   # So concurrent processing with multiple pods could cause problems
   minReplicas: 1
   maxReplicas: 1
+  priorityClassName: high
 
 container:
   requestMemory: 100Mi
