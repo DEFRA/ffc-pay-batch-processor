@@ -20,8 +20,6 @@ const { SOURCE } = require('../../../app/constants/source')
 const { PAYMENT_EXTRACTED } = require('../../../app/constants/events')
 
 let filename
-let sequence
-let batchExportDate
 let scheme
 
 let paymentRequest
@@ -45,38 +43,38 @@ describe('V2 events for processed payment requests', () => {
   })
 
   test('should send event to V2 topic', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
   })
 
   test('should raise an event with batch processor source', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(mockPublishEvents.mock.calls[0][0][0].source).toBe(SOURCE)
   })
 
   test('should raise extracted event type', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(mockPublishEvents.mock.calls[0][0][0].type).toBe(PAYMENT_EXTRACTED)
   })
 
   test('should raise an event with filename as subject', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(mockPublishEvents.mock.calls[0][0][0].subject).toBe(filename)
   })
 
   test('should include scheme in event data', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(mockPublishEvents.mock.calls[0][0][0].data.schemeId).toBe(scheme.schemeId)
   })
 
   test('should include payment request in event data', async () => {
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(mockPublishEvents.mock.calls[0][0][0].data).toMatchObject(paymentRequest)
   })
 
   test('should send event for every payment request', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
-    await sendBatchProcessedEvents(paymentRequests, filename, sequence, batchExportDate, scheme)
+    await sendBatchProcessedEvents(paymentRequests, filename, scheme)
     expect(mockPublishEvents.mock.calls[0][0].length).toBe(2)
   })
 })

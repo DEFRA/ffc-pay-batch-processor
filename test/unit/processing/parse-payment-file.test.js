@@ -116,7 +116,7 @@ describe('Parse and send events on success or failure', () => {
 
   test('should call sendBatchProcessedEvents with paymentRequestsCollection.successfulPaymentRequests, filename, sequence and batch export date when getPaymentRequestsFromFile.paymentRequests returns 1 successfulPaymentRequests', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendBatchProcessedEvents).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(sendBatchProcessedEvents).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests, filename, scheme)
   })
 
   test('should call sendBatchProcessedEvents when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
@@ -134,7 +134,7 @@ describe('Parse and send events on success or failure', () => {
   test('should call sendBatchProcessedEvents with filename, paymentRequestsCollection.successfulPaymentRequests, sequence and batch export date when getPaymentRequestsFromFile.paymentRequests returns 2 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests.push(successfulPaymentRequest)
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendBatchProcessedEvents).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests, filename, sequence, batchExportDate, scheme)
+    expect(sendBatchProcessedEvents).toHaveBeenCalledWith(paymentRequestsCollection.successfulPaymentRequests, filename, scheme)
   })
 
   test('should call sendBatchProcessedEvents when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
@@ -152,7 +152,7 @@ describe('Parse and send events on success or failure', () => {
   test('should call sendBatchProcessedEvents with an empty array, filename, sequence and batchExportDate when getPaymentRequestsFromFile.paymentRequests returns 0 successfulPaymentRequests', async () => {
     paymentRequestsCollection.successfulPaymentRequests = []
     await parsePaymentFile(filename, fileBuffer, sfiPilot, sequence)
-    expect(sendBatchProcessedEvents).toHaveBeenCalledWith([], filename, sequence, batchExportDate, scheme)
+    expect(sendBatchProcessedEvents).toHaveBeenCalledWith([], filename, scheme)
   })
 
   test('should call sendPaymentBatchMessages when valid filename, fileBuffer and sequence are received', async () => {

@@ -1,4 +1,4 @@
-const util = require('util')
+const util = require('node:util')
 const messageConfig = require('../config/message')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const { SOURCE } = require('../constants/source')

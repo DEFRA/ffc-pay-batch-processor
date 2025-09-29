@@ -3,7 +3,7 @@ const { EventPublisher } = require('ffc-pay-event-publisher')
 const { SOURCE } = require('../constants/source')
 const { PAYMENT_EXTRACTED } = require('../constants/events')
 
-const sendBatchProcessedEvents = async (paymentRequests, filename, sequence, batchExportDate, scheme) => {
+const sendBatchProcessedEvents = async (paymentRequests, filename, scheme) => {
   if (paymentRequests.length) {
     const events = paymentRequests.map(paymentRequest => createEvent(paymentRequest, filename, scheme))
     const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
