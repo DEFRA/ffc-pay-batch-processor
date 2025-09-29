@@ -1,5 +1,4 @@
 const util = require('util')
-const config = require('../config/processing')
 const messageConfig = require('../config/message')
 const { EventPublisher } = require('ffc-pay-event-publisher')
 const { SOURCE } = require('../constants/source')
@@ -7,12 +6,6 @@ const { PAYMENT_REJECTED } = require('../constants/events')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
   console.log('Publishing events for invalid payment requests', util.inspect(paymentRequests, false, null, true))
-  if (config.useV2Events) {
-    await sendV2PaymentRequestInvalidEvents(paymentRequests)
-  }
-}
-
-const sendV2PaymentRequestInvalidEvents = async (paymentRequests) => {
   if (paymentRequests?.length) {
     const events = paymentRequests.map(createEvent)
     const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
