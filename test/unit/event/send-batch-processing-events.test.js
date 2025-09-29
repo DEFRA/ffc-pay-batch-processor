@@ -30,8 +30,6 @@ describe('V2 events for processed payment requests', () => {
     messageConfig.eventsTopic = 'v2-events'
 
     filename = 'SITIELM0001_AP_1.dat'
-    sequence = '0001'
-    batchExportDate = '2021-08-12'
     scheme = require('../../../app/constants/schemes').sfiPilot
 
     paymentRequest = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequest))
