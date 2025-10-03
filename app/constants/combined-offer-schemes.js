@@ -5,10 +5,10 @@ module.exports = {
     sourceSystem: 'ESFIO',
     fileMask: /^ESFIO\d{4}_AP_\d*.dat$/
   },
-  csHigherTier: {
+  cohtRevenue: {
     schemeId: 15,
-    name: 'CS Higher Tier',
-    sourceSystem: 'CSHTR',
+    name: 'COHT Revenue',
+    sourceSystem: 'COHTR',
     fileMask: /^ESFIO\d{4}_AP_\d*.dat$/
   }
 }

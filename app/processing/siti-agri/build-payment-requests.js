@@ -1,16 +1,13 @@
 const { v4: uuidv4 } = require('uuid')
 const { buildInvoiceLines } = require('./build-invoice-lines')
 const handleKnownDefects = require('./handle-known-defects')
-const { cs, combinedOffer, cohtCapital } = require('../../constants/schemes')
-const { sfiExpanded, csHigherTier } = require('../../constants/combined-offer-schemes')
+const { cs, combinedOffer } = require('../../constants/schemes')
+const { sfiExpanded, cohtRevenue } = require('../../constants/combined-offer-schemes')
 const START_AT_ZERO = 0
 
 const getCombinedSourceSystem = (schemeId) => {
-  if (schemeId === cohtCapital.schemeId) {
-    return cohtCapital.sourceSystem
-  }
-  if (schemeId === csHigherTier.schemeId) {
-    return csHigherTier.sourceSystem
+  if (schemeId === cohtRevenue.schemeId) {
+    return cohtRevenue.sourceSystem
   }
   return sfiExpanded.sourceSystem
 }

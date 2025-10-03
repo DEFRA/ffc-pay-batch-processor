@@ -10,8 +10,8 @@ const { buildInvoiceLines } = require('../../../../app/processing/siti-agri/buil
 const correlationId = require('../../../mocks/correlation-id')
 
 const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
-const { cs, combinedOffer, cohtCapital } = require('../../../../app/constants/schemes')
-const { sfiExpanded, csHigherTier } = require('../../../../app/constants/combined-offer-schemes')
+const { cs, combinedOffer } = require('../../../../app/constants/schemes')
+const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
 
 let paymentRequest
 let paymentRequests
@@ -215,22 +215,16 @@ describe('Build payment requests', () => {
       expect(result[0].sourceSystem).toBe(sourceSystem)
     })
 
-    test('should use csHigherTier source system for csHigherTier schemeId', async () => {
-      paymentRequest.schemeId = csHigherTier.schemeId
+    test('should use combinedOffer source system for cohtRevenue schemeId', async () => {
+      paymentRequest.schemeId = cohtRevenue.schemeId
       const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
-      expect(result[0].sourceSystem).toBe(csHigherTier.sourceSystem)
+      expect(result[0].sourceSystem).toBe(cohtRevenue.sourceSystem)
     })
 
     test('should use sfiExpanded source system for default combinedOffer schemeId', async () => {
       paymentRequest.schemeId = combinedOffer.schemeId
       const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
       expect(result[0].sourceSystem).toBe(sfiExpanded.sourceSystem)
-    })
-
-    test('should use cohtCapital source system for cohtCapital schemeId', async () => {
-      paymentRequest.schemeId = cohtCapital.schemeId
-      const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
-      expect(result[0].sourceSystem).toBe(cohtCapital.sourceSystem)
     })
   })
 })
