@@ -70,5 +70,11 @@ module.exports = {
     name: 'Combined Offer',
     sourceSystem: 'Multiple',
     fileMask: /^ESFIO\d{4}_AP_\d*.dat$/
+  },
+  cohtCapital: {
+    schemeId: 16,
+    name: 'COHT Capital',
+    sourceSystem: 'COHTC',
+    fileMask: /^SITICOHTC\d{4}_AP_\d*.dat$/
   }
 }

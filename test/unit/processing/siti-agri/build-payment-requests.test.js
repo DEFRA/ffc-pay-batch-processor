@@ -10,7 +10,7 @@ const { buildInvoiceLines } = require('../../../../app/processing/siti-agri/buil
 const correlationId = require('../../../mocks/correlation-id')
 
 const buildPaymentRequests = require('../../../../app/processing/siti-agri/build-payment-requests')
-const { cs, combinedOffer } = require('../../../../app/constants/schemes')
+const { cs, combinedOffer, cohtCapital } = require('../../../../app/constants/schemes')
 const { sfiExpanded, csHigherTier } = require('../../../../app/constants/combined-offer-schemes')
 
 let paymentRequest
@@ -44,6 +44,11 @@ describe('Build payment requests', () => {
 
   afterEach(async () => {
     jest.resetAllMocks()
+  })
+
+  test('should return [] when paymentRequests is undefined', async () => {
+    const result = buildPaymentRequests(undefined, sourceSystem)
+    expect(result).toMatchObject([])
   })
 
   test('should call uuidv4 when valid paymentRequests and sourceSystem are given', async () => {
@@ -220,6 +225,12 @@ describe('Build payment requests', () => {
       paymentRequest.schemeId = combinedOffer.schemeId
       const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
       expect(result[0].sourceSystem).toBe(sfiExpanded.sourceSystem)
+    })
+
+    test('should use cohtCapital source system for cohtCapital schemeId', async () => {
+      paymentRequest.schemeId = cohtCapital.schemeId
+      const result = buildPaymentRequests([paymentRequest], combinedOffer.sourceSystem)
+      expect(result[0].sourceSystem).toBe(cohtCapital.sourceSystem)
     })
   })
 })

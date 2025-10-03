@@ -1,5 +1,5 @@
 const transformInvoiceLine = require('../../../../app/processing/siti-agri/transform-invoice-line')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer, cohtCapital } = require('../../../../app/constants/schemes')
 
 describe('Transform invoice lines', () => {
   test('transforms SFI invoice line', async () => {
@@ -166,6 +166,57 @@ describe('Transform invoice lines', () => {
       dueDate: '2022-12-01',
       accountCode: 'SOS273'
     })
+  })
+
+  test('transforms COHT Capital invoice line (uses accountCode at index 14 and removes dueDate)', async () => {
+    const lineData = [
+      'L',
+      'COHT0000001', // 1 invoiceNumber
+      '100', // 2 value
+      '2022', // 3 marketingYear
+      '80001', // 4 schemeCode
+      'DRD10', // 5 fundCode
+      'AG0001', // 6 agreementNumber
+      'RP00', // 7 deliveryBody
+      'N', // 8 descriptionSITI (not used)
+      '1', // 9 dueDateSITI (not used)
+      'G00 - Gross value of claim', // 10 description
+      '2022-12-01', // 11 dueDate (should be removed for COHT)
+      'unused12', // 12
+      'SFIacct', // 13 accountCode for SFI branch
+      'COHTacct' // 14 accountCode for COHT
+    ]
+    const result = transformInvoiceLine(lineData, cohtCapital.schemeId)
+    expect(result).toEqual({
+      invoiceNumber: 'COHT0000001',
+      value: 100,
+      marketingYear: 2022,
+      schemeCode: '80001',
+      fundCode: 'DRD10',
+      agreementNumber: 'AG0001',
+      deliveryBody: 'RP00',
+      description: 'G00 - Gross value of claim',
+      accountCode: 'COHTacct'
+    })
+    // dueDate should be removed for COHT capital
+    expect(result.dueDate).toBeUndefined()
+  })
+
+  test('returns undefined values if line empty for cohtCapital', async () => {
+    const lineData = []
+    const result = transformInvoiceLine(lineData, cohtCapital.schemeId)
+    expect(result.invoiceNumber).toBeUndefined()
+    expect(result.value).toBeUndefined()
+    expect(result.marketingYear).toBeUndefined()
+    expect(result.schemeCode).toBeUndefined()
+    expect(result.fundCode).toBeUndefined()
+    expect(result.agreementNumber).toBeUndefined()
+    expect(result.deliveryBody).toBeUndefined()
+    expect(result.description).toBeUndefined()
+    // accountCode should also be undefined for empty COHT line
+    expect(result.accountCode).toBeUndefined()
+    // dueDate is deleted for COHT, so ensure undefined
+    expect(result.dueDate).toBeUndefined()
   })
 
   test('returns undefined values if line empty', async () => {
