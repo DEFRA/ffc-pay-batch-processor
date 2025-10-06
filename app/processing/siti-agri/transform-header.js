@@ -20,12 +20,12 @@ const LUMP_BPS_HEADER_VALUE = 6
 const LUMP_BPS_HEADER_DELIVERY_BODY = 7
 const LUMP_BPS_HEADER_CURRENCY = 8
 
-const parseValue = (value) => {
+const parsedValue = (value) => {
   const parsed = Number.parseFloat(value)
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
-const parseInt = (value) => {
+const parsedInteger = (value) => {
   const parsed = Number.parseInt(value)
   return Number.isFinite(parsed) ? parsed : undefined
 }
@@ -78,11 +78,11 @@ const transformSFIOrDPHeader = (headerData, schemeId, filename) => {
     schemeId: schemeId === combinedOffer.schemeId ? getSchemeId(headerData, schemeId) : schemeId,
     batch: filename,
     invoiceNumber: headerData[HEADER_INVOICE_NO],
-    paymentRequestNumber: parseInt(headerData[HEADER_PAYMENT_REQUEST_NO]),
+    paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
     contractNumber: headerData[HEADER_CONTRACT_NO],
     frn: headerData[SFI_CS_HEADER_FRN],
     currency: headerData[SFI_CS_HEADER_CURRENCY],
-    value: parseValue(headerData[SFI_CS_HEADER_VALUE]),
+    value: parsedValue(headerData[SFI_CS_HEADER_VALUE]),
     deliveryBody: headerData[SFI_CS_HEADER_DELIVERY_BODY],
     schedule: headerData[SFI_HEADER_SCHEDULE],
     invoiceLines: []
@@ -100,11 +100,11 @@ const transformLumpSumsHeader = (headerData, schemeId, filename) => ({
   schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
-  paymentRequestNumber: parseInt(headerData[HEADER_PAYMENT_REQUEST_NO]),
+  paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
   contractNumber: headerData[HEADER_CONTRACT_NO],
   frn: headerData[LUMP_BPS_HEADER_FRN],
   currency: headerData[LUMP_BPS_HEADER_CURRENCY],
-  value: parseValue(headerData[LUMP_BPS_HEADER_VALUE]),
+  value: parsedValue(headerData[LUMP_BPS_HEADER_VALUE]),
   deliveryBody: headerData[LUMP_BPS_HEADER_DELIVERY_BODY],
   invoiceLines: []
 })
@@ -114,10 +114,10 @@ const transformBPSHeader = (headerData, schemeId, filename) => ({
   schemeId,
   batch: filename,
   invoiceNumber: headerData[HEADER_INVOICE_NO],
-  paymentRequestNumber: parseInt(headerData[HEADER_PAYMENT_REQUEST_NO]),
+  paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
   contractNumber: headerData[HEADER_CONTRACT_NO],
   frn: headerData[LUMP_BPS_HEADER_FRN],
-  value: parseValue(headerData[LUMP_BPS_HEADER_VALUE]),
+  value: parsedValue(headerData[LUMP_BPS_HEADER_VALUE]),
   deliveryBody: headerData[LUMP_BPS_HEADER_DELIVERY_BODY],
   currency: headerData[LUMP_BPS_HEADER_CURRENCY],
   invoiceLines: []
@@ -128,12 +128,12 @@ const transformCSHeader = (headerData, schemeId, filename) => ({
   schemeId,
   batch: filename,
   invoiceNumber: headerData[HEADER_INVOICE_NO],
-  paymentRequestNumber: parseInt(headerData[HEADER_PAYMENT_REQUEST_NO]),
+  paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
   contractNumber: headerData[HEADER_CONTRACT_NO],
-  paymentType: parseInt(headerData[CS_HEADER_PAYMENT_TYPE]),
+  paymentType: parsedInteger(headerData[CS_HEADER_PAYMENT_TYPE]),
   frn: headerData[SFI_CS_HEADER_FRN],
   currency: headerData[SFI_CS_HEADER_CURRENCY],
-  value: parseValue(headerData[SFI_CS_HEADER_VALUE]),
+  value: parsedValue(headerData[SFI_CS_HEADER_VALUE]),
   deliveryBody: headerData[SFI_CS_HEADER_DELIVERY_BODY],
   invoiceLines: []
 })
