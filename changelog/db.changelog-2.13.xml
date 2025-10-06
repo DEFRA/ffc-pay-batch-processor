@@ -10,13 +10,13 @@
     </update>
   </changeSet>
   <changeSet author="Leigh Godson" id="3">
-  <insert tableName="schemes">
-    <column name="schemeId" value="16" />
-    <column name="scheme" value="COHT Capital" />
-  </insert>
-  <insert tableName="sequences">
-    <column name="schemeId" value="16" />
-    <column name="next" value="1" />
-  </insert>
-</changeSet>
+   <insert tableName="schemes">
+     <column name="schemeId" value="16" />
+     <column name="scheme" value="COHT Capital" />
+   </insert>
+   <insert tableName="sequences">
+     <column name="schemeId" value="16" />
+     <column name="next" value="1" />
+   </insert>
+  </changeSet>
 </databaseChangeLog>
