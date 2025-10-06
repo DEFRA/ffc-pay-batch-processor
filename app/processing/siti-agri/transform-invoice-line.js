@@ -17,32 +17,51 @@ const LINE_DATA_ACCOUNT_CODE_COHTC = 14
 const LINE_DATA_CONVERGENCE = 8
 
 const transformInvoiceLine = (lineData, schemeId) => {
+  const schemeIdNum = Number(schemeId)
+
+  if (Number.isNaN(schemeIdNum)) {
+    throw new TypeError(`Unknown scheme: ${schemeId}`)
+  }
+  const sfiGroup = new Set([
+    Number(sfi.schemeId),
+    Number(sfiPilot.schemeId),
+    Number(sfi23.schemeId),
+    Number(delinked.schemeId),
+    Number(combinedOffer.schemeId),
+    Number(cohtCapital.schemeId)
+  ])
+
+  if (sfiGroup.has(schemeIdNum)) {
+    return transformSFIOrDPInvoiceLine(lineData, schemeIdNum)
+  }
   switch (schemeId) {
-    case sfi.schemeId:
-    case sfiPilot.schemeId:
-    case sfi23.schemeId:
-    case delinked.schemeId:
-    case combinedOffer.schemeId:
-      return transformSFIOrDPInvoiceLine(lineData, schemeId)
-    case lumpSums.schemeId:
-    case bps.schemeId:
-    case fdmr.schemeId:
+    case Number(lumpSums.schemeId):
+    case Number(bps.schemeId):
+    case Number(fdmr.schemeId):
       return transformSitiInvoiceLine(lineData)
-    case cs.schemeId:
+    case Number(cs.schemeId):
       return transformCSInvoiceLine(lineData)
-    case cohtCapital.schemeId:
-      return transformSFIOrDPInvoiceLine(lineData, schemeId)
     default:
       throw new Error(`Unknown scheme: ${schemeId}`)
   }
 }
 
+const parseValue = (value) => {
+  const parsed = Number.parseFloat(value)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+const parseYear = (value) => {
+  const parsed = Number.parseInt(value)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
 const transformSFIOrDPInvoiceLine = (lineData, schemeId) => {
-  const isCOHTC = String(schemeId) === String(cohtCapital.schemeId)
+  const isCOHTC = (schemeId) === (cohtCapital.schemeId)
   const lineItems = {
     invoiceNumber: lineData[LINE_DATA_INVOICE_NUMBER],
-    value: !isNaN(lineData[LINE_DATA_VALUE]) ? parseFloat(lineData[LINE_DATA_VALUE]) : undefined,
-    marketingYear: !isNaN(lineData[LINE_DATA_MARKETING_YEAR]) ? parseInt(lineData[LINE_DATA_MARKETING_YEAR]) : undefined,
+    value: parseValue(lineData[LINE_DATA_VALUE]),
+    marketingYear: parseYear(lineData[LINE_DATA_MARKETING_YEAR]),
     schemeCode: lineData[LINE_DATA_SCHEME_CODE],
     fundCode: lineData[LINE_DATA_FUND_CODE],
     agreementNumber: lineData[LINE_DATA_AGREEMENT_NUMBER],
@@ -60,8 +79,8 @@ const transformSFIOrDPInvoiceLine = (lineData, schemeId) => {
 
 const transformSitiInvoiceLine = (lineData) => ({
   invoiceNumber: lineData[LINE_DATA_INVOICE_NUMBER],
-  value: !isNaN(lineData[LINE_DATA_VALUE]) ? parseFloat(lineData[LINE_DATA_VALUE]) : undefined,
-  marketingYear: !isNaN(lineData[LINE_DATA_MARKETING_YEAR]) ? parseInt(lineData[LINE_DATA_MARKETING_YEAR]) : undefined,
+  value: parseValue(lineData[LINE_DATA_VALUE]),
+  marketingYear: parseYear(lineData[LINE_DATA_MARKETING_YEAR]),
   schemeCode: lineData[LINE_DATA_SCHEME_CODE],
   fundCode: lineData[LINE_DATA_FUND_CODE],
   deliveryBody: lineData[LINE_DATA_DELIVERY_BODY_SITI],
@@ -71,8 +90,8 @@ const transformSitiInvoiceLine = (lineData) => ({
 
 const transformCSInvoiceLine = (lineData) => ({
   invoiceNumber: lineData[LINE_DATA_INVOICE_NUMBER],
-  value: !isNaN(lineData[LINE_DATA_VALUE]) ? parseFloat(lineData[LINE_DATA_VALUE]) : undefined,
-  marketingYear: !isNaN(lineData[LINE_DATA_MARKETING_YEAR]) ? parseInt(lineData[LINE_DATA_MARKETING_YEAR]) : undefined,
+  value: parseValue(lineData[LINE_DATA_VALUE]),
+  marketingYear: parseYear(lineData[LINE_DATA_MARKETING_YEAR]),
   schemeCode: lineData[LINE_DATA_SCHEME_CODE],
   fundCode: lineData[LINE_DATA_FUND_CODE],
   agreementNumber: lineData[LINE_DATA_AGREEMENT_NUMBER],

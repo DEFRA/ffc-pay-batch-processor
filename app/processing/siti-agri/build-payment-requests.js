@@ -16,7 +16,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
   if (paymentRequests === undefined) { return [] }
 
   return paymentRequests.map(paymentRequest => ({
-    sourceSystem: (sourceSystem !== combinedOffer.sourceSystem) ? sourceSystem : getCombinedSourceSystem(paymentRequest.schemeId),
+    sourceSystem: (sourceSystem === combinedOffer.sourceSystem) ? getCombinedSourceSystem(paymentRequest.schemeId) : sourceSystem,
     schemeId: paymentRequest.schemeId,
     batch: paymentRequest.batch,
     deliveryBody: paymentRequest.schemeId === cs.schemeId ? paymentRequest.invoiceLines?.[START_AT_ZERO]?.deliveryBody : paymentRequest.deliveryBody,
