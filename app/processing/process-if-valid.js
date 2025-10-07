@@ -8,7 +8,7 @@ const processIfValid = async (scheme, filename) => {
 
   if (sequenceValidationSuccess) {
     await batch.create(filename, currentSequence, scheme.schemeId)
-    await downloadAndParse(filename, scheme, currentSequence)
+    await downloadAndParse(filename, scheme)
   } else if (currentSequence > expectedSequence) {
     console.log(`Ignoring ${filename}, expected sequence id ${expectedSequence} and current sequence is ${currentSequence}`)
   } else {
