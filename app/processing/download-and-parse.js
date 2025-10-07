@@ -4,9 +4,9 @@ const batch = require('./batch')
 const fileProcessingFailed = require('./file-processing-failed')
 const { sendBatchSuccessEvent } = require('../event')
 
-const downloadAndParse = async (filename, scheme, sequence) => {
+const downloadAndParse = async (filename, scheme) => {
   const buffer = await storage.downloadPaymentFile(filename)
-  const parseSuccess = await parsePaymentFile(filename, buffer, scheme, sequence)
+  const parseSuccess = await parsePaymentFile(filename, buffer, scheme)
 
   if (parseSuccess) {
     console.log(`Archiving ${filename}, successfully parsed file`)

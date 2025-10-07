@@ -12,9 +12,6 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 
-jest.mock('../../../app/config/processing')
-const processingConfig = require('../../../app/config/processing')
-
 jest.mock('../../../app/config/message')
 const messageConfig = require('../../../app/config/message')
 
@@ -28,7 +25,6 @@ let paymentRequests
 
 describe('V2 events for processed payment requests', () => {
   beforeEach(async () => {
-    processingConfig.useV2Events = true
     messageConfig.eventsTopic = 'v2-events'
 
     paymentRequest = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequest))
@@ -40,18 +36,6 @@ describe('V2 events for processed payment requests', () => {
 
   afterEach(async () => {
     jest.clearAllMocks()
-  })
-
-  test('should send V2 event if V2 events enabled', async () => {
-    processingConfig.useV2Events = true
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(mockPublishEvents).toHaveBeenCalled()
-  })
-
-  test('should not send V2 event if V2 events disabled', async () => {
-    processingConfig.useV2Events = false
-    await sendPaymentRequestInvalidEvents(paymentRequests)
-    expect(mockPublishEvents).not.toHaveBeenCalled()
   })
 
   test('should send event to V2 topic', async () => {

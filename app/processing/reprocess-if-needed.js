@@ -38,7 +38,7 @@ const reprocess = async (filename, existingBatch, scheme) => {
     await fileProcessingFailed(filename)
   } else {
     await batch.incrementProcessingTries(filename)
-    await downloadAndParse(filename, scheme, existingBatch.sequenceNumber)
+    await downloadAndParse(filename, scheme)
   }
 }
 
