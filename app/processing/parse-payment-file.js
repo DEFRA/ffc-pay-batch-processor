@@ -7,19 +7,17 @@ const parsePaymentFile = async (filename, fileBuffer, scheme) => {
     const { paymentRequestsCollection } = await getPaymentRequestsFromFile(fileBuffer, scheme, filename)
     await sendParsedPaymentRequests(paymentRequestsCollection, filename, scheme)
     return true
-  } catch {
+  } catch (err) {
+    console.error(`parsePaymentFile error for ${filename}:`, err)
     return false
   }
 }
 
 const sendParsedPaymentRequests = async (paymentRequestsCollection, filename, scheme) => {
-  try {
-    await sendPaymentBatchMessages(paymentRequestsCollection.successfulPaymentRequests)
-    await sendBatchProcessedEvents(paymentRequestsCollection.successfulPaymentRequests, filename, scheme)
-    await sendPaymentRequestInvalidEvents(paymentRequestsCollection.unsuccessfulPaymentRequests)
-  } catch (err) {
-    console.error(`One or more payment requests could not be sent: ${err}`)
-  }
+  await sendBatchProcessedEvents(paymentRequestsCollection.successfulPaymentRequests, filename, scheme)
+  await sendPaymentBatchMessages(paymentRequestsCollection.successfulPaymentRequests)
+  await sendPaymentRequestInvalidEvents(paymentRequestsCollection.unsuccessfulPaymentRequests)
+
   return true
 }
 

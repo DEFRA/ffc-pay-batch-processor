@@ -59,6 +59,48 @@ describe('Parse and send events on success or failure', () => {
     jest.resetAllMocks()
   })
 
+  test('should send batch processed events before sending messages and invalid events', async () => {
+    const callOrder = []
+
+    sendBatchProcessedEvents.mockImplementation(() => callOrder.push('processed'))
+    sendPaymentBatchMessages.mockImplementation(() => callOrder.push('messages'))
+    sendPaymentRequestInvalidEvents.mockImplementation(() => callOrder.push('invalid'))
+
+    await parsePaymentFile(filename, fileBuffer, sfiPilot)
+    expect(callOrder).toEqual(['processed', 'messages', 'invalid'])
+  })
+
+  test('does not send messages or invalid events if sendBatchProcessedEvents fails and logs the error', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    sendBatchProcessedEvents.mockRejectedValue(new Error('Event publish failed'))
+
+    const result = await parsePaymentFile(filename, fileBuffer, sfiPilot)
+    expect(result).toBe(false)
+    expect(sendPaymentBatchMessages).not.toHaveBeenCalled()
+    expect(sendPaymentRequestInvalidEvents).not.toHaveBeenCalled()
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `parsePaymentFile error for ${filename}:`,
+      expect.any(Error)
+    )
+
+    consoleErrorSpy.mockRestore()
+  })
+
+  test('logs parsing error when getPaymentRequestsFromFile rejects', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    getPaymentRequestsFromFile.mockRejectedValue(new Error('Invalid file - Unknown line'))
+
+    const result = await parsePaymentFile(filename, fileBuffer, sfiPilot)
+
+    expect(result).toBe(false)
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `parsePaymentFile error for ${filename}:`,
+      expect.any(Error)
+    )
+
+    consoleErrorSpy.mockRestore()
+  })
+
   test('should call getPaymentRequestsFromFile when valid filename, fileBuffer scheme  are received', async () => {
     await parsePaymentFile(filename, fileBuffer, sfiPilot)
     expect(getPaymentRequestsFromFile).toHaveBeenCalled()
