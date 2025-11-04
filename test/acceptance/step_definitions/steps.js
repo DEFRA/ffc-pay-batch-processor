@@ -13,6 +13,8 @@ Given('a batch file is received', async () => {
 })
 
 When('the file is processed', async () => {
+  const pollInbound = require('../../../app/processing/poll-inbound')
+  await pollInbound()
 })
 
 Then('a Payment Request is generated', async () => {

@@ -1,5 +1,7 @@
 services:
   ffc-pay-batch-processor:
+      depends_on:
+      - ffc-pay-batch-processor-postgres
       build: 
         target: development
       image: ffc-pay-batch-processor-development
