@@ -8,6 +8,8 @@ services:
         - ./package.json:/home/node/package.json
       environment:
         DISABLE_SEQUENCE_VALIDATION: ${DISABLE_SEQUENCE_VALIDATION:-true}
+        EVENT_TOPIC_ADDRESS: ${EVENT_TOPIC_ADDRESS:-ffc-pay-event}${MESSAGE_QUEUE_SUFFIX}
+        EVENTS_TOPIC_ADDRESS: ${EVENTS_TOPIC_ADDRESS:-ffc-pay-events}${MESSAGE_QUEUE_SUFFIX}
   
   ffc-pay-batch-processor-test-runner:
     build:
@@ -24,6 +26,8 @@ services:
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-batch-azurite:10000/devstoreaccount1;
       AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
       PAYMENT_TOPIC_ADDRESS: ${PAYMENT_TOPIC_ADDRESS:-ffc-pay-request}${MESSAGE_QUEUE_SUFFIX}
+      EVENT_TOPIC_ADDRESS: ${EVENT_TOPIC_ADDRESS:-ffc-pay-event}${MESSAGE_QUEUE_SUFFIX}
+      EVENTS_TOPIC_ADDRESS: ${EVENTS_TOPIC_ADDRESS:-ffc-pay-events}${MESSAGE_QUEUE_SUFFIX}
       MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST}
       MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD}
       MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER}

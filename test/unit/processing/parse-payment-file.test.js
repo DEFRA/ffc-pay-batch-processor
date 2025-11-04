@@ -62,9 +62,9 @@ describe('Parse and send events on success or failure', () => {
   test('should send batch processed events before sending messages and invalid events', async () => {
     const callOrder = []
 
-    sendBatchProcessedEvents.mockImplementation(() => callOrder.push('processed'))
-    sendPaymentBatchMessages.mockImplementation(() => callOrder.push('messages'))
-    sendPaymentRequestInvalidEvents.mockImplementation(() => callOrder.push('invalid'))
+    sendBatchProcessedEvents.mockImplementation(() => Promise.resolve(callOrder.push('processed')))
+    sendPaymentBatchMessages.mockImplementation(() => Promise.resolve(callOrder.push('messages')))
+    sendPaymentRequestInvalidEvents.mockImplementation(() => Promise.resolve(callOrder.push('invalid')))
 
     await parsePaymentFile(filename, fileBuffer, sfiPilot)
     expect(callOrder).toEqual(['processed', 'messages', 'invalid'])
@@ -81,6 +81,23 @@ describe('Parse and send events on success or failure', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       `parsePaymentFile error for ${filename}:`,
       expect.any(Error)
+    )
+
+    consoleErrorSpy.mockRestore()
+  })
+
+  test('messages are sent even if sendPaymentRequestInvalidEvents fails, and error is logged', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    sendPaymentBatchMessages.mockResolvedValue()
+    sendPaymentRequestInvalidEvents.mockRejectedValue(new Error('Invalid events failed'))
+
+    const result = await parsePaymentFile(filename, fileBuffer, sfiPilot)
+    expect(sendPaymentBatchMessages).toHaveBeenCalled()
+    expect(sendPaymentRequestInvalidEvents).toHaveBeenCalled()
+    expect(result).toBe(false)
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+    `parsePaymentFile error for ${filename}:`,
+    expect.any(Error)
     )
 
     consoleErrorSpy.mockRestore()
