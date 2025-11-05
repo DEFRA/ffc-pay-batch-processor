@@ -5,8 +5,7 @@ const schema = Joi.object({
   processingActive: Joi.boolean().default(true),
   pollingInterval: Joi.number().default(10000), // 10 seconds
   maxProcessingTries: Joi.number().default(3),
-  disableSequenceValidation: Joi.boolean().default(false),
-  useV2Events: Joi.boolean().default(true)
+  disableSequenceValidation: Joi.boolean().default(false)
 })
 
 // Build config
@@ -14,8 +13,7 @@ const config = {
   processingActive: process.env.PROCESSING_ACTIVE,
   pollingInterval: process.env.POLLING_INTERVAL,
   maxProcessingTries: process.env.MAX_PROCESSING_TRIES,
-  disableSequenceValidation: process.env.DISABLE_SEQUENCE_VALIDATION,
-  useV2Events: process.env.USE_V2_EVENTS
+  disableSequenceValidation: process.env.DISABLE_SEQUENCE_VALIDATION
 }
 
 // Validate config

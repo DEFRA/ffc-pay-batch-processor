@@ -25,5 +25,4 @@ data:
   POLLING_INTERVAL: {{ quote .Values.container.pollingInterval }}
   MAX_PROCESSING_TRIES: {{ quote .Values.container.maxProcessingTries }}
   DISABLE_SEQUENCE_VALIDATION: {{ quote .Values.container.disableSequenceValidation }}
-  USE_V2_EVENTS: {{ quote .Values.container.useV2Events }}
 {{- end -}}

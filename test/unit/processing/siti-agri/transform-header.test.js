@@ -1,10 +1,11 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
 const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, sfiExpanded } = require('../../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
+const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
 
 describe('Transform header', () => {
   const correlationId = require('../../../mocks/correlation-id')
@@ -30,18 +31,18 @@ describe('Transform header', () => {
     })
   })
 
-  test('for SFI return undefined if paymentRequestNumber is NaN', async () => {
+  test('for SFI return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'SITISFI0001_AP_20230315083522081.dat'
     const headerData = ['H', 'SFI0000001', 'abc', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
     const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for SFI return undefined if value is NaN', async () => {
+  test('for SFI return undefined if value is not a valid number', async () => {
     const filename = 'SITISFI0001_AP_20230315083522081.dat'
     const headerData = ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFI', 'M12']
     const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    expect(result.value).toBeUndefined()
   })
 
   test('transforms SFI Pilot header', async () => {
@@ -102,18 +103,18 @@ describe('Transform header', () => {
     })
   })
 
-  test('for BPS return undefined if paymentRequestNumber is NaN', async () => {
+  test('for BPS return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'SITI_0001_AP_20230315081841316.dat'
     const headerData = ['H', 'SITI0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
     const result = transformHeader(headerData, bps.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for BPS return undefined if value is NaN', async () => {
+  test('for BPS return undefined if value is not a valid number', async () => {
     const filename = 'SITI_0001_AP_20230315081841316.dat'
     const headerData = ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
     const result = transformHeader(headerData, bps.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    expect(result.value).toBeUndefined()
   })
 
   test('transforms CS header', async () => {
@@ -136,18 +137,18 @@ describe('Transform header', () => {
     })
   })
 
-  test('for CS return undefined if paymentRequestNumber is NaN', async () => {
+  test('for CS return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'SITICS0001_AP_20230315084313836.dat'
     const headerData = ['H', 'CS000000001', 'abc', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP']
     const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for CS return undefined if value is NaN', async () => {
+  test('for CS return undefined if value is not a valid number', async () => {
     const filename = 'SITICS0001_AP_20230315084313836.dat'
     const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', 'abc', 'NE00', 'GBP']
     const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    expect(result.value).toBeUndefined()
   })
 
   test('for CS return Payment Type as an int', async () => {
@@ -157,11 +158,11 @@ describe('Transform header', () => {
     expect(result.paymentType).toBe(1)
   })
 
-  test('for CS return Payment Type as undefined if NaN', async () => {
+  test('for CS return Payment Type as undefined if not a valid number', async () => {
     const filename = 'SITICS0001_AP_20230315084313836.dat'
     const headerData = ['H', 'CS000000001', '001', 'A0000001', 'payment-type', '1000000001', 'GBP', '100', 'NE00', 'GBP']
     const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.paymentType).toBe(undefined)
+    expect(result.paymentType).toBeUndefined()
   })
 
   test('transforms FDMR header', async () => {
@@ -183,18 +184,18 @@ describe('Transform header', () => {
     })
   })
 
-  test('for FDMR return undefined if paymentRequestNumber is NaN', async () => {
+  test('for FDMR return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'FDMR_0001_AP_20230315081841316.dat'
     const headerData = ['H', 'FDMR0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
     const result = transformHeader(headerData, fdmr.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for FDMR return undefined if value is NaN', async () => {
+  test('for FDMR return undefined if value is not a valid number', async () => {
     const filename = 'FDMR_0001_AP_20230315081841316.dat'
     const headerData = ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
     const result = transformHeader(headerData, fdmr.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    expect(result.value).toBeUndefined()
   })
 
   test('transforms SFI23 header', async () => {
@@ -217,18 +218,18 @@ describe('Transform header', () => {
     })
   })
 
-  test('for SFI23 return undefined if paymentRequestNumber is NaN', async () => {
+  test('for SFI23 return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'SITISFIA0001_AP_20230315083522081.dat'
     const headerData = ['H', 'SFIA0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12']
     const result = transformHeader(headerData, sfi23.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for SFI23 return undefined if value is NaN', async () => {
+  test('for SFI23 return undefined if value is not a valid number', async () => {
     const filename = 'SITISFIA0001_AP_20230315083522081.dat'
     const headerData = ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFIA', 'M12']
     const result = transformHeader(headerData, sfi23.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    expect(result.value).toBeUndefined()
   })
 
   test('transforms Delinked header', async () => {
@@ -251,24 +252,24 @@ describe('Transform header', () => {
     })
   })
 
-  test('for Delinked return undefined if paymentRequestNumber is NaN', async () => {
+  test('for Delinked return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'SITIDP0001_AP_20230315083522081.dat'
     const headerData = ['H', 'DP0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1']
     const result = transformHeader(headerData, delinked.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for Delinked return undefined if value is NaN', async () => {
+  test('for Delinked return undefined if value is not a valid number', async () => {
     const filename = 'SITIDP0001_AP_20230315083522081.dat'
     const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'DP', 'Y1']
     const result = transformHeader(headerData, delinked.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    expect(result.value).toBeUndefined()
   })
 
   test('transforms SFI Expanded header', async () => {
     const filename = 'ESFIO0001_AP_20230315083522081.dat'
     const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4']
-    const result = transformHeader(headerData, sfiExpanded.schemeId, filename)
+    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
     expect(result).toEqual({
       correlationId,
       schemeId: sfiExpanded.schemeId,
@@ -285,25 +286,72 @@ describe('Transform header', () => {
     })
   })
 
-  test('for SFI expanded, return undefined if paymentRequestNumber is NaN', async () => {
+  test('for SFI expanded, return undefined if paymentRequestNumber is not a valid number', async () => {
     const filename = 'ESFIO0001_AP_20230315083522081.dat'
     const headerData = ['H', 'ESFIO0000001', 'abc', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4']
-    const result = transformHeader(headerData, sfiExpanded.schemeId, filename)
-    expect(result.paymentRequestNumber).toBe(undefined)
+    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
+    expect(result.paymentRequestNumber).toBeUndefined()
   })
 
-  test('for SFI Expanded return undefined if value is NaN', async () => {
+  test('for SFI Expanded return undefined if value is not a valid number', async () => {
     const filename = 'ESFIO0001_AP_20230315083522081.dat'
     const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'ESFIO', 'Q4']
-    const result = transformHeader(headerData, sfiExpanded.schemeId, filename)
-    expect(result.value).toBe(undefined)
+    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
+    expect(result.value).toBeUndefined()
   })
 
-  test('returns undefined values if line empty, except for schemeId', async () => {
+  test('transforms CSHT Revenue header', async () => {
+    const filename = 'ESFIO0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'COHTR', 'Q4']
+    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
+    expect(result).toEqual({
+      correlationId,
+      schemeId: cohtRevenue.schemeId,
+      batch: filename,
+      invoiceNumber: 'ESFIO0000001',
+      paymentRequestNumber: 1,
+      contractNumber: 'E000001',
+      frn: '1000000001',
+      currency: GBP,
+      value: 100,
+      deliveryBody: 'RP00',
+      schedule: Q4,
+      invoiceLines: []
+    })
+  })
+
+  test('for CS Higher Tier, return undefined if paymentRequestNumber is not a valid number', async () => {
+    const filename = 'ESFIO0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'ESFIO0000001', 'abc', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'COHTR', 'Q4']
+    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
+    expect(result.paymentRequestNumber).toBeUndefined()
+  })
+
+  test('for CS Higher Tier return undefined if value is not a valid number', async () => {
+    const filename = 'ESFIO0001_AP_20230315083522081.dat'
+    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'COHTR', 'Q4']
+    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
+    expect(result.value).toBeUndefined()
+  })
+
+  test('returns expected shape for an empty line (lumpSums) — schemeId and correlationId present; numeric fields are undefined, others undefined', async () => {
     const headerData = []
     const result = transformHeader(headerData, lumpSums.schemeId)
-    delete result.schemeId
-    Object.values(result).forEach(value => expect(value === undefined || value.length === 0 || value === uuidv4()).toBeTruthy())
+
+    expect(result.schemeId).toEqual(lumpSums.schemeId)
+    expect(result.correlationId).toEqual(correlationId)
+    expect(result.batch).toBeUndefined()
+    expect(result.invoiceNumber).toBeUndefined()
+    expect(result.contractNumber).toBeUndefined()
+    expect(result.frn).toBeUndefined()
+    expect(result.currency).toBeUndefined()
+    expect(result.deliveryBody).toBeUndefined()
+
+    expect(result.paymentRequestNumber).toBeUndefined()
+    expect(result.value).toBeUndefined()
+
+    expect(Array.isArray(result.invoiceLines)).toBeTruthy()
+    expect(result.invoiceLines).toHaveLength(0)
   })
 
   test('returns schemeId correctly even if line empty', async () => {

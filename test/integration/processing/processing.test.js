@@ -97,6 +97,12 @@ const TEST_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_FILE_IMPS
 const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS = 'FIN_IMPS_AP_0002.INT'
 const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_IMPS = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_IMPS)
 
+const TEST_FILE_COHTCAPITAL = 'SITICOHTC0001_AP_20251003130021.dat'
+const TEST_FILEPATH_COHTCAPITAL = path.resolve(__dirname, '../../files', TEST_FILE_COHTCAPITAL)
+
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_COHTCAPITAL = 'SITICOHTC0002_AP_20251003130021.dat'
+const TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_COHTCAPITAL = path.resolve(__dirname, '../../files', TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_COHTCAPITAL)
+
 describe('process batch files', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -119,6 +125,9 @@ describe('process batch files', () => {
     }, {
       schemeId: 11,
       scheme: 'IMPS'
+    }, {
+      schemeId: 16,
+      scheme: 'COHTC'
     }])
     await db.sequence.bulkCreate([{
       schemeId: 1,
@@ -137,6 +146,9 @@ describe('process batch files', () => {
       next: 1
     }, {
       schemeId: 11,
+      next: 1
+    }, {
+      schemeId: 16,
       next: 1
     }])
     await db.status.bulkCreate([{
@@ -665,6 +677,54 @@ describe('process batch files', () => {
     expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_FC}`).length).toBe(1)
   })
 
+  test('sends all payment requests for COHT Capital', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_COHTCAPITAL}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_COHTCAPITAL)
+
+    await pollInbound()
+
+    expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
+  })
+
+  test('sends invoice numbers for COHT Capital for all payment requests', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_COHTCAPITAL}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_COHTCAPITAL)
+
+    await pollInbound()
+
+    // We don't assert an exact invoice string here (file contents may vary);
+    // just assert that an invoiceNumber exists for both messages.
+    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBeTruthy()
+    expect(mockSendBatchMessages.mock.calls[0][0][1].body.invoiceNumber).toBeTruthy()
+  })
+
+  test('archives file on success for COHT Capital', async () => {
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_COHTCAPITAL}`)
+    await blockBlobClient.uploadFile(TEST_FILEPATH_COHTCAPITAL)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.archiveFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.archiveFolder}/${TEST_FILE_COHTCAPITAL}`).length).toBe(1)
+  })
+
+  test('quarantines invalid batch header number of payment requests to actual number of payment requests for COHT Capital', async () => {
+    await db.sequence.update({ next: 2 }, { where: { schemeId: 16 } })
+
+    const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_COHTCAPITAL}`)
+    await blockBlobClient.uploadFile(TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILEPATH_COHTCAPITAL)
+
+    await pollInbound()
+
+    const fileList = []
+    for await (const item of container.listBlobsFlat({ prefix: storageConfig.quarantineFolder })) {
+      fileList.push(item.name)
+    }
+    expect(fileList.filter(x => x === `${storageConfig.quarantineFolder}/${TEST_INVALID_BATCH_HEADER_NUMBER_OF_PAYMENT_REQUESTS_TO_ACTUAL_NUMBER_OF_PAYMENT_REQUESTS_FILE_COHTCAPITAL}`).length).toBe(1)
+  })
   test('sends all payment requests for IMPS', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${storageConfig.inboundFolder}/${TEST_FILE_IMPS}`)
     await blockBlobClient.uploadFile(TEST_FILEPATH_IMPS)

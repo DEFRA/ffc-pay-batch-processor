@@ -12,9 +12,6 @@ jest.mock('ffc-pay-event-publisher', () => {
   }
 })
 
-jest.mock('../../../app/config/processing')
-const processingConfig = require('../../../app/config/processing')
-
 jest.mock('../../../app/config/message')
 const messageConfig = require('../../../app/config/message')
 
@@ -26,7 +23,6 @@ let filename
 
 describe('V2 events for batch quarantine', () => {
   beforeEach(async () => {
-    processingConfig.useV2Events = true
     messageConfig.eventsTopic = 'v2-events'
 
     filename = 'SITIELM0001_AP_1.dat'
@@ -34,18 +30,6 @@ describe('V2 events for batch quarantine', () => {
 
   afterEach(async () => {
     jest.clearAllMocks()
-  })
-
-  test('should send V2 event if V2 events enabled', async () => {
-    processingConfig.useV2Events = true
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent).toHaveBeenCalled()
-  })
-
-  test('should not send V2 event if V2 events disabled', async () => {
-    processingConfig.useV2Events = false
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent).not.toHaveBeenCalled()
   })
 
   test('should send event to V2 topic', async () => {

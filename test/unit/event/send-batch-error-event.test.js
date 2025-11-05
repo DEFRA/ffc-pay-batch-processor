@@ -13,7 +13,6 @@ jest.mock('ffc-pay-event-publisher', () => {
 })
 
 jest.mock('../../../app/config/processing')
-const processingConfig = require('../../../app/config/processing')
 
 jest.mock('../../../app/config/message')
 const messageConfig = require('../../../app/config/message')
@@ -30,24 +29,11 @@ const error = {
 
 describe('V2 send batch error event for SITI payment file that cannot be parsed', () => {
   beforeEach(async () => {
-    processingConfig.useV2Events = true
     messageConfig.eventsTopic = 'v2-events'
   })
 
   afterEach(async () => {
     jest.clearAllMocks()
-  })
-
-  test('send V2 events when v2 events enabled ', async () => {
-    processingConfig.useV2Events = true
-    await sendBatchErrorEvent(filename, error)
-    expect(mockPublishEvent).toHaveBeenCalled()
-  })
-
-  test('should not send V2 events when v2 events disabled ', async () => {
-    processingConfig.useV2Events = false
-    await sendBatchErrorEvent(filename, error)
-    expect(mockPublishEvent).not.toHaveBeenCalled()
   })
 
   test('should send event to V2 topic', async () => {

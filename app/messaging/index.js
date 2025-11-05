@@ -1,4 +1,4 @@
-const util = require('util')
+const util = require('node:util')
 const config = require('../config/message')
 const sendBatchMessages = require('./send-batch-messages')
 
