@@ -13,11 +13,10 @@ Given('a batch file is received', async () => {
 })
 
 When('the file is processed', async () => {
-  const pollInbound = require('../../../app/processing/poll-inbound')
-  await pollInbound()
 })
 
 Then('a Payment Request is generated', async () => {
+  await new Promise(resolve => setTimeout(resolve, 30000))
   const messages = await processor.consumeMessages('Receiving messages')
 
   const expectedFields = {
