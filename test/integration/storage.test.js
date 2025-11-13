@@ -17,8 +17,7 @@ describe('Blob storage tests', () => {
 
     for (const filename of mockFileList) {
       const blob = container.getBlockBlobClient(`${blobStorageConfig.inboundFolder}/${filename}`)
-      const buffer = Buffer.from(testFileContents)
-      await blob.upload(buffer, buffer.byteLength)
+      await blob.upload(Buffer.from(testFileContents), Buffer.byteLength(Buffer.from(testFileContents)))
     }
   })
 
@@ -27,24 +26,21 @@ describe('Blob storage tests', () => {
     expect(fileList).toEqual(expect.arrayContaining(mockFileList))
   })
 
-  test('Get file details from blob container', async () => {
-    const fileDetails = await blobStorage.getInboundFileDetails(mockFileList[0])
-    expect(fileDetails._response.status).toEqual(200)
+  test.each(mockFileList)('Get details for %s from blob container', async (filename) => {
+    const fileDetails = await blobStorage.getInboundFileDetails(filename)
+    expect(fileDetails._response.status).toBe(200)
   })
 
-  test('Download blob into buffer from blob container', async () => {
-    const buffer = await blobStorage.downloadPaymentFile(mockFileList[0])
-    const bufferContent = buffer.toString()
-
+  test.each(mockFileList)('Download %s from blob container', async (filename) => {
+    const buffer = await blobStorage.downloadPaymentFile(filename)
     expect(buffer).toBeInstanceOf(Buffer)
-    expect(bufferContent).toEqual(testFileContents)
+    expect(buffer.toString()).toBe(testFileContents)
   })
 
-  test('Copy blob from inbound to archive container', async () => {
-    const result = await blobStorage.archivePaymentFile(mockFileList[0], mockFileList[0])
+  test.each(mockFileList)('Archive %s from inbound to archive container', async (filename) => {
+    const result = await blobStorage.archivePaymentFile(filename, filename)
     const fileList = await blobStorage.getInboundFileList()
-
-    expect(result).toEqual(true)
-    expect(fileList.length).toEqual(mockFileList.length - 1)
+    expect(result).toBe(true)
+    expect(fileList.length).toBe(mockFileList.length - 1)
   })
 })

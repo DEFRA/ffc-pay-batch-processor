@@ -9,20 +9,26 @@ describe('Errors Plugin', () => {
     server = Hapi.server()
     await server.register(plugin)
 
-    server.route({
-      method: 'GET',
-      path: '/regular-error',
-      handler: () => {
-        throw new Error('Regular test error')
+    // Define error routes
+    const routes = [
+      {
+        path: '/regular-error',
+        error: new Error('Regular test error'),
+        statusCode: 500
+      },
+      {
+        path: '/boom-error',
+        error: Boom.badRequest('Hapi Boom test error'),
+        statusCode: 400
       }
-    })
+    ]
 
-    server.route({
-      method: 'GET',
-      path: '/boom-error',
-      handler: () => {
-        throw Boom.badRequest('Hapi Boom test error')
-      }
+    routes.forEach(({ path, error }) => {
+      server.route({
+        method: 'GET',
+        path,
+        handler: () => { throw error }
+      })
     })
   })
 
@@ -34,28 +40,10 @@ describe('Errors Plugin', () => {
     jest.clearAllMocks()
   })
 
-  test('should log errors when a regular error (non-Boom) occurs', async () => {
-    const requestLogSpy = jest.fn()
-    server.ext('onRequest', (request, h) => {
-      request.log = requestLogSpy
-      return h.continue
-    })
-
-    const response = await server.inject({
-      method: 'GET',
-      url: '/regular-error'
-    })
-
-    expect(response.statusCode).toBe(500)
-
-    expect(requestLogSpy).toHaveBeenCalledWith('error', expect.objectContaining({
-      statusCode: 500,
-      message: 'Regular test error',
-      payloadMessage: ''
-    }))
-  })
-
-  test('should log errors when a Boom error occurs (covers isBoom)', async () => {
+  test.each([
+    { path: '/regular-error', expectedStatus: 500, expectedMessage: 'Regular test error' },
+    { path: '/boom-error', expectedStatus: 400, expectedMessage: 'Hapi Boom test error' }
+  ])('logs errors correctly for $path', async ({ path, expectedStatus, expectedMessage }) => {
     const requestLogSpy = jest.fn()
 
     server.ext('onRequest', (request, h) => {
@@ -63,16 +51,12 @@ describe('Errors Plugin', () => {
       return h.continue
     })
 
-    const response = await server.inject({
-      method: 'GET',
-      url: '/boom-error'
-    })
+    const response = await server.inject({ method: 'GET', url: path })
 
-    expect(response.statusCode).toBe(400)
-
+    expect(response.statusCode).toBe(expectedStatus)
     expect(requestLogSpy).toHaveBeenCalledWith('error', expect.objectContaining({
-      statusCode: 400,
-      message: 'Hapi Boom test error',
+      statusCode: expectedStatus,
+      message: expectedMessage,
       payloadMessage: ''
     }))
   })
