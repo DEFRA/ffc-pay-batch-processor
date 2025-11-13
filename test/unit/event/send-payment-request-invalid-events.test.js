@@ -27,8 +27,8 @@ describe('V2 events for processed payment requests', () => {
   beforeEach(async () => {
     messageConfig.eventsTopic = 'v2-events'
 
-    paymentRequest = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../../mocks/payment-request').paymentRequests))
+    paymentRequest = structuredClone(require('../../mocks/payment-request').paymentRequest)
+    paymentRequests = structuredClone(require('../../mocks/payment-request').paymentRequests)
 
     error = 'Bad payment request'
     paymentRequests.forEach(paymentRequest => { paymentRequest.errorMessage = error })

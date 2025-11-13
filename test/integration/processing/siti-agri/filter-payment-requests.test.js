@@ -9,9 +9,9 @@ let paymentRequestCollection
 
 describe('Filter payment requests', () => {
   beforeEach(() => {
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
-    paymentRequests = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequests))
-    mappedPaymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').mappedPaymentRequest))
+    paymentRequest = structuredClone(require('../../../mocks/payment-request').paymentRequest)
+    paymentRequests = structuredClone(require('../../../mocks/payment-request').paymentRequests)
+    mappedPaymentRequest = structuredClone(require('../../../mocks/payment-request').mappedPaymentRequest)
     sourceSystem = paymentRequest.sourceSystem
     paymentRequestCollection = { successfulPaymentRequests: [], unsuccessfulPaymentRequests: [] }
   })
@@ -141,7 +141,7 @@ describe('Filter payment requests', () => {
 
   mixedCases.forEach(({ name, validFirst }) => {
     test(`returns 1 success + 1 fail when ${name}`, async () => {
-      const invalid = JSON.parse(JSON.stringify(paymentRequest))
+      const invalid = structuredClone(paymentRequest)
       delete invalid.paymentRequestNumber
       paymentRequests = validFirst ? [paymentRequest, invalid] : [invalid, paymentRequest]
 
@@ -164,7 +164,7 @@ describe('Filter payment requests', () => {
     {
       name: 'all three validations fail',
       mutate: () => {
-        const invalid = JSON.parse(JSON.stringify(paymentRequest))
+        const invalid = structuredClone(paymentRequest)
         invalid.value = 99
         delete invalid.frn
         delete invalid.invoiceLines[0].fundCode
@@ -175,7 +175,7 @@ describe('Filter payment requests', () => {
     {
       name: 'paymentRequestValid + validateLineTotals fail',
       mutate: () => {
-        const invalid = JSON.parse(JSON.stringify(paymentRequest))
+        const invalid = structuredClone(paymentRequest)
         invalid.value = 99
         delete invalid.frn
         paymentRequests = [invalid]
@@ -185,7 +185,7 @@ describe('Filter payment requests', () => {
     {
       name: 'paymentRequestValid + isInvoiceLineValid fail',
       mutate: () => {
-        const invalid = JSON.parse(JSON.stringify(paymentRequest))
+        const invalid = structuredClone(paymentRequest)
         delete invalid.frn
         delete invalid.invoiceLines[0].fundCode
         paymentRequests = [invalid]
@@ -195,7 +195,7 @@ describe('Filter payment requests', () => {
     {
       name: 'validateLineTotals + isInvoiceLineValid fail',
       mutate: () => {
-        const invalid = JSON.parse(JSON.stringify(paymentRequest))
+        const invalid = structuredClone(paymentRequest)
         invalid.value = 99
         delete invalid.invoiceLines[0].fundCode
         paymentRequests = [invalid]
@@ -237,7 +237,7 @@ describe('Filter payment requests', () => {
 
   invoiceLineTests.forEach(({ name, setup, expected }) => {
     test(name, async () => {
-      const invalid = JSON.parse(JSON.stringify(paymentRequest))
+      const invalid = structuredClone(paymentRequest)
       setup(invalid)
       paymentRequests = [invalid]
       const result = filterPaymentRequest(paymentRequests, sourceSystem)

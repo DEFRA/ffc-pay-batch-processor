@@ -1,14 +1,12 @@
 const mockCorrelationId = require('../../../mocks/correlation-id')
 const { filename1 } = require('../../../mocks/glos-filenames')
-
 const groupByInvoiceNumber = require('../../../../app/processing/glos/group-by-invoice-number')
 
 describe('group by invoice number', () => {
-  const glosPaymentRequest = {
+  const basePaymentRequest = {
     correlationId: mockCorrelationId,
     batch: filename1,
     batchExportDate: '31/05/2023 22:01:38',
-    invoiceNumber: '33315 16',
     paymentRequestNumber: 1,
     frn: '1102294241',
     sbi: '106609512',
@@ -18,38 +16,23 @@ describe('group by invoice number', () => {
     value: 81
   }
 
-  test('should group by invoice number with 2 invoice lines', () => {
-    const paymentRequests = [{
-      ...glosPaymentRequest,
-      invoiceNumber: '33315 16'
-    }, {
-      ...glosPaymentRequest,
-      invoiceNumber: '33315 16'
-    }]
+  test.each([
+    {
+      desc: '2 invoice lines with same invoice number',
+      input: ['33315 16', '33315 16'],
+      expected: { '33315 16': 2 }
+    },
+    {
+      desc: 'multiple unique invoice numbers',
+      input: ['33315 16', '33315 16', '23747 13', '33315 16'],
+      expected: { '33315 16': 3, '23747 13': 1 }
+    }
+  ])('$desc', ({ input, expected }) => {
+    const paymentRequests = input.map(invNum => ({ ...basePaymentRequest, invoiceNumber: invNum }))
+    const grouped = groupByInvoiceNumber(paymentRequests)
 
-    const groupedPayments = groupByInvoiceNumber(paymentRequests)
-
-    expect(groupedPayments.find(x => x.invoiceNumber === '33315 16').invoiceLines.length).toBe(2)
-  })
-
-  test('should group by invoice number with multiple unique invoice numbers', () => {
-    const paymentRequests = [{
-      ...glosPaymentRequest,
-      invoiceNumber: '33315 16'
-    }, {
-      ...glosPaymentRequest,
-      invoiceNumber: '33315 16'
-    }, {
-      ...glosPaymentRequest,
-      invoiceNumber: '23747 13'
-    }, {
-      ...glosPaymentRequest,
-      invoiceNumber: '33315 16'
-    }]
-
-    const groupedPayments = groupByInvoiceNumber(paymentRequests)
-
-    expect(groupedPayments.find(x => x.invoiceNumber === '33315 16').invoiceLines.length).toBe(3)
-    expect(groupedPayments.find(x => x.invoiceNumber === '23747 13').invoiceLines.length).toBe(1)
+    Object.entries(expected).forEach(([invNum, count]) => {
+      expect(grouped.find(x => x.invoiceNumber === invNum).invoiceLines.length).toBe(count)
+    })
   })
 })

@@ -1,6 +1,5 @@
 jest.mock('../../../../app/currency-convert')
 const { convertToPence, getTotalValueInPence } = require('../../../../app/currency-convert')
-
 const validateBatch = require('../../../../app/processing/imps/validate-batch')
 
 let batchHeader
@@ -8,103 +7,38 @@ let paymentRequest
 
 describe('Validate batch', () => {
   beforeEach(() => {
-    batchHeader = JSON.parse(JSON.stringify(require('../../../mocks/imps-batch-header')))
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../mocks/payment-request').paymentRequest))
+    batchHeader = structuredClone(require('../../../mocks/imps-batch-header'))
+    paymentRequest = structuredClone(require('../../../mocks/payment-request').paymentRequest)
 
     convertToPence.mockImplementation(() => batchHeader.batchValue)
     getTotalValueInPence.mockImplementation(() => paymentRequest.value)
   })
 
-  test('returns true if batch valid', async () => {
+  test('returns true if batch is valid', async () => {
     const result = await validateBatch([batchHeader], [paymentRequest])
     expect(result).toBeTruthy()
   })
 
-  test('returns false if no batch headers', async () => {
-    const result = await validateBatch([], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if more than one batch header', async () => {
-    const result = await validateBatch([batchHeader, batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if batch value missing', async () => {
-    batchHeader.batchValue = undefined
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if expected number of payment requests is less than actual', async () => {
-    batchHeader.numberOfPaymentRequests = 0
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if expected number of payment requests is more than actual', async () => {
-    batchHeader.numberOfPaymentRequests = 2
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if unknown ledger', async () => {
-    batchHeader.ledger = 'unknown'
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if ledger missing', async () => {
-    batchHeader.ledger = undefined
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if export date DD-MM-YYYY', async () => {
-    batchHeader.exportDate = '28-06-2022'
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if export date yyyy-mm-dd', async () => {
-    batchHeader.exportDate = '2022-06-28'
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if export date YYYY/MM/DD', async () => {
-    batchHeader.exportDate = '2022/06/28'
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if export date missing', async () => {
-    batchHeader.exportDate = undefined
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if sequence is undefined', async () => {
-    batchHeader.sequence = undefined
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if sequence is a negative number', async () => {
-    batchHeader.sequence = -3
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if sequence is a float', async () => {
-    batchHeader.sequence = 3.2
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
-  })
-
-  test('returns false if sourceSystem is undefined', async () => {
-    batchHeader.sourceSystem = undefined
-    const result = await validateBatch([batchHeader], [paymentRequest])
-    expect(result).toBeFalsy()
+  describe('returns false for invalid batches', () => {
+    test.each([
+      ['no batch headers', [], [paymentRequest]],
+      ['more than one batch header', [batchHeader, batchHeader], [paymentRequest]],
+      ['batch value missing', [{ ...batchHeader, batchValue: undefined }], [paymentRequest]],
+      ['expected number of payment requests less than actual', [{ ...batchHeader, numberOfPaymentRequests: 0 }], [paymentRequest]],
+      ['expected number of payment requests more than actual', [{ ...batchHeader, numberOfPaymentRequests: 2 }], [paymentRequest]],
+      ['unknown ledger', [{ ...batchHeader, ledger: 'unknown' }], [paymentRequest]],
+      ['ledger missing', [{ ...batchHeader, ledger: undefined }], [paymentRequest]],
+      ['export date DD-MM-YYYY', [{ ...batchHeader, exportDate: '28-06-2022' }], [paymentRequest]],
+      ['export date yyyy-mm-dd', [{ ...batchHeader, exportDate: '2022-06-28' }], [paymentRequest]],
+      ['export date YYYY/MM/DD', [{ ...batchHeader, exportDate: '2022/06/28' }], [paymentRequest]],
+      ['export date missing', [{ ...batchHeader, exportDate: undefined }], [paymentRequest]],
+      ['sequence undefined', [{ ...batchHeader, sequence: undefined }], [paymentRequest]],
+      ['sequence negative', [{ ...batchHeader, sequence: -3 }], [paymentRequest]],
+      ['sequence is float', [{ ...batchHeader, sequence: 3.2 }], [paymentRequest]],
+      ['sourceSystem undefined', [{ ...batchHeader, sourceSystem: undefined }], [paymentRequest]]
+    ])('%s', async (_, headers, requests) => {
+      const result = await validateBatch(headers, requests)
+      expect(result).toBeFalsy()
+    })
   })
 })

@@ -1,202 +1,61 @@
 const removeDefunctParticipationFund = require('../../../../../app/processing/siti-agri/handle-known-defects/remove-defunct-participation-fund')
 const { sfiPilot } = require('../../../../../app/constants/schemes')
+
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 
 describe('Remove defunct participation fund', () => {
-  test('removes defunct participation fund if no other gross values', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 0
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    updatedPaymentRequest.invoiceLines.forEach(invoiceLine => {
-      expect(invoiceLine.value).toBe(0)
-    })
+  const createPaymentRequest = (lines, sourceSystem = sfiPilot.sourceSystem, value = lines.reduce((sum, l) => sum + l.value, 0)) => ({
+    sourceSystem,
+    value,
+    invoiceLines: structuredClone(lines)
   })
 
-  test('removes defunct participation fund if no other invoice lines', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }]
+  const grossLine = (schemeCode, value) => ({ description: GROSS_LINE_DESCRIPTION, schemeCode, value })
+  const reductionLine = (schemeCode, value) => ({ description: 'P24 - Over declaration reduction', schemeCode, value })
+
+  test.each([
+    ['removes defunct fund if no other gross values', [grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000), grossLine('80001', 0)], 0, true],
+    ['removes defunct fund if no other invoice lines', [grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000)], 0, true],
+    ['does not remove fund if other gross values', [grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000), grossLine('80001', 1000)], 6000, false],
+    ['removes fund if other net values all zero', [grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000), grossLine('80001', 1000), reductionLine('80001', -1000)], 0, true],
+    ['removes fund if multiple groups net values all zero', [
+      grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000),
+      grossLine('80001', 1000),
+      reductionLine('80001', -1000),
+      grossLine('80002', 2000),
+      reductionLine('80002', -2000)
+    ], 0, true],
+    ['removes fund if multiple reductions', [
+      grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000),
+      grossLine('80001', 1000),
+      reductionLine('80001', -500),
+      grossLine('80001', -500)
+    ], 0, true],
+    ['removes fund if decimal values', [
+      grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000),
+      grossLine('80001', 0.3),
+      reductionLine('80001', -0.1),
+      reductionLine('80001', -0.2)
+    ], 0, true]
+  ])('%s', (_, invoiceLines, expectedValue, shouldRemoveFund) => {
+    const paymentRequest = createPaymentRequest(invoiceLines)
+    const updated = removeDefunctParticipationFund(paymentRequest)
+    expect(updated.value).toBe(expectedValue)
+
+    if (shouldRemoveFund) {
+      expect(updated.invoiceLines[0].value).toBe(0)
+    } else {
+      expect(updated.invoiceLines[0].value).toBe(invoiceLines[0].value)
     }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    updatedPaymentRequest.invoiceLines.forEach(invoiceLine => {
-      expect(invoiceLine.value).toBe(0)
-    })
   })
 
-  test('does not remove participation fund if other gross values', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 6000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 1000
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(6000)
-  })
-
-  test('removes defunct participation fund if other net values all zero', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 1000
-      }, {
-        description: 'P24 - Over declaration reduction',
-        schemeCode: '80001',
-        value: -1000
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[1].value).toBe(1000)
-    expect(updatedPaymentRequest.invoiceLines[2].value).toBe(-1000)
-  })
-
-  test('removes defunct participation fund if multiple groups net values all zero', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 1000
-      }, {
-        description: 'P24 - Over declaration reduction',
-        schemeCode: '80001',
-        value: -1000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80002',
-        value: 2000
-      }, {
-        description: 'P24 - Over declaration reduction',
-        schemeCode: '80002',
-        value: -2000
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[1].value).toBe(1000)
-    expect(updatedPaymentRequest.invoiceLines[2].value).toBe(-1000)
-    expect(updatedPaymentRequest.invoiceLines[3].value).toBe(2000)
-    expect(updatedPaymentRequest.invoiceLines[4].value).toBe(-2000)
-  })
-
-  test('removes defunct participation fund if multiple reductions', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 1000
-      }, {
-        description: 'P24 - Over declaration reduction',
-        schemeCode: '80001',
-        value: -500
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: -500
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[1].value).toBe(1000)
-    expect(updatedPaymentRequest.invoiceLines[2].value).toBe(-500)
-    expect(updatedPaymentRequest.invoiceLines[3].value).toBe(-500)
-  })
-
-  test('removes defunct participation fund if decimal values', () => {
-    const paymentRequest = {
-      sourceSystem: sfiPilot.sourceSystem,
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 0.30
-      }, {
-        description: 'P24 - Over declaration reduction',
-        schemeCode: '80001',
-        value: -0.10
-      }, {
-        description: 'P24 - Over declaration reduction',
-        schemeCode: '80001',
-        value: -0.20
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[0].value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines[1].value).toBe(0.30)
-    expect(updatedPaymentRequest.invoiceLines[2].value).toBe(-0.10)
-    expect(updatedPaymentRequest.invoiceLines[3].value).toBe(-0.20)
-  })
-
-  test('does not remove defunct participation fund if not SFI Pilot', () => {
-    const paymentRequest = {
-      sourceSystem: 'Something else',
-      value: 5000,
-      invoiceLines: [{
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: PARTICIPATION_PAYMENT_SCHEME_CODE,
-        value: 5000
-      }, {
-        description: GROSS_LINE_DESCRIPTION,
-        schemeCode: '80001',
-        value: 0
-      }]
-    }
-    const updatedPaymentRequest = removeDefunctParticipationFund(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(paymentRequest.value)
-    expect(updatedPaymentRequest.invoiceLines[0].value).toBe(5000)
-    expect(updatedPaymentRequest.invoiceLines[1].value).toBe(0)
+  test('does not remove fund if not SFI Pilot', () => {
+    const invoiceLines = [grossLine(PARTICIPATION_PAYMENT_SCHEME_CODE, 5000), grossLine('80001', 0)]
+    const paymentRequest = createPaymentRequest(invoiceLines, 'Something else')
+    const updated = removeDefunctParticipationFund(paymentRequest)
+    expect(updated.value).toBe(paymentRequest.value)
+    expect(updated.invoiceLines[0].value).toBe(5000)
+    expect(updated.invoiceLines[1].value).toBe(0)
   })
 })

@@ -15,7 +15,7 @@ const { sfiPilot } = require('../../../app/constants/schemes')
 
 let filename
 
-describe('Process payment file', () => {
+describe('processPaymentFile', () => {
   beforeEach(() => {
     filename = 'SITIELM0001_AP_20220317104956617.dat'
   })
@@ -37,25 +37,25 @@ describe('Process payment file', () => {
     expect(downloadAndParse).toHaveBeenCalled()
   })
 
-  test('should ignore file if next sequence is higher than expected', async () => {
-    filename = 'SITIELM0002_AP_20220317104956617.dat'
-    batch.nextSequenceId.mockResolvedValue(1)
-    await processPaymentFile(filename, sfiPilot)
-    expect(downloadAndParse).not.toHaveBeenCalled()
-    expect(quarantineFile).not.toHaveBeenCalled()
-  })
+  test.each([
+    { desc: 'next sequence higher than expected', filename: 'SITIELM0002_AP_20220317104956617.dat', nextSeq: 1 },
+    { desc: 'next sequence lower than expected', filename: 'SITIELM0001_AP_20220317104956617.dat', nextSeq: 2 },
+    { desc: 'next sequence undefined', filename: 'SITIELM0001_AP_20220317104956617.dat', nextSeq: undefined }
+  ])(
+    'should handle file correctly when $desc',
+    async ({ filename: file, nextSeq }) => {
+      filename = file
+      batch.nextSequenceId.mockResolvedValue(nextSeq)
 
-  test('should quarantine file if sequence is lower than expected', async () => {
-    batch.nextSequenceId.mockResolvedValue(2)
-    await processPaymentFile(filename, sfiPilot)
-    expect(quarantineFile).toHaveBeenCalled()
-    expect(downloadAndParse).not.toHaveBeenCalled()
-  })
+      await processPaymentFile(filename, sfiPilot)
 
-  test('should quarantine file if next sequence is undefined', async () => {
-    batch.nextSequenceId.mockResolvedValue(undefined)
-    await processPaymentFile(filename, sfiPilot)
-    expect(quarantineFile).toHaveBeenCalled()
-    expect(downloadAndParse).not.toHaveBeenCalled()
-  })
+      if (nextSeq === 1) {
+        expect(downloadAndParse).not.toHaveBeenCalled()
+        expect(quarantineFile).not.toHaveBeenCalled()
+      } else {
+        expect(quarantineFile).toHaveBeenCalled()
+        expect(downloadAndParse).not.toHaveBeenCalled()
+      }
+    }
+  )
 })

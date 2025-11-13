@@ -23,23 +23,20 @@ describe('start processing', () => {
     expect(setTimeout).toHaveBeenCalledTimes(1)
   })
 
-  test('should not throw when pollInbound throws', async () => {
+  test('should not throw when pollInbound rejects', async () => {
     pollInbound.mockRejectedValue(new Error('Processing issue'))
 
-    const wrapper = async () => {
-      await processing.start()
-    }
-
-    expect(wrapper).not.toThrow()
+    await expect(processing.start()).resolves.not.toThrow()
   })
 
-  test('should call setTimeout with processing.start and processingConfig.settlementProcessingInterval', async () => {
+  test('should call setTimeout with processing.start and correct interval', async () => {
     await processing.start()
     expect(setTimeout).toHaveBeenCalledWith(processing.start, config.pollingInterval)
   })
 
-  test('should call setTimeout when pollInterval throws', async () => {
+  test('should call setTimeout even if pollInbound throws', async () => {
     pollInbound.mockRejectedValue(new Error('Processing issue'))
+
     await processing.start()
     expect(setTimeout).toHaveBeenCalled()
   })
