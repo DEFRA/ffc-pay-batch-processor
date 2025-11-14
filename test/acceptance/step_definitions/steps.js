@@ -16,8 +16,16 @@ When('the file is processed', async () => {
 })
 
 Then('a Payment Request is generated', async () => {
-  await new Promise(resolve => setTimeout(resolve, 30000))
-  const messages = await processor.consumeMessages('Receiving messages')
+  // Wait up to 45 seconds, checking for messages every 5 seconds
+  const maxWaitTime = 45000 // 45 seconds
+  const checkInterval = 5000 // 5 seconds
+  const startTime = Date.now()
+  let messages = []
+
+  while (Date.now() - startTime < maxWaitTime && messages.length === 0) {
+    await new Promise(resolve => setTimeout(resolve, checkInterval))
+    messages = await processor.consumeMessages('Receiving messages')
+  }
 
   const expectedFields = {
     paymentRequestNumber: __.equalTo(1),
