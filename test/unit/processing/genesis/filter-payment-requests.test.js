@@ -151,19 +151,16 @@ describe('filterPaymentRequests', () => {
     // Reset mocks for each scenario
       jest.clearAllMocks()
 
-      // Mock functions as needed per scenario
       if (message.includes('Example error') && message.includes('content')) {
         paymentRequestSchema.validate.mockReturnValue({ error: { message: 'Example error' } })
       } else if (message.includes('Example error')) {
         isInvoiceLineValid.mockReturnValue({ result: false, errorMessage: 'Example error' })
       } else {
-      // mismatch scenario
         convertToPence.mockReturnValue(getTotalValueInPence() + 1)
       }
 
       const unsuccessful = {
         ...unsuccessfulMappedPaymentRequest,
-        // Match exactly what the function generates, including trailing space
         errorMessage: `Payment request for FRN: ${unsuccessfulMappedPaymentRequest.frn} - ${unsuccessfulMappedPaymentRequest.invoiceNumber} from batch ${unsuccessfulMappedPaymentRequest.batch} is invalid, ${message} `
       }
 
@@ -171,7 +168,6 @@ describe('filterPaymentRequests', () => {
 
       expect(result.successfulPaymentRequests).not.toContainEqual(mappedPaymentRequest)
 
-      // Trim both sides to avoid whitespace issues
       expect(result.unsuccessfulPaymentRequests.map(r => ({ ...r, errorMessage: r.errorMessage.trim() })))
         .toContainEqual({ ...unsuccessful, errorMessage: unsuccessful.errorMessage.trim() })
     })

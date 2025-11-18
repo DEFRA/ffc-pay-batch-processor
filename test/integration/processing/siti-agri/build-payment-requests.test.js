@@ -53,7 +53,7 @@ describe('Build mappedPaymentRequests', () => {
     { prop: 'contractNumber', value: undefined },
     { prop: 'value', value: undefined },
     { prop: 'frn', value: 1 },
-    { prop: 'currency', value: 'USD' },
+    { prop: 'currency', value: 'GBP' },
     { prop: 'schedule', value: '4' }
   ]
 

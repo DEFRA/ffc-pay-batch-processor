@@ -64,9 +64,9 @@ describe('Filter payment requests', () => {
     },
     {
       name: 'returns unsuccessfulPaymentRequests when invalid currency',
-      mutate: () => { paymentRequest.currency = 'USD'; paymentRequests = [paymentRequest] },
+      mutate: () => { paymentRequest.currency = 'GBP'; paymentRequests = [paymentRequest] },
       expectedKey: 'unsuccessfulPaymentRequests',
-      override: () => ({ ...mappedPaymentRequest, currency: 'USD' })
+      override: () => ({ ...mappedPaymentRequest, currency: 'GBP' })
     },
     {
       name: 'returns unsuccessfulPaymentRequests when invalid schedule',
