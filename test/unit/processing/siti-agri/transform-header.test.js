@@ -130,7 +130,7 @@ describe('Transform header', () => {
     if (typeof deliveryBodyIndex !== 'undefined') {
       expect(result.deliveryBody).toEqual(headerData[deliveryBodyIndex])
     }
-    
+
     expect(Array.isArray(result.invoiceLines)).toBeTruthy()
   })
 

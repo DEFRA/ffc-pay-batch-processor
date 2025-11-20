@@ -58,7 +58,7 @@ describe('Transform invoice lines', () => {
   test.each(testCases)('transforms $scheme.schemeId invoice line', ({ lineData, scheme, expected }) => {
     const result = transformInvoiceLine(lineData, scheme.schemeId)
     expect(result).toEqual(expected)
-    
+
     if (scheme === cohtCapital) {
       expect(result.dueDate).toBeUndefined() // special COHT rule
     }

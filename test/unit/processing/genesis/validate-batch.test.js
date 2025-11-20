@@ -57,7 +57,7 @@ describe('validateBatch', () => {
     if (batchValue) {
       batchHeader.batchValue = batchValue()
     }
-    
+
     if (paymentValue) {
       paymentRequest.value = paymentValue()
     }

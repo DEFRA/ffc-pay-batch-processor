@@ -205,8 +205,7 @@ describe('getPaymentRequestsFromFile', () => {
   ])('%s', async (_, bufferOverride, ErrorClass, errorMessage) => {
     if (bufferOverride) {
       fileBuffer = Buffer.from(bufferOverride)
-    }
-    else {
+    } else {
       validateBatch.mockReturnValue(false)
     }
 
