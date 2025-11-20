@@ -2,371 +2,167 @@ const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
 const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
 const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
+const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
 
 jest.mock('uuid')
 const { v4: uuidv4 } = require('uuid')
-const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
 
 describe('Transform header', () => {
   const correlationId = require('../../../mocks/correlation-id')
   uuidv4.mockReturnValue(correlationId)
 
-  test('transforms SFI header', async () => {
-    const filename = 'SITISFI0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
-    const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: sfi.schemeId,
-      batch: filename,
-      invoiceNumber: 'SFI0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'S000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      schedule: M12,
-      invoiceLines: []
+  const testCases = [
+    {
+      filename: 'SITISFI0001_AP.dat',
+      headerData: ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12'],
+      scheme: sfi,
+      expectedSchedule: M12,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'SITIELM0001_AP.dat',
+      headerData: ['H', 'SFIP0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12'],
+      scheme: sfiPilot,
+      expectedSchedule: M12,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'SITILSES0001_AP.dat',
+      headerData: ['H', 'LSES0000001', '001', 'L000001', '1000000001', '1', '100', 'RP00', 'GBP'],
+      scheme: lumpSums,
+      frnIndex: 4,
+      valueIndex: 6,
+      prnIndex: 2,
+      deliveryBodyIndex: 7
+    },
+    {
+      filename: 'SITI_0001_AP.dat',
+      headerData: ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP'],
+      scheme: bps,
+      frnIndex: 4,
+      valueIndex: 6,
+      prnIndex: 2,
+      deliveryBodyIndex: 7
+    },
+    {
+      filename: 'SITICS0001_AP.dat',
+      headerData: ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP'],
+      scheme: cs,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'FDMR_0001_AP.dat',
+      headerData: ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP'],
+      scheme: fdmr,
+      frnIndex: 4,
+      valueIndex: 6,
+      prnIndex: 2,
+      deliveryBodyIndex: 7
+    },
+    {
+      filename: 'SITISFIA0001_AP.dat',
+      headerData: ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12'],
+      scheme: sfi23,
+      expectedSchedule: M12,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'SITIDP0001_AP.dat',
+      headerData: ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1'],
+      scheme: delinked,
+      expectedSchedule: Y1,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'ESFIO0001_AP.dat',
+      headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4'],
+      scheme: combinedOffer,
+      expectedSchedule: Q4,
+      expectedSchemeId: sfiExpanded.schemeId,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'ESFIO0001_AP.dat',
+      headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'COHTR', 'Q4'],
+      scheme: combinedOffer,
+      expectedSchedule: Q4,
+      expectedSchemeId: cohtRevenue.schemeId,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    }
+  ]
+
+  test.each(testCases)('transforms $scheme.schemeId header', ({ headerData, scheme, filename, expectedSchedule, expectedSchemeId, frnIndex, valueIndex, prnIndex, deliveryBodyIndex }) => {
+    const result = transformHeader(headerData, scheme.schemeId, filename)
+    expect(result.correlationId).toEqual(correlationId)
+    expect(result.schemeId).toEqual(expectedSchemeId || scheme.schemeId)
+    expect(result.batch).toEqual(filename)
+    expect(result.invoiceNumber).toEqual(headerData[1])
+    expect(result.paymentRequestNumber).toEqual(parseInt(headerData[prnIndex], 10))
+    expect(result.contractNumber).toEqual(headerData[3])
+    expect(result.frn).toEqual(headerData[frnIndex])
+    expect(result.currency).toEqual(GBP)
+    expect(result.value).toEqual(parseInt(headerData[valueIndex], 10))
+    if (expectedSchedule) expect(result.schedule).toEqual(expectedSchedule)
+    if (typeof deliveryBodyIndex !== 'undefined') expect(result.deliveryBody).toEqual(headerData[deliveryBodyIndex])
+    expect(Array.isArray(result.invoiceLines)).toBeTruthy()
+  })
+
+  const invalidNumberCases = [
+    { fieldIndex: 'prnIndex', fieldName: 'paymentRequestNumber' },
+    { fieldIndex: 'valueIndex', fieldName: 'value' }
+  ]
+
+  test.each(testCases)('handles invalid numbers in $scheme.schemeId header', ({ headerData, scheme, filename, prnIndex, valueIndex }) => {
+    invalidNumberCases.forEach(({ fieldIndex, fieldName }) => {
+      const invalidHeader = [...headerData]
+      invalidHeader[fieldIndex === 'prnIndex' ? prnIndex : valueIndex] = 'abc'
+      const result = transformHeader(invalidHeader, scheme.schemeId, filename)
+      expect(result[fieldName]).toBeUndefined()
     })
   })
 
-  test('for SFI return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'SITISFI0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFI0000001', 'abc', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
-    const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for SFI return undefined if value is not a valid number', async () => {
-    const filename = 'SITISFI0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFI', 'M12']
-    const result = transformHeader(headerData, sfi.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('transforms SFI Pilot header', async () => {
-    const filename = 'SITIELM0001_AP_20230315083940939.dat'
-    const headerData = ['H', 'SFIP0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12']
-    const result = transformHeader(headerData, sfiPilot.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: sfiPilot.schemeId,
-      batch: filename,
-      invoiceNumber: 'SFIP0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'S000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      schedule: M12,
-      invoiceLines: []
-    })
-  })
-
-  test('transforms Lump Sums header', async () => {
-    const filename = 'SITILSES0001_AP_20230315084137333.dat'
-    const headerData = ['H', 'LSES0000001', '001', 'L000001', '1000000001', '1', '100', 'RP00', 'GBP']
-    const result = transformHeader(headerData, lumpSums.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: lumpSums.schemeId,
-      batch: filename,
-      invoiceNumber: 'LSES0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'L000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      invoiceLines: []
-    })
-  })
-
-  test('transforms BPS header', async () => {
-    const filename = 'SITI_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
-    const result = transformHeader(headerData, bps.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: bps.schemeId,
-      batch: filename,
-      invoiceNumber: 'SITI0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'C0000001',
-      frn: '1000000001',
-      value: 100,
-      deliveryBody: 'RP00',
-      currency: GBP,
-      invoiceLines: []
-    })
-  })
-
-  test('for BPS return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'SITI_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'SITI0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
-    const result = transformHeader(headerData, bps.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for BPS return undefined if value is not a valid number', async () => {
-    const filename = 'SITI_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
-    const result = transformHeader(headerData, bps.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('transforms CS header', async () => {
-    const filename = 'SITICS0001_AP_20230315084313836.dat'
-    const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP']
-    const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: cs.schemeId,
-      batch: filename,
-      invoiceNumber: 'CS000000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'A0000001',
-      paymentType: 1,
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'NE00',
-      invoiceLines: []
-    })
-  })
-
-  test('for CS return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'SITICS0001_AP_20230315084313836.dat'
-    const headerData = ['H', 'CS000000001', 'abc', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP']
-    const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for CS return undefined if value is not a valid number', async () => {
-    const filename = 'SITICS0001_AP_20230315084313836.dat'
-    const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', 'abc', 'NE00', 'GBP']
-    const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('for CS return Payment Type as an int', async () => {
-    const filename = 'SITICS0001_AP_20230315084313836.dat'
-    const headerData = ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP']
-    const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.paymentType).toBe(1)
-  })
-
-  test('for CS return Payment Type as undefined if not a valid number', async () => {
-    const filename = 'SITICS0001_AP_20230315084313836.dat'
-    const headerData = ['H', 'CS000000001', '001', 'A0000001', 'payment-type', '1000000001', 'GBP', '100', 'NE00', 'GBP']
-    const result = transformHeader(headerData, cs.schemeId, filename)
-    expect(result.paymentType).toBeUndefined()
-  })
-
-  test('transforms FDMR header', async () => {
-    const filename = 'FDMR_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
-    const result = transformHeader(headerData, fdmr.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: fdmr.schemeId,
-      batch: filename,
-      invoiceNumber: 'FDMR0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'C0000001',
-      frn: '1000000001',
-      value: 100,
-      deliveryBody: 'RP00',
-      currency: GBP,
-      invoiceLines: []
-    })
-  })
-
-  test('for FDMR return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'FDMR_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'FDMR0000001', 'abc', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP']
-    const result = transformHeader(headerData, fdmr.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for FDMR return undefined if value is not a valid number', async () => {
-    const filename = 'FDMR_0001_AP_20230315081841316.dat'
-    const headerData = ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', 'abc', 'RP00', 'GBP']
-    const result = transformHeader(headerData, fdmr.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('transforms SFI23 header', async () => {
-    const filename = 'SITISFIA0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12']
-    const result = transformHeader(headerData, sfi23.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: sfi23.schemeId,
-      batch: filename,
-      invoiceNumber: 'SFIA0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'Z000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      schedule: M12,
-      invoiceLines: []
-    })
-  })
-
-  test('for SFI23 return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'SITISFIA0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFIA0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12']
-    const result = transformHeader(headerData, sfi23.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for SFI23 return undefined if value is not a valid number', async () => {
-    const filename = 'SITISFIA0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'SFIA', 'M12']
-    const result = transformHeader(headerData, sfi23.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('transforms Delinked header', async () => {
-    const filename = 'SITIDP0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1']
-    const result = transformHeader(headerData, delinked.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: delinked.schemeId,
-      batch: filename,
-      invoiceNumber: 'DP0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'Z000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      schedule: Y1,
-      invoiceLines: []
-    })
-  })
-
-  test('for Delinked return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'SITIDP0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'DP0000001', 'abc', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1']
-    const result = transformHeader(headerData, delinked.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for Delinked return undefined if value is not a valid number', async () => {
-    const filename = 'SITIDP0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'DP', 'Y1']
-    const result = transformHeader(headerData, delinked.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('transforms SFI Expanded header', async () => {
-    const filename = 'ESFIO0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4']
-    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: sfiExpanded.schemeId,
-      batch: filename,
-      invoiceNumber: 'ESFIO0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'E000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      schedule: Q4,
-      invoiceLines: []
-    })
-  })
-
-  test('for SFI expanded, return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'ESFIO0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'ESFIO0000001', 'abc', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4']
-    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for SFI Expanded return undefined if value is not a valid number', async () => {
-    const filename = 'ESFIO0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'ESFIO', 'Q4']
-    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('transforms CSHT Revenue header', async () => {
-    const filename = 'ESFIO0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'COHTR', 'Q4']
-    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
-    expect(result).toEqual({
-      correlationId,
-      schemeId: cohtRevenue.schemeId,
-      batch: filename,
-      invoiceNumber: 'ESFIO0000001',
-      paymentRequestNumber: 1,
-      contractNumber: 'E000001',
-      frn: '1000000001',
-      currency: GBP,
-      value: 100,
-      deliveryBody: 'RP00',
-      schedule: Q4,
-      invoiceLines: []
-    })
-  })
-
-  test('for CS Higher Tier, return undefined if paymentRequestNumber is not a valid number', async () => {
-    const filename = 'ESFIO0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'ESFIO0000001', 'abc', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'COHTR', 'Q4']
-    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
-    expect(result.paymentRequestNumber).toBeUndefined()
-  })
-
-  test('for CS Higher Tier return undefined if value is not a valid number', async () => {
-    const filename = 'ESFIO0001_AP_20230315083522081.dat'
-    const headerData = ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', 'abc', 'RP00', 'GBP', 'COHTR', 'Q4']
-    const result = transformHeader(headerData, combinedOffer.schemeId, filename)
-    expect(result.value).toBeUndefined()
-  })
-
-  test('returns expected shape for an empty line (lumpSums) — schemeId and correlationId present; numeric fields are undefined, others undefined', async () => {
-    const headerData = []
-    const result = transformHeader(headerData, lumpSums.schemeId)
-
+  test('returns expected shape for empty line', () => {
+    const result = transformHeader([], lumpSums.schemeId)
     expect(result.schemeId).toEqual(lumpSums.schemeId)
     expect(result.correlationId).toEqual(correlationId)
+    expect(result.paymentRequestNumber).toBeUndefined()
+    expect(result.value).toBeUndefined()
     expect(result.batch).toBeUndefined()
     expect(result.invoiceNumber).toBeUndefined()
     expect(result.contractNumber).toBeUndefined()
     expect(result.frn).toBeUndefined()
     expect(result.currency).toBeUndefined()
     expect(result.deliveryBody).toBeUndefined()
-
-    expect(result.paymentRequestNumber).toBeUndefined()
-    expect(result.value).toBeUndefined()
-
     expect(Array.isArray(result.invoiceLines)).toBeTruthy()
     expect(result.invoiceLines).toHaveLength(0)
   })
 
-  test('returns schemeId correctly even if line empty', async () => {
-    const headerData = []
-    const result = transformHeader(headerData, lumpSums.schemeId)
-    expect(result.schemeId === lumpSums.schemeId).toBeTruthy()
+  test('throws error if no scheme', () => {
+    expect(() => transformHeader([])).toThrowError('Unknown scheme: undefined')
   })
 
-  test('throws error if no scheme', async () => {
-    const headerData = []
-    expect(() => transformHeader(headerData)).toThrowError('Unknown scheme: undefined')
-  })
-
-  test('throws error if unknown scheme', async () => {
-    const headerData = []
-    expect(() => transformHeader(headerData, 99)).toThrowError('Unknown scheme: 99')
+  test('throws error if unknown scheme', () => {
+    expect(() => transformHeader([], 99)).toThrowError('Unknown scheme: 99')
   })
 })

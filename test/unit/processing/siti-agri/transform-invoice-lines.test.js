@@ -2,236 +2,81 @@ const transformInvoiceLine = require('../../../../app/processing/siti-agri/trans
 const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer, cohtCapital } = require('../../../../app/constants/schemes')
 
 describe('Transform invoice lines', () => {
-  test('transforms SFI invoice line', async () => {
-    const lineData = ['L', 'SFI0000001', '100', '2022', '80001', 'DRD10', 'SIP00000000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, sfi.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'SFI0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DRD10',
-      agreementNumber: 'SIP00000000001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01',
-      accountCode: 'SOS273'
+  const testCases = [
+    {
+      scheme: sfi,
+      lineData: ['L', 'SFI0000001', '100', '2022', '80001', 'DRD10', 'SIP00000000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273'],
+      expected: { invoiceNumber: 'SFI0000001', value: 100, marketingYear: 2022, schemeCode: '80001', fundCode: 'DRD10', agreementNumber: 'SIP00000000001', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2022-12-01', accountCode: 'SOS273' }
+    },
+    {
+      scheme: sfiPilot,
+      lineData: ['L', 'SFIP0000001', '100', '2022', '80001', 'DRD10', 'SIP00000000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273'],
+      expected: { invoiceNumber: 'SFIP0000001', value: 100, marketingYear: 2022, schemeCode: '80001', fundCode: 'DRD10', agreementNumber: 'SIP00000000001', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2022-12-01', accountCode: 'SOS273' }
+    },
+    {
+      scheme: lumpSums,
+      lineData: ['L', 'LSES0000001', '100', '2022', '10501', 'EGF00', 'RP00', '1', 'G00 - Gross value of claim', '2022-12-01'],
+      expected: { invoiceNumber: 'LSES0000001', value: 100, marketingYear: 2022, schemeCode: '10501', fundCode: 'EGF00', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2022-12-01' }
+    },
+    {
+      scheme: bps,
+      lineData: ['L', 'SITI0000001', '100', '2023', '10501', 'EGF00', 'RP00', '1', 'G00 - Gross value of claim', '2023-12-01'],
+      expected: { invoiceNumber: 'SITI0000001', value: 100, marketingYear: 2023, schemeCode: '10501', fundCode: 'EGF00', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2023-12-01' }
+    },
+    {
+      scheme: cs,
+      lineData: ['L', 'CS000000001', '100', '2023', '5704A', 'ERD14', 'A01000000001/MT', 'NE00', 'Y', '1', 'G00 - Gross value of claim', '2023-12-01', 'SOS273'],
+      expected: { invoiceNumber: 'CS000000001', value: 100, marketingYear: 2023, schemeCode: '5704A', fundCode: 'ERD14', agreementNumber: 'A01000000001/MT', deliveryBody: 'NE00', convergence: true, description: 'G00 - Gross value of claim', dueDate: '2023-12-01', accountCode: 'SOS273' }
+    },
+    {
+      scheme: fdmr,
+      lineData: ['L', 'FDMR0000001', '100', '2023', '10573', 'EGF00', 'RP00', '1', 'G01 - Gross value of claim', '2023-12-01'],
+      expected: { invoiceNumber: 'FDMR0000001', value: 100, marketingYear: 2023, schemeCode: '10573', fundCode: 'EGF00', deliveryBody: 'RP00', description: 'G01 - Gross value of claim', dueDate: '2023-12-01' }
+    },
+    {
+      scheme: sfi23,
+      lineData: ['L', 'SFIA0000001', '100', '2022', '80001', 'DRD10', 'Z000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273'],
+      expected: { invoiceNumber: 'SFIA0000001', value: 100, marketingYear: 2022, schemeCode: '80001', fundCode: 'DRD10', agreementNumber: 'Z000001', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2022-12-01', accountCode: 'SOS273' }
+    },
+    {
+      scheme: delinked,
+      lineData: ['L', 'DP0000001', '100', '2022', '80001', 'DOM10', 'Z000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS210'],
+      expected: { invoiceNumber: 'DP0000001', value: 100, marketingYear: 2022, schemeCode: '80001', fundCode: 'DOM10', agreementNumber: 'Z000001', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2022-12-01', accountCode: 'SOS210' }
+    },
+    {
+      scheme: combinedOffer,
+      lineData: ['L', 'ESFIO0000001', '100', '2022', '80001', 'DOM10', 'E000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273'],
+      expected: { invoiceNumber: 'ESFIO0000001', value: 100, marketingYear: 2022, schemeCode: '80001', fundCode: 'DOM10', agreementNumber: 'E000001', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', dueDate: '2022-12-01', accountCode: 'SOS273' }
+    },
+    {
+      scheme: cohtCapital,
+      lineData: ['L', 'COHT0000001', '100', '2022', '80001', 'DRD10', 'AG0001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', 'unused12', 'SFIacct', 'COHTacct'],
+      expected: { invoiceNumber: 'COHT0000001', value: 100, marketingYear: 2022, schemeCode: '80001', fundCode: 'DRD10', agreementNumber: 'AG0001', deliveryBody: 'RP00', description: 'G00 - Gross value of claim', accountCode: 'COHTacct' } // no dueDate
+    }
+  ]
+
+  test.each(testCases)('transforms $scheme.schemeId invoice line', ({ lineData, scheme, expected }) => {
+    const result = transformInvoiceLine(lineData, scheme.schemeId)
+    expect(result).toEqual(expected)
+    if (scheme === cohtCapital) {
+      expect(result.dueDate).toBeUndefined() // special COHT rule
+    }
+  })
+
+  test('returns undefined values for empty lines', () => {
+    const schemesToTest = [lumpSums, cohtCapital]
+    schemesToTest.forEach(s => {
+      const result = transformInvoiceLine([], s.schemeId)
+      Object.values(result).forEach(v => expect(v).toBeUndefined())
+      if (s === cohtCapital) expect(result.dueDate).toBeUndefined()
     })
   })
 
-  test('transforms SFI Pilot invoice line', async () => {
-    const lineData = ['L', 'SFIP0000001', '100', '2022', '80001', 'DRD10', 'SIP00000000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, sfiPilot.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'SFIP0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DRD10',
-      agreementNumber: 'SIP00000000001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01',
-      accountCode: 'SOS273'
-    })
+  test('throws error if no scheme', () => {
+    expect(() => transformInvoiceLine([])).toThrowError('Unknown scheme: undefined')
   })
 
-  test('transforms Lump Sums invoice line', async () => {
-    const lineData = ['L', 'LSES0000001', '100', '2022', '10501', 'EGF00', 'RP00', '1', 'G00 - Gross value of claim', '2022-12-01']
-    const result = transformInvoiceLine(lineData, lumpSums.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'LSES0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '10501',
-      fundCode: 'EGF00',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01'
-    })
-  })
-
-  test('transforms BPS invoice line', async () => {
-    const lineData = ['L', 'SITI0000001', '100', '2023', '10501', 'EGF00', 'RP00', '1', 'G00 - Gross value of claim', '2023-12-01'
-    ]
-    const result = transformInvoiceLine(lineData, bps.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'SITI0000001',
-      value: 100,
-      marketingYear: 2023,
-      schemeCode: '10501',
-      fundCode: 'EGF00',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2023-12-01'
-    })
-  })
-
-  test('transforms CS invoice line', async () => {
-    const lineData = ['L', 'CS000000001', '100', '2023', '5704A', 'ERD14', 'A01000000001/MT', 'NE00', 'Y', '1', 'G00 - Gross value of claim', '2023-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, cs.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'CS000000001',
-      value: 100,
-      marketingYear: 2023,
-      schemeCode: '5704A',
-      fundCode: 'ERD14',
-      agreementNumber: 'A01000000001/MT',
-      deliveryBody: 'NE00',
-      convergence: true,
-      description: 'G00 - Gross value of claim',
-      dueDate: '2023-12-01',
-      accountCode: 'SOS273'
-    })
-  })
-
-  test('transforms FDMR invoice line', async () => {
-    const lineData = ['L', 'FDMR0000001', '100', '2023', '10573', 'EGF00', 'RP00', '1', 'G01 - Gross value of claim', '2023-12-01']
-    const result = transformInvoiceLine(lineData, fdmr.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'FDMR0000001',
-      value: 100,
-      marketingYear: 2023,
-      schemeCode: '10573',
-      fundCode: 'EGF00',
-      deliveryBody: 'RP00',
-      description: 'G01 - Gross value of claim',
-      dueDate: '2023-12-01'
-    })
-  })
-
-  test('transforms SFI23 invoice line', async () => {
-    const lineData = ['L', 'SFIA0000001', '100', '2022', '80001', 'DRD10', 'Z000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, sfi23.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'SFIA0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DRD10',
-      agreementNumber: 'Z000001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01',
-      accountCode: 'SOS273'
-    })
-  })
-
-  test('transforms Delinked invoice line', async () => {
-    const lineData = ['L', 'DP0000001', '100', '2022', '80001', 'DOM10', 'Z000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS210']
-    const result = transformInvoiceLine(lineData, delinked.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'DP0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DOM10',
-      agreementNumber: 'Z000001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01',
-      accountCode: 'SOS210'
-    })
-  })
-
-  test('transforms SFI Expanded invoice line', async () => {
-    const lineData = ['L', 'ESFIO0000001', '100', '2022', '80001', 'DOM10', 'E000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, combinedOffer.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'ESFIO0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DOM10',
-      agreementNumber: 'E000001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01',
-      accountCode: 'SOS273'
-    })
-  })
-
-  test('transforms CS Higher Tier invoice line', async () => {
-    const lineData = ['L', 'ESFIO0000001', '100', '2022', '80001', 'DOM10', 'E000001', 'RP00', 'N', '1', 'G00 - Gross value of claim', '2022-12-01', '2022-12-01', 'SOS273']
-    const result = transformInvoiceLine(lineData, combinedOffer.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'ESFIO0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DOM10',
-      agreementNumber: 'E000001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      dueDate: '2022-12-01',
-      accountCode: 'SOS273'
-    })
-  })
-
-  test('transforms COHT Capital invoice line (uses accountCode at index 14 and removes dueDate)', async () => {
-    const lineData = [
-      'L',
-      'COHT0000001', // 1 invoiceNumber
-      '100', // 2 value
-      '2022', // 3 marketingYear
-      '80001', // 4 schemeCode
-      'DRD10', // 5 fundCode
-      'AG0001', // 6 agreementNumber
-      'RP00', // 7 deliveryBody
-      'N', // 8 descriptionSITI (not used)
-      '1', // 9 dueDateSITI (not used)
-      'G00 - Gross value of claim', // 10 description
-      '2022-12-01', // 11 dueDate (should be removed for COHT)
-      'unused12', // 12
-      'SFIacct', // 13 accountCode for SFI branch
-      'COHTacct' // 14 accountCode for COHT
-    ]
-    const result = transformInvoiceLine(lineData, cohtCapital.schemeId)
-    expect(result).toEqual({
-      invoiceNumber: 'COHT0000001',
-      value: 100,
-      marketingYear: 2022,
-      schemeCode: '80001',
-      fundCode: 'DRD10',
-      agreementNumber: 'AG0001',
-      deliveryBody: 'RP00',
-      description: 'G00 - Gross value of claim',
-      accountCode: 'COHTacct'
-    })
-    // dueDate should be removed for COHT capital
-    expect(result.dueDate).toBeUndefined()
-  })
-
-  test('returns undefined values if line empty for cohtCapital', async () => {
-    const lineData = []
-    const result = transformInvoiceLine(lineData, cohtCapital.schemeId)
-    expect(result.invoiceNumber).toBeUndefined()
-    expect(result.value).toBeUndefined()
-    expect(result.marketingYear).toBeUndefined()
-    expect(result.schemeCode).toBeUndefined()
-    expect(result.fundCode).toBeUndefined()
-    expect(result.agreementNumber).toBeUndefined()
-    expect(result.deliveryBody).toBeUndefined()
-    expect(result.description).toBeUndefined()
-    // accountCode should also be undefined for empty COHT line
-    expect(result.accountCode).toBeUndefined()
-    // dueDate is deleted for COHT, so ensure undefined
-    expect(result.dueDate).toBeUndefined()
-  })
-
-  test('returns undefined values if line empty', async () => {
-    const lineData = []
-    const result = transformInvoiceLine(lineData, lumpSums.schemeId)
-    Object.values(result).forEach(value => expect(value).toBeUndefined())
-  })
-
-  test('throws error if no scheme', async () => {
-    const lineData = []
-    expect(() => transformInvoiceLine(lineData)).toThrowError('Unknown scheme: undefined')
-  })
-
-  test('throws error if unknown scheme', async () => {
-    const lineData = []
-    expect(() => transformInvoiceLine(lineData, 99)).toThrowError('Unknown scheme: 99')
+  test('throws error if unknown scheme', () => {
+    expect(() => transformInvoiceLine([], 99)).toThrowError('Unknown scheme: 99')
   })
 })

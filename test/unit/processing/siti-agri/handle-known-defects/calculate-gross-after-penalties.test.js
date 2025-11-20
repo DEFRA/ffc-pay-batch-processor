@@ -1,5 +1,4 @@
 const { P01, P02, P04, G00 } = require('../../../../../app/constants/line-descriptions')
-
 const { calculateGrossAfterPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/calculate-gross-after-penalties')
 
 const schemeCode = 10501
@@ -9,35 +8,25 @@ let invoiceLine
 
 describe('Calculate the correct BPS penalties', () => {
   const addInvoiceLine = (description, schemeCode, value) => {
-    invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
+    invoiceLine = structuredClone(require('../../../../mocks/invoice-lines').invoiceLines[0])
     invoiceLine.description = description
     invoiceLine.schemeCode = schemeCode
     invoiceLine.value = value
     invoiceLinesByScheme.push(invoiceLine)
   }
+
   beforeEach(() => {
     invoiceLinesByScheme = []
-    addInvoiceLine(G00, schemeCode, 100)
+    addInvoiceLine(G00, schemeCode, 100) // gross line
   })
 
-  test('Should return total of gross - penalty line when only one penalty invoice line.', () => {
-    addInvoiceLine(P02, schemeCode, -10)
+  test.each([
+    ['single penalty line', [[P02, -10]], 90],
+    ['multiple penalty lines', [[P01, -10], [P02, -10], [P04, -10]], 70],
+    ['mixed penalty and non-penalty lines', [[P02, -10], ['Not a penalty line', -10]], 90]
+  ])('%s', (_, penalties, expected) => {
+    penalties.forEach(([desc, val]) => addInvoiceLine(desc, schemeCode, val))
     const result = calculateGrossAfterPenalties(invoiceLinesByScheme)
-    expect(result).toBe(90)
-  })
-
-  test('Should return total of gross - all penalty lines when multiple penalty lines.', () => {
-    addInvoiceLine(P01, schemeCode, -10)
-    addInvoiceLine(P02, schemeCode, -10)
-    addInvoiceLine(P04, schemeCode, -10)
-    const result = calculateGrossAfterPenalties(invoiceLinesByScheme)
-    expect(result).toBe(70)
-  })
-
-  test('Should not include non penalty lines in penalty total and return total of gross - all penalty lines.', () => {
-    addInvoiceLine(P02, schemeCode, -10)
-    addInvoiceLine('Not a penalty line', schemeCode, -10)
-    const result = calculateGrossAfterPenalties(invoiceLinesByScheme)
-    expect(result).toBe(90)
+    expect(result).toBe(expected)
   })
 })

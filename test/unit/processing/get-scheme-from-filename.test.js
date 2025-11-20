@@ -1,74 +1,30 @@
 const getSchemeFromFilename = require('../../../app/processing/get-scheme-from-filename')
 const { sfi, sfiPilot, lumpSums } = require('../../../app/constants/schemes')
 
-describe('Get scheme', () => {
-  test('returns SFI for SFI filename', async () => {
-    const result = getSchemeFromFilename('SITISFI0001_AP_20220317104956617.dat')
-    expect(result).toMatchObject(sfi)
+describe('Get scheme from filename', () => {
+  test.each([
+    ['SFI filename', 'SITISFI0001_AP_20220317104956617.dat', sfi],
+    ['SFI Pilot filename', 'SITIELM0001_AP_20220317104956617.dat', sfiPilot],
+    ['Lump Sums filename', 'SITILSES0001_AP_20220317104956617.dat', lumpSums]
+  ])('returns correct scheme for %s', (_, filename, expectedScheme) => {
+    const result = getSchemeFromFilename(filename)
+    expect(result).toMatchObject(expectedScheme)
   })
 
-  test('returns SFI Pilot for SFI Pilot filename', async () => {
-    const result = getSchemeFromFilename('SITIELM0001_AP_20220317104956617.dat')
-    expect(result).toMatchObject(sfiPilot)
-  })
-
-  test('returns Lump Sums for Lump Sums filename', async () => {
-    const result = getSchemeFromFilename('SITILSES0001_AP_20220317104956617.dat')
-    expect(result).toMatchObject(lumpSums)
-  })
-
-  test('returns undefined for unknown filename', async () => {
-    const result = getSchemeFromFilename('NOTAREALSCHEME_0001_AP_20220317104956617.dat')
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for no filename', async () => {
-    const result = getSchemeFromFilename()
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for undefined filename', async () => {
-    const result = getSchemeFromFilename(undefined)
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for object filename', async () => {
-    const result = getSchemeFromFilename({})
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for array filename', async () => {
-    const result = getSchemeFromFilename([])
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for null filename', async () => {
-    const result = getSchemeFromFilename(null)
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for true filename', async () => {
-    const result = getSchemeFromFilename(true)
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for false filename', async () => {
-    const result = getSchemeFromFilename(false)
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for 1 filename', async () => {
-    const result = getSchemeFromFilename(1)
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for 0 filename', async () => {
-    const result = getSchemeFromFilename(0)
-    expect(result).toBeUndefined()
-  })
-
-  test('returns undefined for empty string filename', async () => {
-    const result = getSchemeFromFilename('')
+  test.each([
+    ['unknown filename', 'NOTAREALSCHEME_0001_AP_20220317104956617.dat'],
+    ['no filename', undefined],
+    ['undefined filename', undefined],
+    ['object filename', {}],
+    ['array filename', []],
+    ['null filename', null],
+    ['true filename', true],
+    ['false filename', false],
+    ['numeric 1 filename', 1],
+    ['numeric 0 filename', 0],
+    ['empty string filename', '']
+  ])('returns undefined for %s', (_, filename) => {
+    const result = getSchemeFromFilename(filename)
     expect(result).toBeUndefined()
   })
 })

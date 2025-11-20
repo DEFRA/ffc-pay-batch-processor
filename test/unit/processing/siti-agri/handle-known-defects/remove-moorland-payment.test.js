@@ -2,89 +2,75 @@ const { sfi, sfi23 } = require('../../../../../app/constants/schemes')
 const { removeMoorlandPayment } = require('../../../../../app/processing/siti-agri/handle-known-defects/remove-moorland-payment')
 const { MOORLAND_SCHEME_CODE } = require('../../../../../app/constants/scheme-codes')
 
-let paymentRequest
-let invoiceLine
-let moorlandInvoiceLine
-
 describe('Remove moorland payments', () => {
-  beforeEach(() => {
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../../mocks/payment-request').paymentRequest))
-    invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').mappedInvoiceLines[0]))
+  const grossLine = (schemeCode, value = 0) => ({ description: 'G00 - Gross value of claim', schemeCode, value })
+  const reductionLine = (schemeCode, value = 0) => ({ description: 'P24 - Over declaration reduction', schemeCode, value })
 
-    invoiceLine = {
-      ...invoiceLine,
-      schemeCode: '80001',
-      value: 0
+  const createPaymentRequest = (sourceSystem, lines) => ({
+    sourceSystem,
+    schemeId: sourceSystem === sfi.sourceSystem ? sfi.schemeId : undefined,
+    value: lines.reduce((sum, l) => sum + (l.value ?? 0), 0),
+    invoiceLines: structuredClone(lines)
+  })
+
+  test.each([
+    'removes moorland payment with one zero value invoice line',
+    'removes moorland payment when other lines net zero',
+    'removes moorland payment with multiple reductions',
+    'removes moorland payment with multiple groups net zero',
+    'removes moorland payment with decimal values'
+  ])('%s', (testName) => {
+    // Create fresh lines inside each test
+    const baseInvoiceLine = grossLine('80001', 0)
+    const moorlandInvoiceLine = grossLine(MOORLAND_SCHEME_CODE, 265)
+
+    let invoiceLines
+    switch (testName) {
+      case 'removes moorland payment with one zero value invoice line':
+        invoiceLines = [baseInvoiceLine, moorlandInvoiceLine]
+        break
+      case 'removes moorland payment when other lines net zero':
+        invoiceLines = [grossLine('80001', 500), grossLine('80001', -500), moorlandInvoiceLine]
+        break
+      case 'removes moorland payment with multiple reductions':
+        invoiceLines = [grossLine('80001', 500), grossLine('80001', -250), reductionLine('80001', -250), moorlandInvoiceLine]
+        break
+      case 'removes moorland payment with multiple groups net zero':
+        invoiceLines = [baseInvoiceLine, moorlandInvoiceLine, grossLine('80002', 500), grossLine('80002', -500)]
+        break
+      case 'removes moorland payment with decimal values':
+        invoiceLines = [grossLine('80001', 500.10), grossLine('80001', -500.10), moorlandInvoiceLine]
+        break
     }
 
-    moorlandInvoiceLine = {
-      ...invoiceLine,
-      schemeCode: MOORLAND_SCHEME_CODE,
-      value: 265
-    }
+    const paymentRequest = createPaymentRequest(sfi.sourceSystem, invoiceLines)
+    const updated = removeMoorlandPayment(paymentRequest)
 
-    paymentRequest = {
-      ...paymentRequest,
-      sourceSystem: sfi.sourceSystem,
-      schemeId: sfi.schemeId,
-      value: 265,
-      invoiceLines: [invoiceLine, moorlandInvoiceLine]
-    }
+    expect(updated.value).toBe(0)
+    expect(updated.invoiceLines.find(line => line.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(0)
   })
 
-  test('removes moorland payment when sourceSystem is SFI22 and one zero value invoice line', () => {
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines.find(invoiceLine => invoiceLine.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(0)
-  })
-
-  test('removes moorland payment when sourceSystem is SFI22 and other invoice lines have a net zero total', () => {
-    paymentRequest.invoiceLines = [{ ...invoiceLine, value: 500 }, { ...invoiceLine, value: -500 }, moorlandInvoiceLine]
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines.find(invoiceLine => invoiceLine.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(0)
-  })
-
-  test('removes moorland payment when sourceSystem is SFI22 and other invoice lines have a multiple reductions', () => {
-    paymentRequest.invoiceLines = [{ ...invoiceLine, value: 500 }, { ...invoiceLine, value: -250 }, { ...invoiceLine, value: -250, descripton: 'P24 - Over declaration reduction' }, moorlandInvoiceLine]
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines.find(invoiceLine => invoiceLine.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(0)
-  })
-
-  test('removes moorland payment if multiple groups net values all zero', () => {
-    paymentRequest.invoiceLines.push({ ...invoiceLine, value: 500, schemeCode: '80002' })
-    paymentRequest.invoiceLines.push({ ...invoiceLine, value: -500, schemeCode: '80002' })
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines.find(invoiceLine => invoiceLine.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(0)
-  })
-
-  test('removes moorland payment if decimal values', () => {
-    paymentRequest.invoiceLines = [{ ...invoiceLine, value: 500.10 }, { ...invoiceLine, value: -500.10 }, moorlandInvoiceLine]
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(0)
-    expect(updatedPaymentRequest.invoiceLines.find(invoiceLine => invoiceLine.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(0)
-  })
-
-  test('does not remove moorland payment when sourceSystem is SFI22 and other gross value', () => {
-    paymentRequest.invoiceLines = [moorlandInvoiceLine, { ...invoiceLine, value: 500 }]
+  test('does not remove moorland payment if other gross value present', () => {
+    const moorlandInvoiceLine = grossLine(MOORLAND_SCHEME_CODE, 265)
+    const paymentRequest = createPaymentRequest(sfi.sourceSystem, [moorlandInvoiceLine, grossLine('80001', 500)])
     paymentRequest.value = 765
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest.value).toBe(765)
-    expect(updatedPaymentRequest.invoiceLines.find(invoiceLine => invoiceLine.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(265)
+    const updated = removeMoorlandPayment(paymentRequest)
+    expect(updated.value).toBe(765)
+    expect(updated.invoiceLines.find(line => line.schemeCode === MOORLAND_SCHEME_CODE).value).toBe(265)
   })
 
-  test('does not remove moorland payment when sourceSystem is SFI23', () => {
-    paymentRequest.sourceSystem = sfi23.sourceSystem
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest).toStrictEqual(paymentRequest)
+  test('does not remove moorland payment for SFI23', () => {
+    const moorlandInvoiceLine = grossLine(MOORLAND_SCHEME_CODE, 265)
+    const baseInvoiceLine = grossLine('80001', 0)
+    const paymentRequest = createPaymentRequest(sfi23.sourceSystem, [baseInvoiceLine, moorlandInvoiceLine])
+    const updated = removeMoorlandPayment(paymentRequest)
+    expect(updated).toStrictEqual(paymentRequest)
   })
 
-  test('does not alter payment request when sourceSystem is SFI22 but no moorland payment', () => {
+  test('does not alter payment request if no moorland payment', () => {
+    const paymentRequest = createPaymentRequest(sfi.sourceSystem, [grossLine('80001', 500), grossLine('80001', -500)])
     paymentRequest.value = 0
-    paymentRequest.invoiceLines = [{ ...invoiceLine, value: 500 }, { ...invoiceLine, value: -500 }]
-    const updatedPaymentRequest = removeMoorlandPayment(paymentRequest)
-    expect(updatedPaymentRequest).toStrictEqual(paymentRequest)
+    const updated = removeMoorlandPayment(paymentRequest)
+    expect(updated).toStrictEqual(paymentRequest)
   })
 })

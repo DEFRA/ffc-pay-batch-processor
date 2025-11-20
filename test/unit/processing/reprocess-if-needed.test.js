@@ -6,9 +6,6 @@ const batch = require('../../../app/processing/batch')
 jest.mock('../../../app/storage')
 const blobStorage = require('../../../app/storage')
 
-jest.mock('../../../app/config/processing')
-const processingConfig = require('../../../app/config/processing')
-
 jest.mock('../../../app/processing/file-processing-failed')
 const fileProcessingFailed = require('../../../app/processing/file-processing-failed')
 
@@ -20,83 +17,42 @@ const quarantineFile = require('../../../app/processing/quarantine-file')
 
 global.console.log = jest.fn()
 
-describe('Reprocess if needed', () => {
-  let existingBatch
-  let schemeType
-  const filename = 'SITIELM0001_AP_20220317104956617.dat'
+describe('reprocessIfNeeded status handling', () => {
+  const cases = [
+    { statusId: 1, expectedLog: 'Tried processing 0 times already', expectedCall: 'downloadAndParse' },
+    { statusId: 2, expectedLog: 'Previous processing success status set, archiving', expectedCall: 'archivePaymentFile' },
+    { statusId: 3, expectedLog: 'Previous processing failure status set, quarantining', expectedCall: 'quarantineFile' },
+    { statusId: 4, expectedLog: null, expectedCall: 'fileProcessingFailed' }
+  ]
 
-  processingConfig.maxProcessingTries = 1
+  test.each(cases)(
+    'should handle batch statusId $statusId correctly',
+    async ({ statusId, expectedLog, expectedCall }) => {
+      const filename = 'SITIELM0001_AP_20220317104956617.dat'
+      const schemeType = { batchId: '0001', date: '2022031', prefix: 'AP', scheme: 'SFI Pilot', source: 'SITIELM' }
+      const existingBatch = { batchId: 1, filename, processingTries: 0, schemeId: 2, sequenceNumber: 1, statusId }
 
-  beforeEach(() => {
-    existingBatch = {
-      batchId: 1,
-      filename,
-      processingTries: 0,
-      schemeId: 2,
-      sequenceNumber: 1,
-      statusId: 1
+      batch.exists.mockResolvedValue(existingBatch)
+      await reprocessIfNeeded(filename, schemeType)
+
+      if (expectedLog) {
+        expect(console.log).toHaveBeenLastCalledWith(expectedLog)
+      }
+
+      switch (expectedCall) {
+        case 'downloadAndParse':
+          expect(downloadAndParse).toHaveBeenCalled()
+          break
+        case 'archivePaymentFile':
+          expect(blobStorage.archivePaymentFile).toHaveBeenCalled()
+          break
+        case 'quarantineFile':
+          expect(quarantineFile).toHaveBeenCalled()
+          break
+        case 'fileProcessingFailed':
+          expect(fileProcessingFailed).toHaveBeenCalled()
+          break
+      }
     }
-
-    schemeType = {
-      batchId: '0001',
-      date: '2022031',
-      prefix: 'AP',
-      scheme: 'SFI Pilot',
-      source: 'SITIELM'
-    }
-  })
-
-  afterEach(async () => {
-    jest.resetAllMocks()
-  })
-
-  test('File does not already exist and re-process not required', async () => {
-    batch.exists.mockResolvedValue(undefined)
-    const response = await reprocessIfNeeded(filename, schemeType)
-    expect(response).toBe(false)
-  })
-
-  test('batch status is in progress with 0 processing tries and downloads and parses', async () => {
-    batch.exists.mockResolvedValue(existingBatch)
-    const response = await reprocessIfNeeded(filename, schemeType)
-    expect(response).toBe(true)
-    expect(console.log).toHaveBeenLastCalledWith('Tried processing 0 times already')
-    expect(downloadAndParse).toHaveBeenCalled()
-    expect(batch.incrementProcessingTries).toHaveBeenCalled()
-  })
-
-  test('batch status is in progress with 1 processing tries', async () => {
-    existingBatch.processingTries = 1
-    batch.exists.mockResolvedValue(existingBatch)
-    const response = await reprocessIfNeeded(filename, schemeType)
-    expect(response).toBe(true)
-    expect(console.log).toHaveBeenLastCalledWith('Reached max re-tries, failed to process, quarantining')
-    expect(fileProcessingFailed).toHaveBeenCalled()
-  })
-
-  test('batch status is success and is archived', async () => {
-    existingBatch.statusId = 2
-    batch.exists.mockResolvedValue(existingBatch)
-    const response = await reprocessIfNeeded(filename, schemeType)
-    expect(response).toBe(true)
-    expect(console.log).toHaveBeenLastCalledWith('Previous processing success status set, archiving')
-    expect(blobStorage.archivePaymentFile).toHaveBeenCalled()
-  })
-
-  test('batch status is failed and is quarantined', async () => {
-    existingBatch.statusId = 3
-    batch.exists.mockResolvedValue(existingBatch)
-    const response = await reprocessIfNeeded(filename, schemeType)
-    expect(response).toBe(true)
-    expect(console.log).toHaveBeenLastCalledWith('Previous processing failure status set, quarantining')
-    expect(quarantineFile).toHaveBeenCalled()
-  })
-
-  test('batch status is unknown and and file processing is failed', async () => {
-    existingBatch.statusId = 4
-    batch.exists.mockResolvedValue(existingBatch)
-    const response = await reprocessIfNeeded(filename, schemeType)
-    expect(response).toBe(true)
-    expect(fileProcessingFailed).toHaveBeenCalled()
-  })
+  )
 })

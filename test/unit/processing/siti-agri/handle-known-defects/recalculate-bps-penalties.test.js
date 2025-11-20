@@ -1,133 +1,71 @@
 const { P01, P02, P04, G00 } = require('../../../../../app/constants/line-descriptions')
-
 const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 
 let paymentRequest
-let invoiceLine
 
-describe('Calculate the correct BPS penalties', () => {
+describe('Recalculate BPS penalties', () => {
   const addInvoiceLine = (description, schemeCode, value) => {
-    invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
+    const invoiceLine = structuredClone(require('../../../../mocks/invoice-lines').invoiceLines[0])
     invoiceLine.description = description
     invoiceLine.schemeCode = schemeCode
     invoiceLine.value = value
     paymentRequest.invoiceLines.push(invoiceLine)
   }
 
+  const getLineValue = (schemeCode, description) =>
+    paymentRequest.invoiceLines.find(line => line.schemeCode === schemeCode && line.description === description)?.value
+
   beforeEach(() => {
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../../mocks/payment-request').paymentRequest))
+    paymentRequest = structuredClone(require('../../../../mocks/payment-request').paymentRequest)
     paymentRequest.invoiceLines = []
   })
 
-  test('Should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -120)
+  test.each([
+    ['P02 only exceeds gross', P02, 10501, -120, -100],
+    ['P02 below gross', P02, 10501, -50, -50],
+    ['P02 with P01 present', P02, 10501, -60, -50, [{ description: P01, value: -50 }]],
+    ['P04 only exceeds gross', P04, 10501, -120, -100],
+    ['P04 below gross', P04, 10501, -50, -50],
+    ['P04 adjusted due to P02', P04, 10501, -60, -50, [{ description: P02, value: -50 }]],
+    ['P04 adjusted due to P02 larger', P04, 10501, -60, -40, [{ description: P02, value: -60 }]],
+    ['P02 and P04 both exceed gross', [P02, P04], 10501, [-120, -120], [-100, 0]]
+  ])('%s', (_, descriptions, schemeCode, inputValues, expectedValues, preLines = []) => {
+    addInvoiceLine(G00, schemeCode, 100)
+
+    preLines.forEach(line => addInvoiceLine(line.description, schemeCode, line.value))
+
+    if (Array.isArray(descriptions)) {
+      descriptions.forEach((desc, i) => addInvoiceLine(desc, schemeCode, inputValues[i]))
+    } else {
+      addInvoiceLine(descriptions, schemeCode, inputValues)
+    }
 
     const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
+
+    if (Array.isArray(descriptions)) {
+      descriptions.forEach((desc, i) => {
+        const value = result.invoiceLines.find(line => line.schemeCode === schemeCode && line.description === desc)?.value
+        expect(value).toBe(expectedValues[i])
+      })
+    } else {
+      const value = result.invoiceLines.find(line => line.schemeCode === schemeCode && line.description === descriptions)?.value
+      expect(value).toBe(expectedValues)
+    }
   })
 
-  test('Should reduce P02 value to -50 when Gross value is 100, P01 value is -50 and P02 value is -60', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P01, 10501, -50)
-    addInvoiceLine(P02, 10501, -60)
+  test('Multiple schemes handled independently', () => {
+    const schemes = [10501, 10502]
+    schemes.forEach(scheme => {
+      addInvoiceLine(G00, scheme, 100)
+      addInvoiceLine(P02, scheme, -120)
+      addInvoiceLine(P04, scheme, -120)
+    })
 
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-50)
-  })
+    recalculateBPSPenalties(paymentRequest)
 
-  test('Should not reduce P02 value when Gross value is 100 and P02 value is -50', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -50)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-50)
-  })
-
-  test('Should reduce P04 value to -100 when Gross value is 100 and P04 value is -120', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P04, 10501, -120)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-100)
-  })
-
-  test('Should reduce P04 value to -50 when Gross value is 100, P01 value is -50 and P04 value is -60', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P01, 10501, -50)
-    addInvoiceLine(P04, 10501, -60)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-50)
-  })
-
-  test('Should not reduce P04 value when Gross value is 100 and P04 value is -50', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P04, 10501, -50)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-50)
-  })
-
-  test('Should reduce P04 value to -50 when Gross value is 100, P02 value is -50 and P04 value -60', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -50)
-    addInvoiceLine(P04, 10501, -60)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-50)
-  })
-
-  test('Should reduce P04 value to -40 when Gross value is 100, P02 value is -60 and P04 value -60', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -60)
-    addInvoiceLine(P04, 10501, -60)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-40)
-  })
-
-  test('Should reduce P02 value to -100 and reduce P04 value to 0 when Gross value is 100, P02 value is -120 and P04 value -120', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -120)
-    addInvoiceLine(P04, 10501, -120)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
-  })
-
-  test('Should reduce P04 value only when no P02 value present', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P04, 10501, -120)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(-100)
-  })
-
-  test('For multiple schemes should reduce P02 value to -100 when Gross value is 100 and P02 value is -120', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -120)
-    addInvoiceLine(G00, 10502, 100)
-    addInvoiceLine(P02, 10502, -120)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10501).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
-  })
-
-  test('For multiple schemes should reduce P02 value to -100 and reduce P04 value to 0 when Gross value is 100, P02 value is -120 and P04 value -120', () => {
-    addInvoiceLine(G00, 10501, 100)
-    addInvoiceLine(P02, 10501, -120)
-    addInvoiceLine(P04, 10501, -120)
-    addInvoiceLine(G00, 10502, 100)
-    addInvoiceLine(P02, 10502, -120)
-    addInvoiceLine(P04, 10502, -120)
-
-    const result = recalculateBPSPenalties(paymentRequest)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10501).filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10501).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P04)[0].value).toBe(0)
-    expect(result.invoiceLines.filter(invoiceLine => invoiceLine.schemeCode === 10502).filter(invoiceLine => invoiceLine.description === P02)[0].value).toBe(-100)
+    schemes.forEach(scheme => {
+      expect(getLineValue(scheme, P02)).toBe(-100)
+      expect(getLineValue(scheme, P04)).toBe(0)
+    })
   })
 })

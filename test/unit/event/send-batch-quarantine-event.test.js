@@ -1,16 +1,12 @@
 const mockPublishEvent = jest.fn()
 
-const MockEventPublisher = jest.fn().mockImplementation(() => {
-  return {
-    publishEvent: mockPublishEvent
-  }
-})
+const MockEventPublisher = jest.fn().mockImplementation(() => ({
+  publishEvent: mockPublishEvent
+}))
 
-jest.mock('ffc-pay-event-publisher', () => {
-  return {
-    EventPublisher: MockEventPublisher
-  }
-})
+jest.mock('ffc-pay-event-publisher', () => ({
+  EventPublisher: MockEventPublisher
+}))
 
 jest.mock('../../../app/config/message')
 const messageConfig = require('../../../app/config/message')
@@ -22,43 +18,38 @@ const { BATCH_QUARANTINED } = require('../../../app/constants/events')
 let filename
 
 describe('V2 events for batch quarantine', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     messageConfig.eventsTopic = 'v2-events'
-
     filename = 'SITIELM0001_AP_1.dat'
   })
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks()
   })
 
-  test('should send event to V2 topic', async () => {
+  test('should send batch quarantine event with correct properties', async () => {
     await sendBatchQuarantineEvent(filename)
+
     expect(MockEventPublisher.mock.calls[0][0]).toBe(messageConfig.eventsTopic)
-  })
 
-  test('should raise an event with batch processor source', async () => {
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent.mock.calls[0][0].source).toBe(SOURCE)
-  })
+    const event = mockPublishEvent.mock.calls[0][0]
 
-  test('should raise quarantined event type', async () => {
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent.mock.calls[0][0].type).toBe(BATCH_QUARANTINED)
-  })
+    const expectedProperties = {
+      source: SOURCE,
+      type: BATCH_QUARANTINED,
+      subject: filename,
+      data: {
+        message: 'Batch quarantined',
+        filename
+      }
+    }
 
-  test('should raise an event with filename as subject', async () => {
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent.mock.calls[0][0].subject).toBe(filename)
-  })
-
-  test('should include error message in event data', async () => {
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent.mock.calls[0][0].data.message).toBe('Batch quarantined')
-  })
-
-  test('should include filename in event data', async () => {
-    await sendBatchQuarantineEvent(filename)
-    expect(mockPublishEvent.mock.calls[0][0].data.filename).toBe(filename)
+    Object.entries(expectedProperties).forEach(([key, value]) => {
+      if (typeof value === 'object') {
+        expect(event[key]).toMatchObject(value)
+      } else {
+        expect(event[key]).toBe(value)
+      }
+    })
   })
 })

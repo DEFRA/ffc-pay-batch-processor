@@ -2,19 +2,17 @@ jest.mock('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-
 const { recalculateBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties/recalculate-bps-penalties')
 
 const { P02, P04 } = require('../../../../../app/constants/line-descriptions')
-
 const { bps, sfi } = require('../../../../../app/constants/schemes')
 const { capBPSPenalties } = require('../../../../../app/processing/siti-agri/handle-known-defects/cap-bps-penalties')
 
 let paymentRequest
 let invoiceLine
 
-describe('Identify if bps penalties need correcting', () => {
+describe('Identify if BPS penalties need correcting', () => {
   beforeEach(() => {
-    paymentRequest = JSON.parse(JSON.stringify(require('../../../../mocks/payment-request').paymentRequest))
+    paymentRequest = structuredClone(require('../../../../mocks/payment-request').paymentRequest)
     paymentRequest.sourceSystem = bps.sourceSystem
-
-    invoiceLine = JSON.parse(JSON.stringify(require('../../../../mocks/invoice-lines').invoiceLines[0]))
+    invoiceLine = structuredClone(require('../../../../mocks/invoice-lines').invoiceLines[0])
   })
 
   test('Should return unchanged paymentRequest when scheme is not BPS', () => {
@@ -23,20 +21,16 @@ describe('Identify if bps penalties need correcting', () => {
     expect(result).toStrictEqual(paymentRequest)
   })
 
-  test('Should return unchanged paymentRequest when scheme is BPS but invoice lines do not contain P02 or P04 penalty', () => {
+  test('Should return unchanged paymentRequest when BPS scheme but no P02/P04 penalties', () => {
     const result = capBPSPenalties(paymentRequest)
     expect(result).toStrictEqual(paymentRequest)
   })
 
-  test('Should call recalculateBPSPenalties when payment request contains a P02 penalty', () => {
-    invoiceLine.description = `${P02} - Over declaration penalty`
-    paymentRequest.invoiceLines.push(invoiceLine)
-    capBPSPenalties(paymentRequest)
-    expect(recalculateBPSPenalties).toHaveBeenCalled()
-  })
-
-  test('Should call recalculateBPSPenalties when payment request contains a P04 penalty', () => {
-    invoiceLine.description = `${P04} - Administrative penalty`
+  test.each([
+    ['P02 penalty', P02],
+    ['P04 penalty', P04]
+  ])('Should call recalculateBPSPenalties when payment request contains %s', (_, penalty) => {
+    invoiceLine.description = `${penalty} - Example penalty`
     paymentRequest.invoiceLines.push(invoiceLine)
     capBPSPenalties(paymentRequest)
     expect(recalculateBPSPenalties).toHaveBeenCalled()
