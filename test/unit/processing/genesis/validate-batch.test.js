@@ -54,8 +54,14 @@ describe('validateBatch', () => {
     { description: 'payment request value more than batch header value', paymentValue: () => batchHeader.batchValue + 50, expected: false },
     { description: 'payment request value less than batch header value', paymentValue: () => batchHeader.batchValue - 50, expected: false }
   ])('returns $expected when $description', async ({ batchValue, paymentValue, expected }) => {
-    if (batchValue) batchHeader.batchValue = batchValue()
-    if (paymentValue) paymentRequest.value = paymentValue()
+    if (batchValue) {
+      batchHeader.batchValue = batchValue()
+    }
+
+    if (paymentValue) {
+      paymentRequest.value = paymentValue()
+    }
+
     const result = await validateBatch([batchHeader], [paymentRequest])
     expect(result).toBe(expected)
   })

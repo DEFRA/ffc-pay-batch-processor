@@ -123,8 +123,14 @@ describe('Transform header', () => {
     expect(result.frn).toEqual(headerData[frnIndex])
     expect(result.currency).toEqual(GBP)
     expect(result.value).toEqual(parseInt(headerData[valueIndex], 10))
-    if (expectedSchedule) expect(result.schedule).toEqual(expectedSchedule)
-    if (typeof deliveryBodyIndex !== 'undefined') expect(result.deliveryBody).toEqual(headerData[deliveryBodyIndex])
+    if (expectedSchedule) {
+      expect(result.schedule).toEqual(expectedSchedule)
+    }
+
+    if (typeof deliveryBodyIndex !== 'undefined') {
+      expect(result.deliveryBody).toEqual(headerData[deliveryBodyIndex])
+    }
+
     expect(Array.isArray(result.invoiceLines)).toBeTruthy()
   })
 
