@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-batch-processor",
-  "version": "1.41.11",
+  "version": "1.41.12",
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
