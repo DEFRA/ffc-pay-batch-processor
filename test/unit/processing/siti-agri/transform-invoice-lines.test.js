@@ -68,7 +68,9 @@ describe('Transform invoice lines', () => {
     schemesToTest.forEach(s => {
       const result = transformInvoiceLine([], s.schemeId)
       Object.values(result).forEach(v => expect(v).toBeUndefined())
-      if (s === cohtCapital) expect(result.dueDate).toBeUndefined()
+      if (s === cohtCapital) {
+        expect(result.dueDate).toBeUndefined()
+      }
     })
   })
 

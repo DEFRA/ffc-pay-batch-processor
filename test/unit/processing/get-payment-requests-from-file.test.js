@@ -203,8 +203,11 @@ describe('getPaymentRequestsFromFile', () => {
     ['rejects when line starts with invalid character', 'V^2021-08-12^2^200^0001^SFIP^AP\r\nH^SFI00000001^01^SFIP000001^1^1000000001^GBP^100^RP00^GBP^SFIP^M12\r\nL^SFI00000001^100^2022^80001^DRD10^SIP00000000001^RP00^N^1^G00 - Gross value of claim^2022-12-01^2022-12-01^SOS27\r\n', Error, 'Invalid file'],
     ['rejects when validateBatch returns false', null, Error, 'Invalid file']
   ])('%s', async (_, bufferOverride, ErrorClass, errorMessage) => {
-    if (bufferOverride) fileBuffer = Buffer.from(bufferOverride)
-    else validateBatch.mockReturnValue(false)
+    if (bufferOverride) {
+      fileBuffer = Buffer.from(bufferOverride)
+    } else {
+      validateBatch.mockReturnValue(false)
+    }
 
     const wrapper = async () => {
       await getPaymentRequestsFromFile(fileBuffer, sfiPilot, filename)
