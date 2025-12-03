@@ -8,7 +8,7 @@
     "pretest": "npm run test:lint",
     "test": "jest --runInBand",
     "test:acceptance": "cucumber-js --config ./test/acceptance/cucumber.js",
-    "test:lint": "standard",
+    "test:lint": "eslint",
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
     "start:watch": "nodemon --inspect=0.0.0.0 --ext js --legacy-watch app/index.js",
@@ -31,18 +31,16 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@azure/identity": "4.4.1",
-    "@azure/storage-blob": "12.13.0",
+    "@azure/storage-blob": "12.29.1",
     "@hapi/hapi": "21.4.0",
     "@joi/date": "2.1.0",
     "applicationinsights": "2.9.6",
     "ffc-database": "1.0.23",
     "ffc-messaging": "2.10.1",
-    "ffc-pay-event-publisher": "1.2.0",
+    "ffc-pay-event-publisher": "1.2.1",
     "hapi-pino": "13.0.0",
     "joi": "17.6.0",
     "log-timestamp": "0.3.0",
-    "pg": "8.7.3",
-    "pg-hstore": "2.3.4",
     "sequelize": "6.29.0",
     "uuid": "8.3.2"
   },
@@ -50,23 +48,12 @@
     "@azure/service-bus": "7.8.1",
     "@cucumber/cucumber": "9.3.0",
     "blipp": "4.0.2",
+    "eslint": "9.39.1",
     "hamjest": "3.7.3",
     "jest": "29.6.4",
     "jest-junit": "13.2.0",
-    "nodemon": "3.0.1",
-    "standard": "17.0.0"
-  },
-  "standard": {
-    "globals": [
-      "describe",
-      "beforeEach",
-      "expect",
-      "test",
-      "afterEach",
-      "jest",
-      "beforeAll",
-      "afterAll"
-    ]
+    "neostandard": "0.12.2",
+    "nodemon": "3.0.1"
   },
   "nodemonConfig": {
     "ignore": [
