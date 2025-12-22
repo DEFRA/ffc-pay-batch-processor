@@ -295,48 +295,6 @@ The format of each line type varies depending on the payment scheme.
 | Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
 | Account Code | 6 | 13 | Y | String | `LLLNNN` i.e. `SOS273` |
 
-##### Financial Discipline Mechanism Reimbursement
-###### Batch line
- 
-| Name | Max | Length position | Is Mandatory | Data Type | Description |
-| ---- | ---- | ---- | ---- | ---- | ---- |
-| Line type | 1 | 1 | Y | Char | `B` |
-| Export date | 10 | 2 | Y | Date | `yyyy-mm-dd` |
-| Number of invoices | 5 | 3 | Y | Integer | How many invoices are included within the batch |
-| Batch value | 15,2 | 4 | Y | Decimal | Total net value of all invoices in batch |
-| Batch ID | 4 | 5 | Y | String | Unique identifier of the batch |
-| Creator ID | 16 | 6 | Y | String | `FDMR` |
-| Invoice type | 2 | 7 | Y | String | `AP` |
- 
-###### Header line
- 
-| Name | Max | Length position | Is Mandatory | Data Type | Description |
-| ---- | ---- | ---- | ---- | ---- | ---- |
-| Line type | 1 | 1 | Y | Char | `H` |
-| Invoice number | 11 | 2 | Y | String | Also called transaction ID. FDMR + 7 digits. Start at next available number (sequence is shared across all SitiAgri schemes). For example `FDMR0123456` |
-| Request Invoice Number | 2 | 3 | Y | String | Starts at 01, finishes at 99. First invoice request number will represent first payment request. Subsequent numbers will represent a correction or delta transaction. |
-| Claim ID | 8 | 4 | Y | String | C + 7 digits. Unique number related to the payment. Start at next available number (sequence is shared across all SitiAgri schemes). For example `C0123456` |
-| FRN | 10 | 5 | Y | String | The unique customer identifier – Firm Reference Number |
-| Payment Type | 1 | 6 | Y | String | Unique number to identify payment. 1 = Request Invoice Number, 2 = Recovery/Reimbursement/Correction (currently derived in Matrix reporting from Request Invoice Number)
-| Total value | 15,2 | 7 | Y | Decimal | Net value of invoice (sum of all invoice lines associated with the header) |
-| Delivery body | 4 | 8 | Y | String | Allowed values: For example `RP00` (Rural Payments Agency). |
-| Payment preference currency | 3 | 9 | Y | String | Currency to be paid in is always `GBP` |
- 
-###### Invoice line
- 
-| Name | Max | Length position | Is Mandatory | Data Type | Description |
-| ---- | ---- | ---- | ---- | ---- | ---- |
-| Line type | 1 | 1 | Y | Char | `L` |
-| Invoice number | 11 | 2 | Y | String | As header |
-| Value | 15,2 | 3 | Y | Decimal | Value of detail line |
-| Marketing year | 4 | 4 | Y | Integer | `YYYY` - Calendar year to which the agreement payment relates |
-| Scheme code | 5 | 5 | Y | String | Scheme structure is 5 digits eg. `12345` or `1234A` |
-| Fund | 5 | 6 | Y | String | `DRD10` |
-| Delivery body | 4 | 7 | Y | String | Allowed values: For example `RP00`. As per Header Delivery body. |
-| Line ID | 3 | 8 | Y | String | Unique identifier to each line of the invoice that starts at 1 |
-| Line type description | 60 | 9 | Y | String | Description of invoice line |
-| Due date | 10 | 12 | Y | Date | `yyyy-mm-dd`. Set to 15th `dd` for Year 1 SFI Pilot. Due date to be the start date of the payment schedule. The payment cannot be made any earlier than this date |
-
 ## Setup
 
 The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.

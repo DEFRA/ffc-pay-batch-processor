@@ -29,12 +29,6 @@ module.exports = {
     sourceSystem: 'SITI AGRI SYS',
     fileMask: /^SITI_\d{4}_AP_\d*.dat$/
   },
-  fdmr: {
-    schemeId: 7,
-    name: 'FDMR',
-    sourceSystem: 'FDMR',
-    fileMask: /^FDMR_\d{4}_AP_\d*.dat$/
-  },
   es: {
     schemeId: 9,
     name: 'ES',
