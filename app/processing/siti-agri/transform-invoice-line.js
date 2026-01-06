@@ -1,4 +1,4 @@
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
 const LINE_DATA_INVOICE_NUMBER = 1
 const LINE_DATA_VALUE = 2
 const LINE_DATA_MARKETING_YEAR = 3
@@ -37,7 +37,6 @@ const transformInvoiceLine = (lineData, schemeId) => {
   switch (schemeId) {
     case Number(lumpSums.schemeId):
     case Number(bps.schemeId):
-    case Number(fdmr.schemeId):
       return transformSitiInvoiceLine(lineData)
     case Number(cs.schemeId):
       return transformCSInvoiceLine(lineData)

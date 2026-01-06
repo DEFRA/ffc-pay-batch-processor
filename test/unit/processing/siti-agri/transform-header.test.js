@@ -1,7 +1,7 @@
 const { GBP } = require('../../../../app/constants/currency')
 const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
 const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
 const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
 
 jest.mock('uuid')
@@ -58,15 +58,6 @@ describe('Transform header', () => {
       valueIndex: 7,
       prnIndex: 2,
       deliveryBodyIndex: 8
-    },
-    {
-      filename: 'FDMR_0001_AP.dat',
-      headerData: ['H', 'FDMR0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP'],
-      scheme: fdmr,
-      frnIndex: 4,
-      valueIndex: 6,
-      prnIndex: 2,
-      deliveryBodyIndex: 7
     },
     {
       filename: 'SITISFIA0001_AP.dat',

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
 const combinedOfferSchemes = require('../../constants/combined-offer-schemes')
 
 // common header indexes
@@ -54,7 +54,6 @@ const transformHeader = (headerData, schemeId, filename) => {
     case Number(lumpSums.schemeId):
       return transformLumpSumsHeader(headerData, schemeIdNum, filename)
     case Number(bps.schemeId):
-    case Number(fdmr.schemeId):
       return transformBPSHeader(headerData, schemeIdNum, filename)
     case Number(cs.schemeId):
       return transformCSHeader(headerData, schemeIdNum, filename)

@@ -1,5 +1,5 @@
 const transformInvoiceLine = require('../../../../app/processing/siti-agri/transform-invoice-line')
-const { sfi, sfiPilot, lumpSums, bps, cs, fdmr, sfi23, delinked, combinedOffer, cohtCapital } = require('../../../../app/constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../../../app/constants/schemes')
 
 describe('Transform invoice lines', () => {
   const testCases = [
@@ -27,11 +27,6 @@ describe('Transform invoice lines', () => {
       scheme: cs,
       lineData: ['L', 'CS000000001', '100', '2023', '5704A', 'ERD14', 'A01000000001/MT', 'NE00', 'Y', '1', 'G00 - Gross value of claim', '2023-12-01', 'SOS273'],
       expected: { invoiceNumber: 'CS000000001', value: 100, marketingYear: 2023, schemeCode: '5704A', fundCode: 'ERD14', agreementNumber: 'A01000000001/MT', deliveryBody: 'NE00', convergence: true, description: 'G00 - Gross value of claim', dueDate: '2023-12-01', accountCode: 'SOS273' }
-    },
-    {
-      scheme: fdmr,
-      lineData: ['L', 'FDMR0000001', '100', '2023', '10573', 'EGF00', 'RP00', '1', 'G01 - Gross value of claim', '2023-12-01'],
-      expected: { invoiceNumber: 'FDMR0000001', value: 100, marketingYear: 2023, schemeCode: '10573', fundCode: 'EGF00', deliveryBody: 'RP00', description: 'G01 - Gross value of claim', dueDate: '2023-12-01' }
     },
     {
       scheme: sfi23,
