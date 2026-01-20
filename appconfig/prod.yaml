@@ -1,12 +1,12 @@
 ---
 environment: production
-environmentCode: pre
+environmentCode: prd
 container:
-  messageQueueHost: PREFFCINFSB1001.servicebus.windows.net
+  messageQueueHost: PRDFFCINFSB1001.servicebus.windows.net
   processingActive: true
-  azureStorageAccountName: preffcpayst1001
-  paymentTopicAddress: ffc-pay-request-pre
-  eventsTopicAddress: ffc-pay-events-pre
+  azureStorageAccountName: prdffcpayst1001
+  paymentTopicAddress: ffc-pay-request
+  eventsTopicAddress: ffc-pay-events
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false
@@ -14,24 +14,24 @@ container:
   maxProcessingTries: 500
   disableSequenceValidation: false
 postgresService:
-  postgresDb: ffc-pay-batch-processor-pre
-  postgresqlHost: preffcdbssq1001.postgres.database.azure.com
+  postgresDb: ffc-pay-batch-processor-prd
+  postgresqlHost: prdffcdbssq1001.postgres.database.azure.com
   postgresPort: 5432
   postgresSchema: public
 secretProviderClass:
   azure:
-    keyvaultName: PREFFCINFKV1001
+    keyvaultName: PRDFFCINFKV1001
     objects:
-      - objectName: pre-ffcahwr-appInsights-connectionString
+      - objectName: prd-ffcahwr-appInsights-connectionString
         objectType: secret
-      - objectName: pre-postgresPayBatchProcessorUser
+      - objectName: prd-postgresPayBatchProcessorUser
         objectType: secret
 
   secretObjects:
     - secretName: ffc-pay-batch-processor
       type: Opaque
       data:
-        - objectName: pre-ffcahwr-appInsights-connectionString
+        - objectName: prd-ffcahwr-appInsights-connectionString
           key: APPINSIGHTS_CONNECTION_STRING
-        - objectName: pre-postgresPayBatchProcessorUser
+        - objectName: prd-postgresPayBatchProcessorUser
           key: POSTGRES_USER

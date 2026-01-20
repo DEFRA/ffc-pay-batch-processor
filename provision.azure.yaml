@@ -2,8 +2,17 @@ resources:
   identity: pay-batch-processor
   postgreSql:
     name: ffc-pay-batch-processor
-  topics:
-    - name: ffc-pay-request
-      role: sender
-    - name: ffc-pay-events
-      role: sender
+  service_bus:
+    topics:
+      - name: ffc-pay-request
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: sender
+      - name: ffc-pay-events
+        defaultMessageTimeToLive: P3650D
+        duplicateDetectionHistoryTimeWindow: PT10M30S
+        requiresDuplicateDetection: true
+        roles: 
+        - name: sender

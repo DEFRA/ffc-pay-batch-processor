@@ -1,0 +1,37 @@
+---
+environment: production
+environmentCode: dev
+container:
+  messageQueueHost: DEVFFCINFSB1001.servicebus.windows.net
+  processingActive: true
+  azureStorageAccountName: devffcpayst1001
+  paymentTopicAddress: ffc-pay-request-dev
+  eventsTopicAddress: ffc-pay-events-dev
+  azureStorageConnectionString: dummy
+  azureStorageUseConnectionString: false
+  azureStorageCreateContainers: false
+  pollingInterval: 10000
+  maxProcessingTries: 500
+  disableSequenceValidation: false
+postgresService:
+  postgresDb: ffc-pay-batch-processor-dev
+  postgresqlHost: devffcdbssq1001.postgres.database.azure.com
+  postgresPort: 5432
+  postgresSchema: public
+secretProviderClass:
+  azure:
+    keyvaultName: DEVFFCINFKV1001
+    objects:
+      - objectName: devtest-ffcahwr-appInsights-connectionString
+        objectType: secret
+      - objectName: dev-postgresPayBatchProcessorUser
+        objectType: secret
+
+  secretObjects:
+    - secretName: ffc-pay-batch-processor
+      type: Opaque
+      data:
+        - objectName: devtest-ffcahwr-appInsights-connectionString
+          key: APPINSIGHTS_CONNECTION_STRING
+        - objectName: dev-postgresPayBatchProcessorUser
+          key: POSTGRES_USER
