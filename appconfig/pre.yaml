@@ -13,11 +13,6 @@ container:
   pollingInterval: 10000
   maxProcessingTries: 500
   disableSequenceValidation: false
-postgresService:
-  postgresDb: ffc-pay-batch-processor-pre
-  postgresqlHost: preffcdbssq1001.postgres.database.azure.com
-  postgresPort: 5432
-  postgresSchema: public
 secretProviderClass:
   azure:
     keyvaultName: PREFFCINFKV1001
