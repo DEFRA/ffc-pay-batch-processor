@@ -3,7 +3,6 @@ environment: production
 environmentCode: snd
 container:
   messageQueueHost: SNDFFCINFSB2001.servicebus.windows.net
-  processingActive: true
   azureStorageAccountName: snd2ffcpayst2001
   paymentTopicAddress: ffc-pay-request-snd2
   eventsTopicAddress: ffc-pay-events-snd2

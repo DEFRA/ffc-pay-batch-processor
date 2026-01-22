@@ -49,23 +49,29 @@ extends:
       pollingInterval: $(pr_pollingInterval)
       maxProcessingTries: $(pr_maxProcessingTries)
       disableSequenceValidation: $(pr_disableSequenceValidation)
+      processingActive: $(pr_processingActive)
     snd2_params:
       pollingInterval: $(snd2_pollingInterval)
       maxProcessingTries: $(snd2_maxProcessingTries)
       disableSequenceValidation: $(snd2_disableSequenceValidation)
+      processingActive: $(snd2_processingActive)
     dev_params:
       pollingInterval: $(dev_pollingInterval)
       maxProcessingTries: $(dev_maxProcessingTries)
       disableSequenceValidation: $(dev_disableSequenceValidation)
+      processingActive: $(dev_processingActive)
     test_params:
       pollingInterval: $(test_pollingInterval)
       maxProcessingTries: $(test_maxProcessingTries)
       disableSequenceValidation: $(test_disableSequenceValidation)
+      processingActive: $(test_processingActive)
     pre_params:
       pollingInterval: $(pre_pollingInterval)
       maxProcessingTries: $(pre_maxProcessingTries)
       disableSequenceValidation: $(pre_disableSequenceValidation)
+      processingActive: $(pre_processingActive)
     prd_params:
-      pollingInterval: $(prod_pollingInterval)
-      maxProcessingTries: $(prod_maxProcessingTries)
-      disableSequenceValidation: $(prod_disableSequenceValidation)
+      pollingInterval: $(prd_pollingInterval)
+      maxProcessingTries: $(prd_maxProcessingTries)
+      disableSequenceValidation: $(prd_disableSequenceValidation)
+      processingActive: $(prd_processingActive)

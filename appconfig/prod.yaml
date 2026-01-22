@@ -3,7 +3,6 @@ environment: production
 environmentCode: prd
 container:
   messageQueueHost: PRDFFCINFSB1001.servicebus.windows.net
-  processingActive: true
   azureStorageAccountName: prdffcpayst1001
   paymentTopicAddress: ffc-pay-request
   eventsTopicAddress: ffc-pay-events

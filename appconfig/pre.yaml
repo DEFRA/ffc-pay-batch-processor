@@ -3,7 +3,6 @@ environment: production
 environmentCode: pre
 container:
   messageQueueHost: PREFFCINFSB1001.servicebus.windows.net
-  processingActive: true
   azureStorageAccountName: preffcpayst1001
   paymentTopicAddress: ffc-pay-request-pre
   eventsTopicAddress: ffc-pay-events-pre

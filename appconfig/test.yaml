@@ -3,7 +3,6 @@ environment: production
 environmentCode: test
 container:
   messageQueueHost: DEVFFCINFSB1001.servicebus.windows.net
-  processingActive: true
   azureStorageAccountName: testffcpayst1001
   paymentTopicAddress: ffc-pay-request-test
   eventsTopicAddress: ffc-pay-events-test
