@@ -15,6 +15,6 @@ container:
   disableSequenceValidation: false
 postgresService:
   postgresDb: ffc-pay-batch-processor-snd2
-  postgresqlHost: snd2ffcdbssq1001.postgres.database.azure.com
+  postgresqlHost: sndffcdbsps2001.postgres.database.azure.com
   postgresPort: 5432
   postgresSchema: public
