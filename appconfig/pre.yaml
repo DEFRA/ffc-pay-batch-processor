@@ -19,8 +19,6 @@ secretProviderClass:
     objects:
       - objectName: pre-ffcahwr-appInsights-connectionString
         objectType: secret
-      - objectName: pre-postgresPayBatchProcessorUser
-        objectType: secret
 
   secretObjects:
     - secretName: ffc-pay-batch-processor
@@ -28,5 +26,3 @@ secretProviderClass:
       data:
         - objectName: pre-ffcahwr-appInsights-connectionString
           key: APPINSIGHTS_CONNECTION_STRING
-        - objectName: pre-postgresPayBatchProcessorUser
-          key: POSTGRES_USERNAME
