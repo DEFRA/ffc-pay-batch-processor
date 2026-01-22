@@ -22,3 +22,5 @@ resources:
         - name: batch
           roles:
             - name: blobContributor
+      roles:
+        - name: storageAccountContributor
