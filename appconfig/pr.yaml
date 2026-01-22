@@ -6,8 +6,8 @@ container:
   messageQueueHost: SNDFFCINFSB2001.servicebus.windows.net
   processingActive: true
   azureStorageAccountName: snd2ffcpayst2001
-  paymentTopicAddress: topic:ffc-pay-request
-  eventsTopicAddress: topic:ffc-pay-events
+  paymentTopicAddress: queue:ffc-pay-request
+  eventsTopicAddress: queue:ffc-pay-events
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false
