@@ -10,6 +10,3 @@ container:
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false
-  pollingInterval: 10000
-  maxProcessingTries: 500
-  disableSequenceValidation: false

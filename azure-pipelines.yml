@@ -44,3 +44,28 @@ extends:
     branchDeployment: ${{ parameters.branchDeployment }}
     sndDeployment: ${{ parameters.sndDeployment }}
     # failOnThreshold: moderate
+    variableGroupName: ffc-pay-batch-processor-env-var
+    pr_params:
+      pollingInterval: $(pr_pollingInterval)
+      maxProcessingTries: $(pr_maxProcessingTries)
+      disableSequenceValidation: $(pr_disableSequenceValidation)
+    snd2_params:
+      pollingInterval: $(snd2_pollingInterval)
+      maxProcessingTries: $(snd2_maxProcessingTries)
+      disableSequenceValidation: $(snd2_disableSequenceValidation)
+    dev_params:
+      pollingInterval: $(dev_pollingInterval)
+      maxProcessingTries: $(dev_maxProcessingTries)
+      disableSequenceValidation: $(dev_disableSequenceValidation)
+    test_params:
+      pollingInterval: $(test_pollingInterval)
+      maxProcessingTries: $(test_maxProcessingTries)
+      disableSequenceValidation: $(test_disableSequenceValidation)
+    pre_params:
+      pollingInterval: $(pre_pollingInterval)
+      maxProcessingTries: $(pre_maxProcessingTries)
+      disableSequenceValidation: $(pre_disableSequenceValidation)
+    prod_params:
+      pollingInterval: $(prod_pollingInterval)
+      maxProcessingTries: $(prod_maxProcessingTries)
+      disableSequenceValidation: $(prod_disableSequenceValidation)
