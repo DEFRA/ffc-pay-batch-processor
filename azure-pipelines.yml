@@ -65,7 +65,7 @@ extends:
       pollingInterval: $(pre_pollingInterval)
       maxProcessingTries: $(pre_maxProcessingTries)
       disableSequenceValidation: $(pre_disableSequenceValidation)
-    prod_params:
+    prd_params:
       pollingInterval: $(prod_pollingInterval)
       maxProcessingTries: $(prod_maxProcessingTries)
       disableSequenceValidation: $(prod_disableSequenceValidation)
