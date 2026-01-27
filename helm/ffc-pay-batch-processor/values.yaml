@@ -14,7 +14,7 @@ containerConfigMap:
   name: ffc-pay-batch-processor-config-map
 
 containerSecret:
-  name: ffc-pay-batch-processor-container-secret
+  name: ffc-pay-batch-processor
   type: Opaque
 
 deployment:
