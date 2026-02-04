@@ -4,8 +4,8 @@ environmentCode: prd
 container:
   messageQueueHost: PRDFFCINFSB1001.servicebus.windows.net
   azureStorageAccountName: prdffcpayst1001
-  paymentTopicAddress: ffc-pay-request-prd
-  eventsTopicAddress: ffc-pay-events-prd
+  paymentTopicAddress: ffc-pay-request
+  eventsTopicAddress: ffc-pay-events
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false

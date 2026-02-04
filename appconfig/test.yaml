@@ -4,8 +4,8 @@ environmentCode: test
 container:
   messageQueueHost: DEVFFCINFSB1001.servicebus.windows.net
   azureStorageAccountName: testffcpayst1001
-  paymentTopicAddress: ffc-pay-request-test
-  eventsTopicAddress: ffc-pay-events-test
+  paymentTopicAddress: ffc-pay-request
+  eventsTopicAddress: ffc-pay-events
   azureStorageConnectionString: dummy
   azureStorageUseConnectionString: false
   azureStorageCreateContainers: false
