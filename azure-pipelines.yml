@@ -46,32 +46,32 @@ extends:
     # failOnThreshold: moderate
     variableGroupName: ffc-pay-batch-processor-env-var
     pr_params:
-      pollingInterval: $(pr_pollingInterval)
-      maxProcessingTries: $(pr_maxProcessingTries)
-      disableSequenceValidation: ${{ eq(variables['pr_disableSequenceValidation'], 'true') }}
-      processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
+      container.pollingInterval: $(pr_pollingInterval)
+      container.maxProcessingTries: $(pr_maxProcessingTries)
+      container.disableSequenceValidation: ${{ eq(variables['pr_disableSequenceValidation'], 'true') }}
+      container.processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
     snd2_params:
-      pollingInterval: $(snd2_pollingInterval)
-      maxProcessingTries: $(snd2_maxProcessingTries)
-      disableSequenceValidation: ${{ eq(variables['snd2_disableSequenceValidation'], 'true') }}
-      processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
+      container.pollingInterval: $(snd2_pollingInterval)
+      container.maxProcessingTries: $(snd2_maxProcessingTries)
+      container.disableSequenceValidation: ${{ eq(variables['snd2_disableSequenceValidation'], 'true') }}
+      container.processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
     dev_params:
-      pollingInterval: $(dev_pollingInterval)
-      maxProcessingTries: $(dev_maxProcessingTries)
-      disableSequenceValidation: ${{ eq(variables['dev_disableSequenceValidation'], 'true') }}
-      processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
+      container.pollingInterval: $(dev_pollingInterval)
+      container.maxProcessingTries: $(dev_maxProcessingTries)
+      container.disableSequenceValidation: ${{ eq(variables['dev_disableSequenceValidation'], 'true') }}
+      container.processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
     test_params:
-      pollingInterval: $(test_pollingInterval)
-      maxProcessingTries: $(test_maxProcessingTries)
-      disableSequenceValidation: ${{ eq(variables['test_disableSequenceValidation'], 'true') }}
-      processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
+      container.pollingInterval: $(test_pollingInterval)
+      container.maxProcessingTries: $(test_maxProcessingTries)
+      container.disableSequenceValidation: ${{ eq(variables['test_disableSequenceValidation'], 'true') }}
+      container.processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
     pre_params:
-      pollingInterval: $(pre_pollingInterval)
-      maxProcessingTries: $(pre_maxProcessingTries)
-      disableSequenceValidation: ${{ eq(variables['pre_disableSequenceValidation'], 'true') }}
-      processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
+      container.pollingInterval: $(pre_pollingInterval)
+      container.maxProcessingTries: $(pre_maxProcessingTries)
+      container.disableSequenceValidation: ${{ eq(variables['pre_disableSequenceValidation'], 'true') }}
+      container.processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
     prd_params:
-      pollingInterval: $(prd_pollingInterval)
-      maxProcessingTries: $(prd_maxProcessingTries)
-      disableSequenceValidation: ${{ eq(variables['prd_disableSequenceValidation'], 'true') }}
-      processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
+      container.pollingInterval: $(prd_pollingInterval)
+      container.maxProcessingTries: $(prd_maxProcessingTries)
+      container.disableSequenceValidation: ${{ eq(variables['prd_disableSequenceValidation'], 'true') }}
+      container.processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
