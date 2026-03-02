@@ -1,9 +1,9 @@
 ---
 environment: production
-environmentCode: test
+environmentCode: prd
 container:
-  messageQueueHost: DEVFFCINFSB1001.servicebus.windows.net
-  azureStorageAccountName: testffcpayst1001
+  messageQueueHost: PRDFFCINFSB1001.servicebus.windows.net
+  azureStorageAccountName: prdffcpayst1001
   paymentTopicAddress: ffc-pay-request
   eventsTopicAddress: ffc-pay-events
   azureStorageConnectionString: dummy
@@ -11,14 +11,14 @@ container:
   azureStorageCreateContainers: false
 secretProviderClass:
   azure:
-    keyvaultName: DEVFFCINFKV1001
+    keyvaultName: PRDFFCINFKV1001
     objects:
-      - objectName: devtest-ffcahwr-appInsights-connectionString
+      - objectName: prd-ffcahwr-appInsights-connectionString
         objectType: secret
 
   secretObjects:
     - secretName: ffc-pay-batch-processor
       type: Opaque
       data:
-        - objectName: devtest-ffcahwr-appInsights-connectionString
+        - objectName: prd-ffcahwr-appInsights-connectionString
           key: APPINSIGHTS_CONNECTION_STRING
