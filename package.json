@@ -13,8 +13,8 @@
     "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
     "start:watch": "nodemon --inspect=0.0.0.0 --ext js --legacy-watch app/index.js",
-    "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js"
-  },
+    "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js",
+    "prepare": "sh -c 'command -v husky >/dev/null && husky install || true'"  },
   "author": "Defra",
   "contributors": [
     "John Watson john.watson1@defra.gov.uk",
@@ -51,6 +51,7 @@
     "blipp": "4.0.2",
     "eslint": "9.39.1",
     "hamjest": "3.7.3",
+    "husky": "^9.1.7",
     "jest": "29.6.4",
     "jest-junit": "13.2.0",
     "neostandard": "0.12.2",
