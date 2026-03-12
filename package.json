@@ -14,7 +14,8 @@
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
     "start:watch": "nodemon --inspect=0.0.0.0 --ext js --legacy-watch app/index.js",
     "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js",
-    "prepare": "sh -c 'command -v husky >/dev/null && husky install || true'"  },
+    "prepare": "sh -c 'command -v husky >/dev/null && husky install || true'"
+  },
   "author": "Defra",
   "contributors": [
     "John Watson john.watson1@defra.gov.uk",
@@ -42,7 +43,7 @@
     "hapi-pino": "13.0.0",
     "joi": "17.13.3",
     "log-timestamp": "0.3.0",
-    "sequelize": "6.31.1",
+    "sequelize": "^6.37.8",
     "uuid": "8.3.2"
   },
   "devDependencies": {
