@@ -35,7 +35,7 @@
     "@azure/storage-blob": "12.29.1",
     "@hapi/hapi": "21.4.0",
     "@joi/date": "2.1.0",
-    "applicationinsights": "2.9.6",
+    "@azure/monitor-opentelemetry": "1.16.0",
     "ffc-database": "1.0.24",
     "ffc-messaging": "2.10.5",
     "ffc-pay-event-publisher": "1.2.3",
