@@ -7,3 +7,4 @@ helm/**/*.lock
 .env
 .idea
 .DS_Store
+.gitleaks-shared/
