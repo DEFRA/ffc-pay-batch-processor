@@ -32,10 +32,20 @@ describe('V2 events for processed payment requests', () => {
 
     error = 'Bad payment request'
     paymentRequests.forEach(paymentRequest => { paymentRequest.errorMessage = error })
+
+    jest.spyOn(console, 'log').mockImplementation(() => {})
   })
 
   afterEach(async () => {
     jest.clearAllMocks()
+  })
+
+  test('should log identifiers of invalid payment requests', async () => {
+    await sendPaymentRequestInvalidEvents(paymentRequests)
+    expect(console.log).toHaveBeenCalledWith(
+      'Publishing events for invalid payment requests',
+      paymentRequests.map(({ frn, sbi, paymentRequestNumber }) => ({ frn, sbi, paymentRequestNumber }))
+    )
   })
 
   test('should send event to V2 topic', async () => {
