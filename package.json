@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-batch-processor",
-  "version": "1.41.22",
+  "version": "1.41.23",
   "description": "FFC Payment Batch Processor",
   "homepage": "https://github.com/DEFRA/ffc-pay-batch-processor",
   "main": "app/index.js",
@@ -14,7 +14,8 @@
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
     "start:watch": "nodemon --inspect=0.0.0.0 --ext js --legacy-watch app/index.js",
     "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js",
-    "prepare": "node --eval \"const fs=require('fs'),cp=require('child_process');if(fs.existsSync('.git')&&!process.env.CI&&!process.env.TF_BUILD)cp.execSync('husky',{stdio:'inherit'})\""  },
+    "prepare": "node --eval \"const fs=require('fs'),cp=require('child_process');if(fs.existsSync('.git')&&!process.env.CI&&!process.env.TF_BUILD)cp.execSync('husky',{stdio:'inherit'})\""
+  },
   "author": "Defra",
   "contributors": [
     "John Watson john.watson1@defra.gov.uk",
@@ -35,7 +36,7 @@
     "@azure/storage-blob": "12.31.0",
     "@hapi/hapi": "21.4.0",
     "@joi/date": "2.1.0",
-    "applicationinsights": "2.9.6",
+    "@azure/monitor-opentelemetry": "1.16.0",
     "ffc-database": "1.0.25",
     "ffc-messaging": "2.10.6",
     "ffc-pay-event-publisher": "1.2.5",
