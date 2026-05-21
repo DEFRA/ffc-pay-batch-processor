@@ -12,7 +12,7 @@ const sendBatchMessages = async (body, type, options) => {
 
         messages.push(createMessage(item, type))
       } catch {
-        console.error('Could not create message for', item)
+        console.error('Could not create message for item:', { frn: item?.frn, sbi: item?.sbi, paymentRequestNumber: item?.paymentRequestNumber })
       }
     }
 
