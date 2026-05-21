@@ -63,7 +63,7 @@
       "**/test-output/**"
     ]
   },
-    "overrides": {
+  "overrides": {
     "protobufjs": "8.2.0"
   }
 }
