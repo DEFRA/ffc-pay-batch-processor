@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 const { buildInvoiceLines } = require('./build-invoice-lines')
 const handleKnownDefects = require('./handle-known-defects')
 const { cs, combinedOffer } = require('../../constants/schemes')
@@ -31,7 +31,7 @@ const buildPaymentRequests = (paymentRequests, sourceSystem) => {
     schedule: paymentRequest.schedule,
     dueDate: paymentRequest.invoiceLines?.[START_AT_ZERO]?.dueDate,
     value: paymentRequest.value,
-    correlationId: uuidv4(),
+    correlationId: randomUUID(),
     invoiceLines: buildInvoiceLines(paymentRequest)
   })).map(x => handleKnownDefects(x))
 }

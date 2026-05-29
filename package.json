@@ -43,8 +43,7 @@
     "hapi-pino": "13.0.0",
     "joi": "17.13.3",
     "log-timestamp": "0.3.0",
-    "sequelize": "6.37.8",
-    "uuid": "8.3.2"
+    "sequelize": "6.37.8"
   },
   "devDependencies": {
     "@azure/service-bus": "7.9.5",
@@ -64,6 +63,7 @@
     ]
   },
   "overrides": {
-    "protobufjs": "8.2.0"
+    "protobufjs": "8.2.0",
+    "uuid": "11.1.1"
   }
 }

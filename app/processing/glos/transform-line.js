@@ -1,8 +1,8 @@
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 
 const transformLine = (batchLine, schemeId, filename) => {
   return {
-    correlationId: uuidv4(),
+    correlationId: randomUUID(),
     batch: filename,
     schemeId,
     batchExportDate: batchLine[3],
