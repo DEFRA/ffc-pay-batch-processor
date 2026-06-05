@@ -1,8 +1,8 @@
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 
 const transformHeader = (headerData, schemeId, filename) => {
   return {
-    correlationId: uuidv4(),
+    correlationId: randomUUID(),
     schemeId,
     batch: filename,
     paymentRequestNumber: 1,
