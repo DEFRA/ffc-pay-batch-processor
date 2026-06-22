@@ -42,6 +42,7 @@ container:
   maxProcessingTries: 500
   disableSequenceValidation: false
   processingActive: true
+  azureLogLevel: error
 
 postgresService:
   postgresDb: ffc_pay_batch_processor
