@@ -1,5 +1,5 @@
-jest.mock('uuid')
-const { v4: uuidv4 } = require('uuid')
+jest.mock('node:crypto')
+const { randomUUID } = require('node:crypto')
 
 const { filename1 } = require('../../../mocks/glos-filenames')
 
@@ -10,7 +10,7 @@ let batchLine = ['', '', '', '31/05/2023 22:01:38', '', '', '0725', '33315 16', 
 
 describe('Transform line', () => {
   const correlationId = require('../../../mocks/correlation-id')
-  uuidv4.mockReturnValue(correlationId)
+  randomUUID.mockReturnValue(correlationId)
 
   test('transforms GLOS line', async () => {
     const result = transformLine(batchLine, fc.schemeId, filename1)

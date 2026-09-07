@@ -1,5 +1,5 @@
-jest.mock('uuid')
-const { v4: uuidv4 } = require('uuid')
+jest.mock('node:crypto')
+const { randomUUID } = require('node:crypto')
 
 jest.mock('../../../../app/processing/siti-agri/handle-known-defects')
 const handleKnownDefects = require('../../../../app/processing/siti-agri/handle-known-defects')
@@ -37,7 +37,7 @@ describe('Build payment requests', () => {
 
     sourceSystem = paymentRequest.sourceSystem
 
-    uuidv4.mockReturnValue(correlationId)
+    randomUUID.mockReturnValue(correlationId)
     buildInvoiceLines.mockReturnValue(mappedInvoiceLines)
     handleKnownDefects.mockImplementation((x) => { return x })
   })
@@ -51,25 +51,25 @@ describe('Build payment requests', () => {
     expect(result).toMatchObject([])
   })
 
-  test('should call uuidv4 when valid paymentRequests and sourceSystem are given', async () => {
+  test('should call randomUUID when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(uuidv4).toBeCalled()
+    expect(randomUUID).toBeCalled()
   })
 
-  test('should call uuidv4 once when valid paymentRequests and sourceSystem are given', async () => {
+  test('should call randomUUID once when valid paymentRequests and sourceSystem are given', async () => {
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(uuidv4).toBeCalledTimes(1)
+    expect(randomUUID).toBeCalledTimes(1)
   })
 
-  test('should call uuidv4 twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
+  test('should call randomUUID twice when paymentRequests has 2 payment requests and sourceSystem are given', async () => {
     paymentRequests = [paymentRequest, paymentRequest]
     buildPaymentRequests(paymentRequests, sourceSystem)
-    expect(uuidv4).toBeCalledTimes(2)
+    expect(randomUUID).toBeCalledTimes(2)
   })
 
-  test('should not call uuidv4 when an empty paymentRequests array and valid sourceSystem are given', async () => {
+  test('should not call randomUUID when an empty paymentRequests array and valid sourceSystem are given', async () => {
     buildPaymentRequests([], sourceSystem)
-    expect(uuidv4).not.toBeCalled()
+    expect(randomUUID).not.toBeCalled()
   })
 
   test('should call buildInvoiceLines when valid paymentRequests and sourceSystem are given', async () => {

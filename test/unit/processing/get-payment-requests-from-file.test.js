@@ -1,5 +1,5 @@
-jest.mock('uuid')
-const { v4: uuidv4 } = require('uuid')
+jest.mock('node:crypto')
+const { randomUUID } = require('node:crypto')
 
 jest.mock('../../../app/processing/siti-agri/filter-payment-requests')
 const filterPaymentRequests = require('../../../app/processing/siti-agri/filter-payment-requests')
@@ -26,7 +26,7 @@ let batchPaymentRequestsLumpSums
 
 describe('getPaymentRequestsFromFile', () => {
   beforeEach(async () => {
-    uuidv4.mockReturnValue(mockCorrelationId)
+    randomUUID.mockReturnValue(mockCorrelationId)
 
     filename = mockFileName
     fileBuffer = Buffer.from(

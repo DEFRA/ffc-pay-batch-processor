@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid')
+const { randomUUID } = require('node:crypto')
 const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
 const combinedOfferSchemes = require('../../constants/combined-offer-schemes')
 
@@ -73,7 +73,7 @@ const getSchemeId = (headerData, schemeId) => {
 
 const transformSFIOrDPHeader = (headerData, schemeId, filename) => {
   const headerItems = {
-    correlationId: uuidv4(),
+    correlationId: randomUUID(),
     schemeId: schemeId === combinedOffer.schemeId ? getSchemeId(headerData, schemeId) : schemeId,
     batch: filename,
     invoiceNumber: headerData[HEADER_INVOICE_NO],
@@ -95,7 +95,7 @@ const transformSFIOrDPHeader = (headerData, schemeId, filename) => {
 }
 
 const transformLumpSumsHeader = (headerData, schemeId, filename) => ({
-  correlationId: uuidv4(),
+  correlationId: randomUUID(),
   schemeId,
   batch: filename,
   invoiceNumber: headerData[1],
@@ -109,7 +109,7 @@ const transformLumpSumsHeader = (headerData, schemeId, filename) => ({
 })
 
 const transformBPSHeader = (headerData, schemeId, filename) => ({
-  correlationId: uuidv4(),
+  correlationId: randomUUID(),
   schemeId,
   batch: filename,
   invoiceNumber: headerData[HEADER_INVOICE_NO],
@@ -123,7 +123,7 @@ const transformBPSHeader = (headerData, schemeId, filename) => ({
 })
 
 const transformCSHeader = (headerData, schemeId, filename) => ({
-  correlationId: uuidv4(),
+  correlationId: randomUUID(),
   schemeId,
   batch: filename,
   invoiceNumber: headerData[HEADER_INVOICE_NO],

@@ -4,12 +4,12 @@ const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
 const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
 const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
 
-jest.mock('uuid')
-const { v4: uuidv4 } = require('uuid')
+jest.mock('node:crypto')
+const { randomUUID } = require('node:crypto')
 
 describe('Transform header', () => {
   const correlationId = require('../../../mocks/correlation-id')
-  uuidv4.mockReturnValue(correlationId)
+  randomUUID.mockReturnValue(correlationId)
 
   const testCases = [
     {
