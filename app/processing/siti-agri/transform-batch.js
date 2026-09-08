@@ -1,9 +1,11 @@
+const { parseInteger, parseFloatValue } = require('../numeric-parse-helpers')
+
 const transformBatch = (batchHeader) => {
   return {
     exportDate: batchHeader[1],
-    numberOfPaymentRequests: !isNaN(batchHeader[2]) ? parseInt(batchHeader[2]) : undefined,
-    batchValue: !isNaN(batchHeader[3]) ? parseFloat(batchHeader[3]) : undefined,
-    sequence: !isNaN(batchHeader[4]) ? parseInt(batchHeader[4]) : undefined,
+    numberOfPaymentRequests: parseInteger(batchHeader[2]),
+    batchValue: parseFloatValue(batchHeader[3]),
+    sequence: parseInteger(batchHeader[4]),
     sourceSystem: batchHeader[5],
     ledger: batchHeader[6]
   }

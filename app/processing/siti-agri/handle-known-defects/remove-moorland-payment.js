@@ -1,10 +1,12 @@
-const { sfi } = require('../../../constants/schemes')
+const { getSourceSystems } = require('ffc-pay-schemes')
 const { MOORLAND_SCHEME_CODE } = require('../../../constants/scheme-codes')
 const { GROSS_LINE_DESCRIPTION } = require('../../../constants/line-descriptions')
 const { convertToPence } = require('../../../currency-convert')
 
+const { SFI } = getSourceSystems()
+
 const removeMoorlandPayment = (paymentRequest) => {
-  if (paymentRequest.sourceSystem !== sfi.sourceSystem) {
+  if (paymentRequest.sourceSystem !== SFI) {
     return paymentRequest
   }
 
@@ -28,11 +30,13 @@ const groupBySchemeCode = (invoiceLines) => {
 
     // if key doesn't exist then first instance so create new group
     const item = x.get(key) || {
-      ...{ schemeCode: y.schemeCode, value: 0 }
+      schemeCode: y.schemeCode, value: 0
     }
     item.value += convertToPence(y.value)
     return x.set(key, item)
   }, new Map()).values()]
 }
 
-module.exports = { removeMoorlandPayment }
+module.exports = {
+  removeMoorlandPayment
+}

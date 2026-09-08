@@ -1,25 +1,29 @@
 const { randomUUID } = require('node:crypto')
+const { getSchemeIds, getSourceSystems } = require('ffc-pay-schemes')
 const { buildInvoiceLines } = require('./build-invoice-lines')
 const handleKnownDefects = require('./handle-known-defects')
-const { cs, combinedOffer } = require('../../constants/schemes')
-const { sfiExpanded, cohtRevenue } = require('../../constants/combined-offer-schemes')
+
+const { CS, COHT_REVENUE } = getSchemeIds()
+const { SFI_EXPANDED: SFI_EXPANDED_SOURCE_SYSTEM, COHT_REVENUE: COHT_REVENUE_SOURCE_SYSTEM } = getSourceSystems()
 const START_AT_ZERO = 0
 
 const getCombinedSourceSystem = (schemeId) => {
-  if (schemeId === cohtRevenue.schemeId) {
-    return cohtRevenue.sourceSystem
+  if (schemeId === COHT_REVENUE) {
+    return COHT_REVENUE_SOURCE_SYSTEM
   }
-  return sfiExpanded.sourceSystem
+  return SFI_EXPANDED_SOURCE_SYSTEM
 }
 
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
-  if (paymentRequests === undefined) { return [] }
+  if (paymentRequests === undefined) {
+    return []
+  }
 
   return paymentRequests.map(paymentRequest => ({
-    sourceSystem: (sourceSystem === combinedOffer.sourceSystem) ? getCombinedSourceSystem(paymentRequest.schemeId) : sourceSystem,
+    sourceSystem: (sourceSystem === SFI_EXPANDED_SOURCE_SYSTEM) ? getCombinedSourceSystem(paymentRequest.schemeId) : sourceSystem,
     schemeId: paymentRequest.schemeId,
     batch: paymentRequest.batch,
-    deliveryBody: paymentRequest.schemeId === cs.schemeId ? paymentRequest.invoiceLines?.[START_AT_ZERO]?.deliveryBody : paymentRequest.deliveryBody,
+    deliveryBody: paymentRequest.schemeId === CS ? paymentRequest.invoiceLines?.[START_AT_ZERO]?.deliveryBody : paymentRequest.deliveryBody,
     invoiceNumber: paymentRequest.invoiceNumber,
     frn: paymentRequest.frn,
     marketingYear: paymentRequest.invoiceLines?.[START_AT_ZERO]?.marketingYear,

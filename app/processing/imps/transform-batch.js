@@ -1,11 +1,13 @@
-const { imps } = require('../../constants/schemes')
+const { getSourceSystems } = require('ffc-pay-schemes')
+
+const { IMPS } = getSourceSystems()
 
 const transformBatch = (batchHeader) => {
   return {
-    sequence: !isNaN(batchHeader[2]) ? parseInt(batchHeader[2]) : undefined,
-    numberOfPaymentRequests: !isNaN(batchHeader[3]) ? parseInt(batchHeader[3]) : undefined,
-    batchValue: !isNaN(batchHeader[5]) ? parseFloat(batchHeader[5]) : undefined,
-    sourceSystem: imps.sourceSystem
+    sequence: !Number.isNaN(batchHeader[2]) ? Number.parseInt(batchHeader[2]) : undefined,
+    numberOfPaymentRequests: !Number.isNaN(batchHeader[3]) ? Number.parseInt(batchHeader[3]) : undefined,
+    batchValue: !Number.isNaN(batchHeader[5]) ? Number.parseFloat(batchHeader[5]) : undefined,
+    sourceSystem: IMPS
   }
 }
 
