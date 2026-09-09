@@ -1,10 +1,12 @@
-const { imps } = require('../../app/constants/schemes')
+const { getSourceSystems } = require('ffc-pay-schemes')
+
+const { IMPS } = getSourceSystems()
 
 const batchHeader = {
   batchValue: 100,
   numberOfPaymentRequests: 1,
   sequence: 1,
-  sourceSystem: imps.sourceSystem
+  sourceSystem: IMPS
 }
 
 module.exports = batchHeader

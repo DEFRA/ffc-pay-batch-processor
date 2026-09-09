@@ -1,76 +1,155 @@
-jest.mock('../../../app/data')
+jest.mock('ffc-pay-schemes', () => {
+  const actual = jest.requireActual('ffc-pay-schemes')
+
+  return {
+    ...actual,
+    getSchemeFromBatchFileName: jest.fn()
+  }
+})
+
+jest.mock('../../../app/data', () => ({
+  sequelize: {
+    transaction: jest.fn()
+  },
+  lock: {
+    findByPk: jest.fn()
+  }
+}))
+
+jest.mock('../../../app/storage', () => ({
+  getInboundFileList: jest.fn()
+}))
+
+jest.mock('../../../app/processing/process-payment-file', () => jest.fn())
+
 const mockDb = require('../../../app/data')
-
-jest.mock('../../../app/storage')
 const mockStorage = require('../../../app/storage')
-
-jest.mock('../../../app/processing/get-scheme-from-filename')
-const mockGetSchemeFromFilename = require('../../../app/processing/get-scheme-from-filename')
-
-jest.mock('../../../app/processing/process-payment-file')
+const { getSchemeFromBatchFileName, getSchemeIds } = require('ffc-pay-schemes')
 const mockProcessPaymentFile = require('../../../app/processing/process-payment-file')
-
-const mockCommit = jest.fn()
-const mockRollback = jest.fn()
-
-const { sfi } = require('../../../app/constants/schemes')
-
 const pollInbound = require('../../../app/processing/poll-inbound')
 
+const { SFI } = getSchemeIds()
+
+const sfi = {
+  name: 'SFI22',
+  schemeId: SFI,
+  sourceSystem: 'SFI'
+}
+
 describe('poll inbound', () => {
+  let transaction
+  let consoleLog
+
   beforeEach(() => {
     jest.clearAllMocks()
-    mockDb.sequelize = {
-      transaction: jest.fn(() => Promise.resolve({ commit: mockCommit, rollback: mockRollback }))
+
+    transaction = {
+      commit: jest.fn().mockResolvedValue(),
+      rollback: jest.fn().mockResolvedValue()
     }
-    mockStorage.getInboundFileList = jest.fn(() => Promise.resolve(['file1', 'file2']))
-    mockGetSchemeFromFilename.mockReturnValue(sfi)
+
+    mockDb.sequelize.transaction.mockResolvedValue(transaction)
+    mockDb.lock.findByPk.mockResolvedValue()
+    mockStorage.getInboundFileList.mockResolvedValue(['file1', 'file2'])
+    mockProcessPaymentFile.mockResolvedValue()
+    getSchemeFromBatchFileName.mockReturnValue(sfi)
+
+    consoleLog = jest.spyOn(console, 'log').mockImplementation()
   })
 
-  test('should create a database transaction', async () => {
+  afterEach(() => {
+    consoleLog.mockRestore()
+  })
+
+  test('creates a database transaction', async () => {
     await pollInbound()
+
     expect(mockDb.sequelize.transaction).toHaveBeenCalledTimes(1)
   })
 
-  test('should lock the lock table', async () => {
+  test('locks the lock table using the transaction', async () => {
     await pollInbound()
-    expect(mockDb.lock.findByPk).toHaveBeenCalledTimes(1)
-    expect(mockDb.lock.findByPk).toHaveBeenCalledWith(1, expect.objectContaining({ lock: true }))
+
+    expect(mockDb.lock.findByPk).toHaveBeenCalledWith(1, {
+      transaction,
+      lock: true
+    })
   })
 
-  test('should get the inbound file list', async () => {
+  test('gets the inbound file list', async () => {
     await pollInbound()
+
     expect(mockStorage.getInboundFileList).toHaveBeenCalledTimes(1)
   })
 
-  test('should get the scheme from each filename', async () => {
+  test('gets the scheme for each inbound filename', async () => {
     await pollInbound()
-    expect(mockGetSchemeFromFilename).toHaveBeenCalledTimes(2)
-    expect(mockGetSchemeFromFilename).toHaveBeenCalledWith('file1')
-    expect(mockGetSchemeFromFilename).toHaveBeenCalledWith('file2')
+
+    expect(getSchemeFromBatchFileName).toHaveBeenCalledTimes(2)
+    expect(getSchemeFromBatchFileName).toHaveBeenNthCalledWith(1, 'file1')
+    expect(getSchemeFromBatchFileName).toHaveBeenNthCalledWith(2, 'file2')
   })
 
-  test('should process each payment file if scheme matched', async () => {
+  test('processes each file with a matching scheme', async () => {
     await pollInbound()
+
     expect(mockProcessPaymentFile).toHaveBeenCalledTimes(2)
+    expect(mockProcessPaymentFile).toHaveBeenNthCalledWith(1, 'file1', sfi)
+    expect(mockProcessPaymentFile).toHaveBeenNthCalledWith(2, 'file2', sfi)
+  })
+
+  test('does not process files without a matching scheme', async () => {
+    getSchemeFromBatchFileName
+      .mockReturnValueOnce(sfi)
+      .mockReturnValueOnce(undefined)
+
+    await pollInbound()
+
+    expect(mockProcessPaymentFile).toHaveBeenCalledTimes(1)
     expect(mockProcessPaymentFile).toHaveBeenCalledWith('file1', sfi)
-    expect(mockProcessPaymentFile).toHaveBeenCalledWith('file2', sfi)
   })
 
-  test('should not process payment file if scheme not matched', async () => {
-    mockGetSchemeFromFilename.mockReturnValue(undefined)
+  test('logs the identified scheme', async () => {
     await pollInbound()
-    expect(mockProcessPaymentFile).toHaveBeenCalledTimes(0)
+
+    expect(consoleLog).toHaveBeenCalledWith(
+      `Identified payment file as scheme: ${sfi.name}`
+    )
   })
 
-  test('should commit the transaction', async () => {
+  test('commits the transaction after processing', async () => {
     await pollInbound()
-    expect(mockCommit).toHaveBeenCalledTimes(1)
+
+    expect(transaction.commit).toHaveBeenCalledTimes(1)
+    expect(transaction.rollback).not.toHaveBeenCalled()
   })
 
-  test('should rollback the transaction if error', async () => {
-    mockStorage.getInboundFileList.mockRejectedValue(new Error('Test error'))
+  test('rolls back and rethrows when getting the inbound file list fails', async () => {
+    const error = new Error('Test error')
+    mockStorage.getInboundFileList.mockRejectedValue(error)
+
     await expect(pollInbound()).rejects.toThrow('Test error')
-    expect(mockRollback).toHaveBeenCalledTimes(1)
+
+    expect(transaction.rollback).toHaveBeenCalledTimes(1)
+    expect(transaction.commit).not.toHaveBeenCalled()
+  })
+
+  test('rolls back and rethrows when processing a payment file fails', async () => {
+    const error = new Error('Processing error')
+    mockProcessPaymentFile.mockRejectedValue(error)
+
+    await expect(pollInbound()).rejects.toThrow('Processing error')
+
+    expect(transaction.rollback).toHaveBeenCalledTimes(1)
+    expect(transaction.commit).not.toHaveBeenCalled()
+  })
+
+  test('rolls back and rethrows when committing fails', async () => {
+    const error = new Error('Commit error')
+    transaction.commit.mockRejectedValue(error)
+
+    await expect(pollInbound()).rejects.toThrow('Commit error')
+
+    expect(transaction.rollback).toHaveBeenCalledTimes(1)
   })
 })

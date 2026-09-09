@@ -1,61 +1,69 @@
-const processPaymentFile = require('../../../app/processing/process-payment-file')
-
-jest.mock('../../../app/processing/batch')
-const batch = require('../../../app/processing/batch')
-
-jest.mock('../../../app/processing/quarantine-file')
-const quarantineFile = require('../../../app/processing/quarantine-file')
+jest.mock('../../../app/event')
+const { sendBatchErrorEvent } = require('../../../app/event')
 
 jest.mock('../../../app/processing/reprocess-if-needed')
 const reprocessIfNeeded = require('../../../app/processing/reprocess-if-needed')
 
-jest.mock('../../../app/processing/download-and-parse')
-const downloadAndParse = require('../../../app/processing/download-and-parse')
-const { sfiPilot } = require('../../../app/constants/schemes')
+jest.mock('../../../app/processing/process-if-valid')
+const processIfValid = require('../../../app/processing/process-if-valid')
 
-let filename
+const { getSchemeIds, getSourceSystems } = require('ffc-pay-schemes')
+const processPaymentFile = require('../../../app/processing/process-payment-file')
+
+const { SFI_PILOT } = getSchemeIds()
+const { SFI_PILOT: SFI_PILOT_SOURCE_SYSTEM } = getSourceSystems()
+
+const sfiPilot = {
+  schemeId: SFI_PILOT,
+  sourceSystem: SFI_PILOT_SOURCE_SYSTEM
+}
 
 describe('processPaymentFile', () => {
+  const filename = 'SITIELM0001_AP_20220317104956617.dat'
+
   beforeEach(() => {
-    filename = 'SITIELM0001_AP_20220317104956617.dat'
+    jest.clearAllMocks()
+    reprocessIfNeeded.mockResolvedValue(false)
+    processIfValid.mockResolvedValue()
+    sendBatchErrorEvent.mockResolvedValue()
   })
 
-  afterEach(() => {
-    jest.resetAllMocks()
+  test('should call reprocessIfNeeded with filename and scheme', async () => {
+    await processPaymentFile(filename, sfiPilot)
+
+    expect(reprocessIfNeeded).toHaveBeenCalledWith(filename, sfiPilot)
   })
 
-  test('should not check next sequence Id if file previously processed', async () => {
+  test('should not process the file again when it was previously processed', async () => {
     reprocessIfNeeded.mockResolvedValue(true)
+
     await processPaymentFile(filename, sfiPilot)
-    expect(batch.nextSequenceId).not.toHaveBeenCalled()
+
+    expect(processIfValid).not.toHaveBeenCalled()
   })
 
-  test('should download and parse file if matches expected sequence', async () => {
-    batch.nextSequenceId.mockResolvedValue(1)
+  test('should process the file when it has not been previously processed', async () => {
     await processPaymentFile(filename, sfiPilot)
-    expect(batch.create).toHaveBeenCalled()
-    expect(downloadAndParse).toHaveBeenCalled()
+
+    expect(processIfValid).toHaveBeenCalledWith(sfiPilot, filename)
   })
 
-  test.each([
-    { desc: 'next sequence higher than expected', filename: 'SITIELM0002_AP_20220317104956617.dat', nextSeq: 1 },
-    { desc: 'next sequence lower than expected', filename: 'SITIELM0001_AP_20220317104956617.dat', nextSeq: 2 },
-    { desc: 'next sequence undefined', filename: 'SITIELM0001_AP_20220317104956617.dat', nextSeq: undefined }
-  ])(
-    'should handle file correctly when $desc',
-    async ({ filename: file, nextSeq }) => {
-      filename = file
-      batch.nextSequenceId.mockResolvedValue(nextSeq)
+  test('should not throw when processing fails', async () => {
+    const error = new Error('Processing failed')
+    processIfValid.mockRejectedValue(error)
 
-      await processPaymentFile(filename, sfiPilot)
+    await expect(processPaymentFile(filename, sfiPilot)).resolves.toBeUndefined()
 
-      if (nextSeq === 1) {
-        expect(downloadAndParse).not.toHaveBeenCalled()
-        expect(quarantineFile).not.toHaveBeenCalled()
-      } else {
-        expect(quarantineFile).toHaveBeenCalled()
-        expect(downloadAndParse).not.toHaveBeenCalled()
-      }
-    }
-  )
+    expect(sendBatchErrorEvent).toHaveBeenCalledWith(filename, error)
+  })
+
+  test('should send a batch error event when reprocessing fails', async () => {
+    const error = new Error('Reprocessing failed')
+    reprocessIfNeeded.mockRejectedValue(error)
+
+    await expect(processPaymentFile(filename, sfiPilot)).resolves.toBeUndefined()
+
+    expect(sendBatchErrorEvent).toHaveBeenCalledWith(filename, error)
+    expect(processIfValid).not.toHaveBeenCalled()
+  })
 })
