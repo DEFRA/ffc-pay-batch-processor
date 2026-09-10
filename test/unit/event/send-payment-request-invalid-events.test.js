@@ -33,7 +33,7 @@ describe('V2 events for processed payment requests', () => {
     error = 'Bad payment request'
     paymentRequests.forEach(paymentRequest => { paymentRequest.errorMessage = error })
 
-    jest.spyOn(console, 'log').mockImplementation(() => {})
+    jest.spyOn(console, 'log').mockImplementation(() => { })
   })
 
   afterEach(async () => {
@@ -77,5 +77,29 @@ describe('V2 events for processed payment requests', () => {
     paymentRequests = [paymentRequest, paymentRequest]
     await sendPaymentRequestInvalidEvents(paymentRequests)
     expect(mockPublishEvents.mock.calls[0][0].length).toBe(2)
+  })
+
+  test('should include sbi in logged identifiers when present', async () => {
+    paymentRequests.forEach(pr => {
+      pr.sbi = '123456789'
+    })
+
+    await sendPaymentRequestInvalidEvents(paymentRequests)
+
+    const loggedRequests = console.log.mock.calls[0][1]
+
+    expect(loggedRequests[0]).toHaveProperty('sbi', '123456789')
+  })
+
+  test('should omit sbi from logged identifiers when undefined', async () => {
+    paymentRequests.forEach(pr => {
+      pr.sbi = undefined
+    })
+
+    await sendPaymentRequestInvalidEvents(paymentRequests)
+
+    const loggedRequests = console.log.mock.calls[0][1]
+
+    expect(loggedRequests[0]).not.toHaveProperty('sbi')
   })
 })
