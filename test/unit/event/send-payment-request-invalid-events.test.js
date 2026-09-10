@@ -33,7 +33,7 @@ describe('V2 events for processed payment requests', () => {
     error = 'Bad payment request'
     paymentRequests.forEach(paymentRequest => { paymentRequest.errorMessage = error })
 
-    jest.spyOn(console, 'log').mockImplementation(() => {})
+    jest.spyOn(console, 'log').mockImplementation(() => { })
   })
 
   afterEach(async () => {
@@ -77,5 +77,19 @@ describe('V2 events for processed payment requests', () => {
     paymentRequests = [paymentRequest, paymentRequest]
     await sendPaymentRequestInvalidEvents(paymentRequests)
     expect(mockPublishEvents.mock.calls[0][0].length).toBe(2)
+  })
+
+  test('should omit sbi from logged identifiers when sbi is undefined', async () => {
+    paymentRequests[0].sbi = undefined
+
+    await sendPaymentRequestInvalidEvents(paymentRequests)
+
+    expect(console.log).toHaveBeenCalledWith(
+      'Publishing events for invalid payment requests',
+      paymentRequests.map(({ frn, paymentRequestNumber }) => ({
+        frn,
+        paymentRequestNumber
+      }))
+    )
   })
 })
