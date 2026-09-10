@@ -79,17 +79,27 @@ describe('V2 events for processed payment requests', () => {
     expect(mockPublishEvents.mock.calls[0][0].length).toBe(2)
   })
 
-  test('should omit sbi from logged identifiers when sbi is undefined', async () => {
-    paymentRequests[0].sbi = undefined
+  test('should include sbi in logged identifiers when present', async () => {
+    paymentRequests.forEach(pr => {
+      pr.sbi = '123456789'
+    })
 
     await sendPaymentRequestInvalidEvents(paymentRequests)
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Publishing events for invalid payment requests',
-      paymentRequests.map(({ frn, paymentRequestNumber }) => ({
-        frn,
-        paymentRequestNumber
-      }))
-    )
+    const loggedRequests = console.log.mock.calls[0][1]
+
+    expect(loggedRequests[0]).toHaveProperty('sbi', '123456789')
+  })
+
+  test('should omit sbi from logged identifiers when undefined', async () => {
+    paymentRequests.forEach(pr => {
+      pr.sbi = undefined
+    })
+
+    await sendPaymentRequestInvalidEvents(paymentRequests)
+
+    const loggedRequests = console.log.mock.calls[0][1]
+
+    expect(loggedRequests[0]).not.toHaveProperty('sbi')
   })
 })
