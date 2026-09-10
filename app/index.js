@@ -22,8 +22,8 @@ const handleShutdown = async (signal) => {
   process.exit(0)
 }
 
-process.on('SIGTERM', async () => await handleShutdown('SIGTERM'))
-process.on('SIGINT', async () => await handleShutdown('SIGINT'))
+process.on('SIGTERM', () => handleShutdown('SIGTERM'))
+process.on('SIGINT', () => handleShutdown('SIGINT'))
 
 startApp()
 

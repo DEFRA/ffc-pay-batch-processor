@@ -6,7 +6,12 @@ const { start: mockStartServer } = require('../../app/server')
 jest.mock('../../app/processing')
 const { start: mockStartProcessing } = require('../../app/processing')
 
+jest.mock('../../app/messaging/service-bus/sender-cache')
+const { closeSenders: mockCloseSenders } = require('../../app/messaging/service-bus/sender-cache')
+
 const startApp = require('../../app')
+
+const waitForAsync = () => new Promise(resolve => setImmediate(resolve))
 
 describe('app start', () => {
   beforeEach(() => {
@@ -37,4 +42,38 @@ describe('app start', () => {
       consoleInfoSpy.mockRestore()
     }
   )
+})
+
+describe('app shutdown', () => {
+  let mockExit
+  let consoleInfoSpy
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {})
+    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    mockExit.mockRestore()
+    consoleInfoSpy.mockRestore()
+  })
+
+  test('SIGTERM closes senders and exits', async () => {
+    process.emit('SIGTERM')
+    await waitForAsync()
+
+    expect(consoleInfoSpy).toHaveBeenCalledWith('Received SIGTERM, closing messaging connections')
+    expect(mockCloseSenders).toHaveBeenCalledTimes(1)
+    expect(mockExit).toHaveBeenCalledWith(0)
+  })
+
+  test('SIGINT closes senders and exits', async () => {
+    process.emit('SIGINT')
+    await waitForAsync()
+
+    expect(consoleInfoSpy).toHaveBeenCalledWith('Received SIGINT, closing messaging connections')
+    expect(mockCloseSenders).toHaveBeenCalledTimes(1)
+    expect(mockExit).toHaveBeenCalledWith(0)
+  })
 })
