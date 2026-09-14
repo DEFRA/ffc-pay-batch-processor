@@ -1,5 +1,5 @@
 const { randomUUID } = require('node:crypto')
-const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital, sfi26 } = require('../../constants/schemes')
 const combinedOfferSchemes = require('../../constants/combined-offer-schemes')
 
 // common header indexes
@@ -43,7 +43,8 @@ const transformHeader = (headerData, schemeId, filename) => {
     Number(sfi23.schemeId),
     Number(delinked.schemeId),
     Number(combinedOffer.schemeId),
-    Number(cohtCapital.schemeId)
+    Number(cohtCapital.schemeId),
+    Number(sfi26.schemeId)
   ])
 
   if (sfiGroup.has(schemeIdNum)) {

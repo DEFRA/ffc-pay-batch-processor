@@ -1,5 +1,5 @@
 const { disableSequenceValidation } = require('../config/processing')
-const { sfi, sfiPilot, lumpSums, bps, cs, es, fc, imps, sfi23, delinked, combinedOffer, cohtCapital } = require('../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, es, fc, imps, sfi23, delinked, combinedOffer, cohtCapital, sfi26 } = require('../constants/schemes')
 const batch = require('./batch')
 const SEQUENCE_LENGTH = 4
 const SFI_SEQUENCE_START = 7
@@ -19,6 +19,7 @@ const getSequence = (schemeId, filename) => {
   switch (schemeId) {
     case sfi.schemeId:
     case sfiPilot.schemeId:
+    case sfi26.schemeId:
       return Number(filename.substr(SFI_SEQUENCE_START, SEQUENCE_LENGTH))
     case lumpSums.schemeId:
     case sfi23.schemeId:
