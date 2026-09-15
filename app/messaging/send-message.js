@@ -1,17 +1,12 @@
-const { MessageBatchSender } = require('ffc-messaging')
+const { getSender } = require('./service-bus/sender-cache')
+const { sendBatchMessages } = require('./service-bus/send-batch-messages')
 
-const sendMessages = async (messages, options) => {
-  let sender
-
+const sendMessages = async (messages, config) => {
   try {
-    sender = new MessageBatchSender(options)
-    await sender.sendBatchMessages(messages)
+    const sender = getSender(config)
+    await sendBatchMessages(sender, messages)
   } catch (error) {
     console.error('Could not send messages for', messages, error)
-  } finally {
-    if (sender !== undefined) {
-      await sender.closeConnection()
-    }
   }
 }
 
