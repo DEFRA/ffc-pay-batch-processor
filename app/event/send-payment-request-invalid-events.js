@@ -4,7 +4,14 @@ const { SOURCE } = require('../constants/source')
 const { PAYMENT_REJECTED } = require('../constants/events')
 
 const sendPaymentRequestInvalidEvents = async (paymentRequests) => {
-  console.log('Publishing events for invalid payment requests', paymentRequests?.map(({ frn, sbi, paymentRequestNumber }) => ({ frn, sbi, paymentRequestNumber })))
+  console.log(
+    'Publishing events for invalid payment requests',
+    paymentRequests?.map(({ frn, sbi, paymentRequestNumber }) => ({
+      frn,
+      ...(sbi != null && { sbi }),
+      paymentRequestNumber
+    }))
+  )
   if (paymentRequests?.length) {
     const events = paymentRequests.map(createEvent)
     const eventPublisher = new EventPublisher(messageConfig.eventsTopic)
