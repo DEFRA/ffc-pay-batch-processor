@@ -1,10 +1,12 @@
+const { getSourceSystems } = require('ffc-pay-schemes')
 const { convertToPence } = require('../../../currency-convert')
-const { sfiPilot } = require('../../../constants/schemes')
+
+const { SFI_PILOT } = getSourceSystems()
 const GROSS_LINE_DESCRIPTION = 'G00 - Gross value of claim'
 const PARTICIPATION_PAYMENT_SCHEME_CODE = '80009'
 
 const removeDefunctParticipationPayment = (paymentRequest) => {
-  if (paymentRequest.sourceSystem !== sfiPilot.sourceSystem) {
+  if (paymentRequest.sourceSystem !== SFI_PILOT) {
     return paymentRequest
   }
   // Defect in Siti Agri where full agreement should be recovered, but Siti Agri cannot set the participation gross value to 0
@@ -28,7 +30,7 @@ const groupBySchemeCode = (invoiceLines) => {
 
     // if key doesn't exist then first instance so create new group
     const item = x.get(key) || {
-      ...{ schemeCode: y.schemeCode, value: 0 }
+      schemeCode: y.schemeCode, value: 0
     }
     item.value += convertToPence(y.value)
 

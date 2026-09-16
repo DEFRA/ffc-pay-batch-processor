@@ -1,6 +1,9 @@
+const { getSchemeIds, getSourceSystems, isSitiAgri } = require('ffc-pay-schemes')
 const { randomUUID } = require('node:crypto')
-const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
-const combinedOfferSchemes = require('../../constants/combined-offer-schemes')
+const { parseInteger, parseFloatValue } = require('../numeric-parse-helpers')
+
+const { LUMP_SUMS, BPS, CS, SFI_EXPANDED, COHT_REVENUE, COHT_CAPITAL } = getSchemeIds()
+const { COHT_REVENUE: COHT_REVENUE_SOURCE_SYSTEM } = getSourceSystems()
 
 // common header indexes
 const HEADER_INVOICE_NO = 1
@@ -20,74 +23,57 @@ const LUMP_BPS_HEADER_VALUE = 6
 const LUMP_BPS_HEADER_DELIVERY_BODY = 7
 const LUMP_BPS_HEADER_CURRENCY = 8
 
-const parsedValue = (value) => {
-  const parsed = Number.parseFloat(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-const parsedInteger = (value) => {
-  const parsed = Number.parseInt(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
 const transformHeader = (headerData, schemeId, filename) => {
   const schemeIdNum = Number(schemeId)
 
-  if (Number.isNaN(schemeIdNum)) {
+  if (Number.isNaN(schemeIdNum) || !isSitiAgri(schemeIdNum)) {
     throw new TypeError(`Unknown scheme: ${schemeId}`)
   }
 
-  const sfiGroup = new Set([
-    Number(sfi.schemeId),
-    Number(sfiPilot.schemeId),
-    Number(sfi23.schemeId),
-    Number(delinked.schemeId),
-    Number(combinedOffer.schemeId),
-    Number(cohtCapital.schemeId)
-  ])
-
-  if (sfiGroup.has(schemeIdNum)) {
-    return transformSFIOrDPHeader(headerData, schemeIdNum, filename)
-  }
-
   switch (schemeIdNum) {
-    case Number(lumpSums.schemeId):
+    case Number(LUMP_SUMS):
       return transformLumpSumsHeader(headerData, schemeIdNum, filename)
-    case Number(bps.schemeId):
+    case Number(BPS):
       return transformBPSHeader(headerData, schemeIdNum, filename)
-    case Number(cs.schemeId):
+    case Number(CS):
       return transformCSHeader(headerData, schemeIdNum, filename)
     default:
-      throw new Error(`Unknown scheme: ${schemeId}`)
+      return transformSFIOrDPHeader(headerData, schemeIdNum, filename)
   }
 }
 
-const getSchemeId = (headerData, schemeId) => {
+const getCombinedOfferSchemeId = (headerData, schemeId) => {
+  // SFI Expanded files can contain both SFI Expanded and COHT Revenue.
+  // It will always be one or the other per payment request.
   const sourceSystem = headerData[SFI_HEADER_SOURCE_SYSTEM]
-  if (sourceSystem === combinedOfferSchemes.cohtRevenue.sourceSystem) {
-    return combinedOfferSchemes.cohtRevenue.schemeId
+
+  if (sourceSystem === COHT_REVENUE_SOURCE_SYSTEM) {
+    console.log('SFI Expanded Offer payment request has been identified as COHT Revenue, scheme ID adjusted accordingly')
+    return COHT_REVENUE
   }
-  // default to first schemeId of combined offer (SFI Expanded - 14)
+
   return schemeId
 }
 
 const transformSFIOrDPHeader = (headerData, schemeId, filename) => {
   const headerItems = {
     correlationId: randomUUID(),
-    schemeId: schemeId === combinedOffer.schemeId ? getSchemeId(headerData, schemeId) : schemeId,
+    schemeId: schemeId === SFI_EXPANDED
+      ? getCombinedOfferSchemeId(headerData, schemeId)
+      : schemeId,
     batch: filename,
     invoiceNumber: headerData[HEADER_INVOICE_NO],
-    paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
+    paymentRequestNumber: parseInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
     contractNumber: headerData[HEADER_CONTRACT_NO],
     frn: headerData[SFI_CS_HEADER_FRN],
     currency: headerData[SFI_CS_HEADER_CURRENCY],
-    value: parsedValue(headerData[SFI_CS_HEADER_VALUE]),
+    value: parseFloatValue(headerData[SFI_CS_HEADER_VALUE]),
     deliveryBody: headerData[SFI_CS_HEADER_DELIVERY_BODY],
     schedule: headerData[SFI_HEADER_SCHEDULE],
     invoiceLines: []
   }
 
-  if (schemeId === cohtCapital.schemeId) {
+  if (schemeId === COHT_CAPITAL) {
     delete headerItems.schedule
   }
 
@@ -98,12 +84,12 @@ const transformLumpSumsHeader = (headerData, schemeId, filename) => ({
   correlationId: randomUUID(),
   schemeId,
   batch: filename,
-  invoiceNumber: headerData[1],
-  paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
+  invoiceNumber: headerData[HEADER_INVOICE_NO],
+  paymentRequestNumber: parseInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
   contractNumber: headerData[HEADER_CONTRACT_NO],
   frn: headerData[LUMP_BPS_HEADER_FRN],
   currency: headerData[LUMP_BPS_HEADER_CURRENCY],
-  value: parsedValue(headerData[LUMP_BPS_HEADER_VALUE]),
+  value: parseFloatValue(headerData[LUMP_BPS_HEADER_VALUE]),
   deliveryBody: headerData[LUMP_BPS_HEADER_DELIVERY_BODY],
   invoiceLines: []
 })
@@ -113,10 +99,10 @@ const transformBPSHeader = (headerData, schemeId, filename) => ({
   schemeId,
   batch: filename,
   invoiceNumber: headerData[HEADER_INVOICE_NO],
-  paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
+  paymentRequestNumber: parseInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
   contractNumber: headerData[HEADER_CONTRACT_NO],
   frn: headerData[LUMP_BPS_HEADER_FRN],
-  value: parsedValue(headerData[LUMP_BPS_HEADER_VALUE]),
+  value: parseFloatValue(headerData[LUMP_BPS_HEADER_VALUE]),
   deliveryBody: headerData[LUMP_BPS_HEADER_DELIVERY_BODY],
   currency: headerData[LUMP_BPS_HEADER_CURRENCY],
   invoiceLines: []
@@ -127,12 +113,12 @@ const transformCSHeader = (headerData, schemeId, filename) => ({
   schemeId,
   batch: filename,
   invoiceNumber: headerData[HEADER_INVOICE_NO],
-  paymentRequestNumber: parsedInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
+  paymentRequestNumber: parseInteger(headerData[HEADER_PAYMENT_REQUEST_NO]),
   contractNumber: headerData[HEADER_CONTRACT_NO],
-  paymentType: parsedInteger(headerData[CS_HEADER_PAYMENT_TYPE]),
+  paymentType: parseInteger(headerData[CS_HEADER_PAYMENT_TYPE]),
   frn: headerData[SFI_CS_HEADER_FRN],
   currency: headerData[SFI_CS_HEADER_CURRENCY],
-  value: parsedValue(headerData[SFI_CS_HEADER_VALUE]),
+  value: parseFloatValue(headerData[SFI_CS_HEADER_VALUE]),
   deliveryBody: headerData[SFI_CS_HEADER_DELIVERY_BODY],
   invoiceLines: []
 })

@@ -12,7 +12,7 @@ const recalculateBPSPenalties = (paymentRequest) => {
       const p02Penalty = invoiceLinesByScheme.find(invoiceLine => invoiceLine.description.match(/^P02/gm))
 
       if (p04Penalty) {
-        p04Penalty.value = p04Penalty.value - grossAfterPenalties > 0 ? 0 : p04Penalty.value - grossAfterPenalties
+        p04Penalty.value = Math.min(p04Penalty.value - grossAfterPenalties, 0)
         grossAfterPenalties = calculateGrossAfterPenalties(invoiceLinesByScheme)
       }
 
