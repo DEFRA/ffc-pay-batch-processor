@@ -1,4 +1,4 @@
-const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital } = require('../../constants/schemes')
+const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer, cohtCapital, sfi26 } = require('../../constants/schemes')
 const LINE_DATA_INVOICE_NUMBER = 1
 const LINE_DATA_VALUE = 2
 const LINE_DATA_MARKETING_YEAR = 3
@@ -28,7 +28,8 @@ const transformInvoiceLine = (lineData, schemeId) => {
     Number(sfi23.schemeId),
     Number(delinked.schemeId),
     Number(combinedOffer.schemeId),
-    Number(cohtCapital.schemeId)
+    Number(cohtCapital.schemeId),
+    Number(sfi26.schemeId)
   ])
 
   if (sfiGroup.has(schemeIdNum)) {

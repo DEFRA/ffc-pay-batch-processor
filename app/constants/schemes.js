@@ -70,5 +70,11 @@ module.exports = {
     name: 'COHT Capital',
     sourceSystem: 'COHTC',
     fileMask: /^SITICOHTC\d{4}_AP_\d*.dat$/
-  }
+  },
+  sfi26: {
+    schemeId: 19,
+    name: 'SFI26',
+    sourceSystem: 'SFI26',
+    fileMask: /^SITISFI26\d{4}_AP_\d*.dat$/
+  },
 }
