@@ -4,9 +4,10 @@ jest.mock('ffc-pay-schemes', () => ({
 
 jest.mock('../../app/data', () => ({
   scheme: {
+    findOne: jest.fn(),
     upsert: jest.fn()
   },
-  squence: {
+  sequence: {
     create: jest.fn()
   }
 }))
@@ -20,6 +21,7 @@ describe('update schemes database', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    db.scheme.findOne.mockResolvedValue(null)
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
   })
 
@@ -45,17 +47,22 @@ describe('update schemes database', () => {
     }
 
     getSchemes.mockReturnValue([scheme])
+    db.scheme.findOne.mockResolvedValue(null)
     db.scheme.upsert.mockResolvedValue([{}, true])
-    db.squence.create.mockResolvedValue({})
+    db.sequence.create.mockResolvedValue({})
 
     await updateSchemesDatabase()
+
+    expect(db.scheme.findOne).toHaveBeenCalledWith({
+      where: { schemeId: scheme.schemeId }
+    })
 
     expect(db.scheme.upsert).toHaveBeenCalledWith({
       schemeId: scheme.schemeId,
       scheme: scheme.schemeName
     })
 
-    expect(db.squence.create).toHaveBeenCalledWith({
+    expect(db.sequence.create).toHaveBeenCalledWith({
       schemeId: scheme.schemeId,
       next: 1
     })
@@ -72,16 +79,21 @@ describe('update schemes database', () => {
     }
 
     getSchemes.mockReturnValue([scheme])
+    db.scheme.findOne.mockResolvedValue({ schemeId: scheme.schemeId })
     db.scheme.upsert.mockResolvedValue([{}, false])
 
     await updateSchemesDatabase()
+
+    expect(db.scheme.findOne).toHaveBeenCalledWith({
+      where: { schemeId: scheme.schemeId }
+    })
 
     expect(db.scheme.upsert).toHaveBeenCalledWith({
       schemeId: scheme.schemeId,
       scheme: scheme.schemeName
     })
 
-    expect(db.squence.create).not.toHaveBeenCalled()
+    expect(db.sequence.create).not.toHaveBeenCalled()
 
     expect(consoleLogSpy).toHaveBeenCalledWith(
       `${scheme.schemeName} updated`
@@ -95,10 +107,12 @@ describe('update schemes database', () => {
     ]
 
     getSchemes.mockReturnValue(schemes)
+    db.scheme.findOne.mockResolvedValue({})
     db.scheme.upsert.mockResolvedValue([{}, false])
 
     await updateSchemesDatabase()
 
+    expect(db.scheme.findOne).toHaveBeenCalledTimes(2)
     expect(db.scheme.upsert).toHaveBeenCalledTimes(2)
 
     expect(db.scheme.upsert).toHaveBeenNthCalledWith(1, {
@@ -118,6 +132,7 @@ describe('update schemes database', () => {
     getSchemes.mockReturnValue([
       { schemeId: 1, schemeName: 'Scheme one' }
     ])
+    db.scheme.findOne.mockResolvedValue(null)
     db.scheme.upsert.mockRejectedValue(error)
 
     await expect(updateSchemesDatabase()).rejects.toBe(error)
@@ -129,8 +144,9 @@ describe('update schemes database', () => {
     getSchemes.mockReturnValue([
       { schemeId: 1, schemeName: 'Scheme one' }
     ])
+    db.scheme.findOne.mockResolvedValue(null)
     db.scheme.upsert.mockResolvedValue([{}, true])
-    db.squence.create.mockRejectedValue(error)
+    db.sequence.create.mockRejectedValue(error)
 
     await expect(updateSchemesDatabase()).rejects.toBe(error)
   })

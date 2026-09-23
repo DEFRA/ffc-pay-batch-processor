@@ -6,12 +6,18 @@ const updateSchemesDatabase = async () => {
   const schemes = getSchemes()
 
   for (const { schemeId, schemeName } of schemes) {
-    const [, created] = await db.scheme.upsert({
+    const existingScheme = await db.scheme.findOne({
+      where: { schemeId }
+    })
+
+    await db.scheme.upsert({
       schemeId,
       scheme: schemeName
     })
+
+    const created = !existingScheme
     if (created) {
-      await db.squence.create({
+      await db.sequence.create({
         schemeId,
         next: 1
       })
