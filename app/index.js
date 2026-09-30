@@ -6,6 +6,7 @@ const processing = require('./processing')
 const { updateSchemesDatabase } = require('./update-schemes-database')
 
 const { start: startServer } = require('./server')
+const { closeSenders } = require('./messaging/service-bus/sender-cache')
 
 const startApp = async () => {
   await startServer()
@@ -17,8 +18,15 @@ const startApp = async () => {
   }
 }
 
-(async () => {
-  await startApp()
-})()
+const handleShutdown = async (signal) => {
+  console.info(`Received ${signal}, closing messaging connections`)
+  await closeSenders()
+  process.exit(0)
+}
+
+process.on('SIGTERM', () => handleShutdown('SIGTERM'))
+process.on('SIGINT', () => handleShutdown('SIGINT'))
+
+startApp()
 
 module.exports = startApp

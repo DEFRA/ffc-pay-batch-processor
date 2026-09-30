@@ -1,10 +1,5 @@
-const mockSendBatchMessages = jest.fn()
-jest.mock('ffc-messaging', () => ({
-  MessageBatchSender: jest.fn().mockImplementation(() => ({
-    sendBatchMessages: mockSendBatchMessages,
-    closeConnection: jest.fn()
-  }))
-}))
+const mockSendMessages = jest.fn()
+jest.mock('../../../app/messaging/send-message', () => mockSendMessages)
 
 const mockPublishEvent = jest.fn()
 const mockPublishEvents = jest.fn()
@@ -136,7 +131,7 @@ describe('process batch files', () => {
   // --- Tests ---
   test('SFI Pilot - sends all payment requests', async () => {
     await uploadAndProcess(TEST_FILES.SFI_PILOT.VALID)
-    expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(2)
+    expect(mockSendMessages.mock.calls[0][0].length).toBe(2)
   })
 
   test('SFI Pilot - quarantines invalid batch header count', async () => {
