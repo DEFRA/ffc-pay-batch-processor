@@ -1,12 +1,15 @@
+const { getSchemeIds, getSourceSystems } = require('ffc-pay-schemes')
 const { filename1 } = require('../mocks/glos-filenames')
-const { fc } = require('../../app/constants/schemes')
 const { invoiceLines, mappedInvoiceLines } = require('./invoice-lines')
 const correlationId = require('./correlation-id')
 
+const { FC } = getSchemeIds()
+const { FC: FC_SOURCE_SYSTEM } = getSourceSystems()
+
 const paymentRequest = {
   correlationId,
-  schemeId: fc.schemeId,
-  sourceSystem: fc.sourceSystem,
+  schemeId: FC,
+  sourceSystem: FC_SOURCE_SYSTEM,
   batch: filename1,
   invoiceNumber: '33315 16',
   paymentRequestNumber: 1,

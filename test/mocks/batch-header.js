@@ -1,5 +1,7 @@
+const { getSourceSystems } = require('ffc-pay-schemes')
 const { AP } = require('../../app/constants/ledger')
-const { sfiPilot } = require('../../app/constants/schemes')
+
+const { SFI_PILOT } = getSourceSystems()
 
 const batchHeader = {
   batchValue: 100,
@@ -7,7 +9,7 @@ const batchHeader = {
   ledger: AP,
   numberOfPaymentRequests: 1,
   sequence: 1,
-  sourceSystem: sfiPilot.sourceSystem
+  sourceSystem: SFI_PILOT
 }
 
 module.exports = batchHeader

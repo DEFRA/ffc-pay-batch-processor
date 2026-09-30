@@ -8,7 +8,7 @@ const transformInvoiceLine = (lineData) => {
     accountCode: lineData[5],
     subAccountCode: lineData[6],
     projectCode: lineData[7].length > 0 ? lineData[7] : undefined,
-    value: !isNaN(lineData[8]) ? parseFloat(lineData[8]) : undefined,
+    value: !Number.isNaN(lineData[8]) ? Number.parseFloat(lineData[8]) : undefined,
     description: lineData[9]
   }, {
     companyCode: lineData[10],
@@ -17,7 +17,7 @@ const transformInvoiceLine = (lineData) => {
     accountCode: lineData[13],
     subAccountCode: lineData[14],
     projectCode: lineData[15].length > 0 ? lineData[15] : undefined,
-    value: !isNaN(lineData[16]) ? parseFloat(lineData[16]) : undefined,
+    value: !Number.isNaN(lineData[16]) ? Number.parseFloat(lineData[16]) : undefined,
     description: lineData[17]
   }]
 }

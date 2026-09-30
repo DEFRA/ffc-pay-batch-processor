@@ -3,12 +3,14 @@ require('log-timestamp')
 
 const { processingConfig } = require('./config')
 const processing = require('./processing')
+const { updateSchemesDatabase } = require('./update-schemes-database')
 
 const { start: startServer } = require('./server')
 const { closeSenders } = require('./messaging/service-bus/sender-cache')
 
 const startApp = async () => {
   await startServer()
+  await updateSchemesDatabase()
   if (processingConfig.processingActive) {
     await processing.start()
   } else {

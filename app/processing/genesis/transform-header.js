@@ -10,7 +10,7 @@ const transformHeader = (headerData, schemeId, filename) => {
     contractNumber: headerData[2],
     vendor: headerData[4],
     marketingYear: headerData[6],
-    value: !isNaN(headerData[7]) ? parseFloat(headerData[7]) : undefined,
+    value: !Number.isNaN(headerData[7]) ? Number.parseFloat(headerData[7]) : undefined,
     invoiceLines: []
   }
 }

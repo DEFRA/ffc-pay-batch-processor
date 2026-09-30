@@ -1,12 +1,19 @@
-const { es } = require('../../constants/schemes')
+const { getSourceSystems } = require('ffc-pay-schemes')
+
+const { ES } = getSourceSystems()
+
+const exportDateIndex = 1
+const numberOfPRsIndex = 2
+const batchValueIndex = 4
+const sequenceIndex = 5
 
 const transformBatch = (batchHeader) => {
   return {
-    exportDate: batchHeader[1],
-    numberOfPaymentRequests: !isNaN(batchHeader[2]) ? parseInt(batchHeader[2]) : undefined,
-    batchValue: !isNaN(batchHeader[4]) ? parseFloat(batchHeader[4]) : undefined,
-    sequence: !isNaN(batchHeader[5]) ? parseInt(batchHeader[5]) : undefined,
-    sourceSystem: es.sourceSystem
+    exportDate: batchHeader[exportDateIndex],
+    numberOfPaymentRequests: !Number.isNaN(batchHeader[numberOfPRsIndex]) ? Number.parseInt(batchHeader[numberOfPRsIndex]) : undefined,
+    batchValue: !Number.isNaN(batchHeader[batchValueIndex]) ? Number.parseFloat(batchHeader[batchValueIndex]) : undefined,
+    sequence: !Number.isNaN(batchHeader[sequenceIndex]) ? Number.parseInt(batchHeader[sequenceIndex]) : undefined,
+    sourceSystem: ES
   }
 }
 

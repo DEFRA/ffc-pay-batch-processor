@@ -1,12 +1,15 @@
+const { getSchemeIds, getSourceSystems } = require('ffc-pay-schemes')
 const { GBP } = require('../../app/constants/currency')
 const { Q4 } = require('../../app/constants/schedule')
-const { sfiPilot } = require('../../app/constants/schemes')
 const { invoiceLines, mappedInvoiceLines } = require('./invoice-lines')
 const correlationId = require('./correlation-id')
 
+const { SFI_PILOT } = getSchemeIds()
+const { SFI_PILOT: SFI_PILOT_SOURCE_SYSTEM } = getSourceSystems()
+
 const paymentRequest = {
-  sourceSystem: sfiPilot.sourceSystem,
-  schemeId: sfiPilot.schemeId,
+  sourceSystem: SFI_PILOT_SOURCE_SYSTEM,
+  schemeId: SFI_PILOT,
   batch: 'SITISFI0001_AP_20230306115413497.dat',
   frn: 1234567890,
   paymentRequestNumber: 1,

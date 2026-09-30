@@ -6,6 +6,11 @@ const { start: mockStartServer } = require('../../app/server')
 jest.mock('../../app/processing')
 const { start: mockStartProcessing } = require('../../app/processing')
 
+jest.mock('../../app/update-schemes-database', () => ({
+  updateSchemesDatabase: jest.fn()
+}))
+const { updateSchemesDatabase: mockUpdateSchemesDatabase } = require('../../app/update-schemes-database')
+
 jest.mock('../../app/messaging/service-bus/sender-cache')
 const { closeSenders: mockCloseSenders } = require('../../app/messaging/service-bus/sender-cache')
 
@@ -14,26 +19,35 @@ const startApp = require('../../app')
 const waitForAsync = () => new Promise(resolve => setImmediate(resolve))
 
 describe('app start', () => {
+  beforeAll(async () => {
+    await new Promise(resolve => setImmediate(resolve))
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+    mockUpdateSchemesDatabase.mockResolvedValue()
   })
 
   test.each([
-    [true, 1, 1, false],
-    [false, 1, 0, true]
+    [true, 1, false],
+    [false, 0, true]
   ])(
-    'processingActive=%p -> serverCalls=%i, processingCalls=%i, logsInfo=%p',
-    async (active, serverCalls, processingCalls, logsInfo) => {
+    'processingActive=%p -> processingCalls=%i, logsInfo=%p',
+    async (active, processingCalls, logsInfo) => {
       processingConfig.processingActive = active
-      const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
+      const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => { })
 
       await startApp()
 
-      expect(mockStartServer).toHaveBeenCalledTimes(serverCalls)
+      expect(mockStartServer).toHaveBeenCalledTimes(1)
+      expect(mockUpdateSchemesDatabase).toHaveBeenCalledTimes(1)
       expect(mockStartProcessing).toHaveBeenCalledTimes(processingCalls)
+
       if (logsInfo) {
         expect(consoleInfoSpy).toHaveBeenCalledWith(
-          expect.stringContaining('Processing capabilities are currently not enabled in this environment')
+          expect.stringContaining(
+            'Processing capabilities are currently not enabled in this environment'
+          )
         )
       } else {
         expect(consoleInfoSpy).not.toHaveBeenCalled()

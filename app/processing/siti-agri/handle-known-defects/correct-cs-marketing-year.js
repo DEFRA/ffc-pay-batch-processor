@@ -1,7 +1,9 @@
-const { cs } = require('../../../constants/schemes')
+const { getSourceSystems } = require('ffc-pay-schemes')
+
+const { CS } = getSourceSystems()
 
 const correctCSMarketingYear = (paymentRequest) => {
-  if (paymentRequest.sourceSystem !== cs.sourceSystem) {
+  if (paymentRequest.sourceSystem !== CS) {
     return paymentRequest
   }
   // Some CS payment requests only have a two digit marketing year.
@@ -9,7 +11,7 @@ const correctCSMarketingYear = (paymentRequest) => {
   if (!paymentRequest.marketingYear || paymentRequest.marketingYear <= 16 || paymentRequest.marketingYear?.toString().length === 4) {
     return paymentRequest
   }
-  paymentRequest.marketingYear = parseInt(`20${paymentRequest.marketingYear}`)
+  paymentRequest.marketingYear = Number.parseInt(`20${paymentRequest.marketingYear}`)
   return paymentRequest
 }
 

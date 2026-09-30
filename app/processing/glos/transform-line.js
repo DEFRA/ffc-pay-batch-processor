@@ -1,4 +1,5 @@
 const { randomUUID } = require('node:crypto')
+const { parseFloatValue } = require('../numeric-parse-helpers')
 
 const transformLine = (batchLine, schemeId, filename) => {
   return {
@@ -13,7 +14,7 @@ const transformLine = (batchLine, schemeId, filename) => {
     claimDate: batchLine[23],
     standardCode: batchLine[12],
     description: batchLine[11],
-    value: !isNaN(batchLine[8]) ? parseFloat(batchLine[8]) : undefined
+    value: parseFloatValue(batchLine[8])
   }
 }
 

@@ -1,5 +1,7 @@
 const buildPaymentRequests = (paymentRequests, sourceSystem) => {
-  if (paymentRequests === undefined) { return [] }
+  if (paymentRequests === undefined) {
+    return []
+  }
 
   return paymentRequests.map(paymentRequest => ({
     correlationId: paymentRequest.correlationId,

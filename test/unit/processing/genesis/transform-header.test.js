@@ -2,19 +2,22 @@ const transformHeader = require('../../../../app/processing/genesis/transform-he
 
 jest.mock('node:crypto')
 const { randomUUID } = require('node:crypto')
+const { getSchemeIds } = require('ffc-pay-schemes')
 const filename = require('../../../mocks/filename')
-const { es } = require('../../../../app/constants/schemes')
 
 describe('transform genesis header', () => {
   const correlationId = require('../../../mocks/correlation-id')
+  const { ES } = getSchemeIds()
+
   randomUUID.mockReturnValue(correlationId)
 
-  test('transforms ES header', async () => {
+  test('transforms ES header', () => {
     const headerData = ['I', '1096514', 'AG00679935', 'ESS', '612456', 'null', '2022', '100.00']
-    const result = transformHeader(headerData, es.schemeId, filename)
+    const result = transformHeader(headerData, ES, filename)
+
     expect(result).toEqual({
       correlationId,
-      schemeId: es.schemeId,
+      schemeId: ES,
       batch: filename,
       invoiceNumber: '1096514',
       paymentRequestNumber: 1,

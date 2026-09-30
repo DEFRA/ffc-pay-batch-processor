@@ -1,21 +1,42 @@
-const { GBP } = require('../../../../app/constants/currency')
-const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
-const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
-const { sfi, sfiPilot, lumpSums, bps, cs, sfi23, delinked, combinedOffer } = require('../../../../app/constants/schemes')
-const { sfiExpanded, cohtRevenue } = require('../../../../app/constants/combined-offer-schemes')
-
 jest.mock('node:crypto')
 const { randomUUID } = require('node:crypto')
 
+const { getSchemeIds, getSourceSystems } = require('ffc-pay-schemes')
+const { GBP } = require('../../../../app/constants/currency')
+const { M12, Y1, Q4 } = require('../../../../app/constants/schedule')
+const transformHeader = require('../../../../app/processing/siti-agri/transform-header')
+
+const {
+  LUMP_SUMS,
+  BPS,
+  CS,
+  SFI,
+  SFI_PILOT,
+  SFI_EXPANDED,
+  COHT_REVENUE,
+  DELINKED
+} = getSchemeIds()
+
+const {
+  SFI: SFI_SOURCE_SYSTEM,
+  SFI_PILOT: SFI_PILOT_SOURCE_SYSTEM,
+  SFI_EXPANDED: SFI_EXPANDED_SOURCE_SYSTEM,
+  COHT_REVENUE: COHT_REVENUE_SOURCE_SYSTEM,
+  DELINKED: DELINKED_SOURCE_SYSTEM
+} = getSourceSystems()
+
 describe('Transform header', () => {
   const correlationId = require('../../../mocks/correlation-id')
-  randomUUID.mockReturnValue(correlationId)
+
+  beforeEach(() => {
+    randomUUID.mockReturnValue(correlationId)
+  })
 
   const testCases = [
     {
       filename: 'SITISFI0001_AP.dat',
-      headerData: ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12'],
-      scheme: sfi,
+      headerData: ['H', 'SFI0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', SFI_SOURCE_SYSTEM, 'M12'],
+      schemeId: SFI,
       expectedSchedule: M12,
       frnIndex: 5,
       valueIndex: 7,
@@ -24,8 +45,8 @@ describe('Transform header', () => {
     },
     {
       filename: 'SITIELM0001_AP.dat',
-      headerData: ['H', 'SFIP0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFI', 'M12'],
-      scheme: sfiPilot,
+      headerData: ['H', 'SFIP0000001', '01', 'S000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', SFI_PILOT_SOURCE_SYSTEM, 'M12'],
+      schemeId: SFI_PILOT,
       expectedSchedule: M12,
       frnIndex: 5,
       valueIndex: 7,
@@ -35,7 +56,7 @@ describe('Transform header', () => {
     {
       filename: 'SITILSES0001_AP.dat',
       headerData: ['H', 'LSES0000001', '001', 'L000001', '1000000001', '1', '100', 'RP00', 'GBP'],
-      scheme: lumpSums,
+      schemeId: LUMP_SUMS,
       frnIndex: 4,
       valueIndex: 6,
       prnIndex: 2,
@@ -44,7 +65,7 @@ describe('Transform header', () => {
     {
       filename: 'SITI_0001_AP.dat',
       headerData: ['H', 'SITI0000001', '001', 'C0000001', '1000000001', '1', '100', 'RP00', 'GBP'],
-      scheme: bps,
+      schemeId: BPS,
       frnIndex: 4,
       valueIndex: 6,
       prnIndex: 2,
@@ -53,17 +74,29 @@ describe('Transform header', () => {
     {
       filename: 'SITICS0001_AP.dat',
       headerData: ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP'],
-      scheme: cs,
+      schemeId: CS,
       frnIndex: 5,
       valueIndex: 7,
       prnIndex: 2,
       deliveryBodyIndex: 8
     },
     {
-      filename: 'SITISFIA0001_AP.dat',
-      headerData: ['H', 'SFIA0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'SFIA', 'M12'],
-      scheme: sfi23,
-      expectedSchedule: M12,
+      filename: 'ESFIO0001_AP.dat',
+      headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', SFI_EXPANDED_SOURCE_SYSTEM, 'Q4'],
+      schemeId: SFI_EXPANDED,
+      expectedSchedule: Q4,
+      expectedSchemeId: SFI_EXPANDED,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
+      filename: 'ESFIO0001_AP.dat',
+      headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', COHT_REVENUE_SOURCE_SYSTEM, 'Q4'],
+      schemeId: SFI_EXPANDED,
+      expectedSchedule: Q4,
+      expectedSchemeId: COHT_REVENUE,
       frnIndex: 5,
       valueIndex: 7,
       prnIndex: 2,
@@ -71,95 +104,84 @@ describe('Transform header', () => {
     },
     {
       filename: 'SITIDP0001_AP.dat',
-      headerData: ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'DP', 'Y1'],
-      scheme: delinked,
+      headerData: ['H', 'DP0000001', '01', 'Z000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', DELINKED_SOURCE_SYSTEM, 'Y1'],
+      schemeId: DELINKED,
       expectedSchedule: Y1,
       frnIndex: 5,
       valueIndex: 7,
       prnIndex: 2,
       deliveryBodyIndex: 8
-    },
-    {
-      filename: 'ESFIO0001_AP.dat',
-      headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'ESFIO', 'Q4'],
-      scheme: combinedOffer,
-      expectedSchedule: Q4,
-      expectedSchemeId: sfiExpanded.schemeId,
-      frnIndex: 5,
-      valueIndex: 7,
-      prnIndex: 2,
-      deliveryBodyIndex: 8
-    },
-    {
-      filename: 'ESFIO0001_AP.dat',
-      headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', 'COHTR', 'Q4'],
-      scheme: combinedOffer,
-      expectedSchedule: Q4,
-      expectedSchemeId: cohtRevenue.schemeId,
-      frnIndex: 5,
-      valueIndex: 7,
-      prnIndex: 2,
-      deliveryBodyIndex: 8
     }
   ]
 
-  test.each(testCases)('transforms $scheme.schemeId header', ({ headerData, scheme, filename, expectedSchedule, expectedSchemeId, frnIndex, valueIndex, prnIndex, deliveryBodyIndex }) => {
-    const result = transformHeader(headerData, scheme.schemeId, filename)
-    expect(result.correlationId).toEqual(correlationId)
-    expect(result.schemeId).toEqual(expectedSchemeId || scheme.schemeId)
-    expect(result.batch).toEqual(filename)
-    expect(result.invoiceNumber).toEqual(headerData[1])
-    expect(result.paymentRequestNumber).toEqual(parseInt(headerData[prnIndex], 10))
-    expect(result.contractNumber).toEqual(headerData[3])
-    expect(result.frn).toEqual(headerData[frnIndex])
-    expect(result.currency).toEqual(GBP)
-    expect(result.value).toEqual(parseInt(headerData[valueIndex], 10))
-    if (expectedSchedule) {
-      expect(result.schedule).toEqual(expectedSchedule)
+  test.each(testCases)(
+    'transforms scheme $schemeId header',
+    ({ headerData, schemeId, filename, expectedSchedule, expectedSchemeId, frnIndex, valueIndex, prnIndex, deliveryBodyIndex }) => {
+      const result = transformHeader(headerData, schemeId, filename)
+
+      expect(result).toEqual(expect.objectContaining({
+        correlationId,
+        schemeId: expectedSchemeId || schemeId,
+        batch: filename,
+        invoiceNumber: headerData[1],
+        paymentRequestNumber: Number.parseInt(headerData[prnIndex], 10),
+        contractNumber: headerData[3],
+        frn: headerData[frnIndex],
+        currency: GBP,
+        value: Number.parseInt(headerData[valueIndex], 10),
+        invoiceLines: []
+      }))
+
+      if (expectedSchedule) {
+        expect(result.schedule).toBe(expectedSchedule)
+      }
+
+      expect(result.deliveryBody).toBe(headerData[deliveryBodyIndex])
     }
+  )
 
-    if (typeof deliveryBodyIndex !== 'undefined') {
-      expect(result.deliveryBody).toEqual(headerData[deliveryBodyIndex])
+  test.each(testCases)(
+    'handles invalid numbers for scheme $schemeId',
+    ({ headerData, schemeId, filename, prnIndex, valueIndex }) => {
+      const invalidPaymentRequestNumber = [...headerData]
+      invalidPaymentRequestNumber[prnIndex] = 'abc'
+
+      const invalidValue = [...headerData]
+      invalidValue[valueIndex] = 'abc'
+
+      expect(
+        transformHeader(invalidPaymentRequestNumber, schemeId, filename).paymentRequestNumber
+      ).toBeUndefined()
+
+      expect(
+        transformHeader(invalidValue, schemeId, filename).value
+      ).toBeUndefined()
     }
+  )
 
-    expect(Array.isArray(result.invoiceLines)).toBeTruthy()
+  test('returns expected shape for an empty line', () => {
+    const result = transformHeader([], LUMP_SUMS)
+
+    expect(result).toEqual(expect.objectContaining({
+      schemeId: LUMP_SUMS,
+      correlationId,
+      paymentRequestNumber: undefined,
+      value: undefined,
+      batch: undefined,
+      invoiceNumber: undefined,
+      contractNumber: undefined,
+      frn: undefined,
+      currency: undefined,
+      deliveryBody: undefined,
+      invoiceLines: []
+    }))
   })
 
-  const invalidNumberCases = [
-    { fieldIndex: 'prnIndex', fieldName: 'paymentRequestNumber' },
-    { fieldIndex: 'valueIndex', fieldName: 'value' }
-  ]
-
-  test.each(testCases)('handles invalid numbers in $scheme.schemeId header', ({ headerData, scheme, filename, prnIndex, valueIndex }) => {
-    invalidNumberCases.forEach(({ fieldIndex, fieldName }) => {
-      const invalidHeader = [...headerData]
-      invalidHeader[fieldIndex === 'prnIndex' ? prnIndex : valueIndex] = 'abc'
-      const result = transformHeader(invalidHeader, scheme.schemeId, filename)
-      expect(result[fieldName]).toBeUndefined()
-    })
+  test('throws an error if no scheme is supplied', () => {
+    expect(() => transformHeader([])).toThrow('Unknown scheme: undefined')
   })
 
-  test('returns expected shape for empty line', () => {
-    const result = transformHeader([], lumpSums.schemeId)
-    expect(result.schemeId).toEqual(lumpSums.schemeId)
-    expect(result.correlationId).toEqual(correlationId)
-    expect(result.paymentRequestNumber).toBeUndefined()
-    expect(result.value).toBeUndefined()
-    expect(result.batch).toBeUndefined()
-    expect(result.invoiceNumber).toBeUndefined()
-    expect(result.contractNumber).toBeUndefined()
-    expect(result.frn).toBeUndefined()
-    expect(result.currency).toBeUndefined()
-    expect(result.deliveryBody).toBeUndefined()
-    expect(Array.isArray(result.invoiceLines)).toBeTruthy()
-    expect(result.invoiceLines).toHaveLength(0)
-  })
-
-  test('throws error if no scheme', () => {
-    expect(() => transformHeader([])).toThrowError('Unknown scheme: undefined')
-  })
-
-  test('throws error if unknown scheme', () => {
-    expect(() => transformHeader([], 99)).toThrowError('Unknown scheme: 99')
+  test('throws an error if an unknown scheme is supplied', () => {
+    expect(() => transformHeader([], 99)).toThrow('Unknown scheme: 99')
   })
 })
