@@ -56,6 +56,33 @@ describe('app start', () => {
       consoleInfoSpy.mockRestore()
     }
   )
+
+  test('logs and exits when startup fails', async () => {
+    const error = new Error('startup failed')
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    const processExitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {})
+    const processOnSpy = jest.spyOn(process, 'on').mockReturnThis()
+
+    try {
+      jest.isolateModules(() => {
+        const { start } = require('../../app/server')
+        start.mockRejectedValue(error)
+        require('../../app')
+      })
+
+      await waitForAsync()
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Application failed to start'),
+        error
+      )
+      expect(processExitSpy).toHaveBeenCalledWith(1)
+    } finally {
+      processOnSpy.mockRestore()
+      processExitSpy.mockRestore()
+      consoleErrorSpy.mockRestore()
+    }
+  })
 })
 
 describe('app shutdown', () => {

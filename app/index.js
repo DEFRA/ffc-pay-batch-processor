@@ -27,6 +27,9 @@ const handleShutdown = async (signal) => {
 process.on('SIGTERM', () => handleShutdown('SIGTERM'))
 process.on('SIGINT', () => handleShutdown('SIGINT'))
 
-startApp()
+startApp().catch((error) => {
+  console.error('Application failed to start', error)
+  process.exit(1)
+})
 
 module.exports = startApp
