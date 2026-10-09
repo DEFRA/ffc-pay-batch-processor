@@ -3,6 +3,9 @@ const boom = require('@hapi/boom')
 
 const batch = require('../../processing/batch')
 
+const minSequenceNumber = 1
+const maxSequenceNumber = 9999
+
 module.exports = [{
   method: 'GET',
   path: '/sequence',
@@ -28,7 +31,7 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         schemeId: Joi.number().integer().required(),
-        next: Joi.number().integer().min(1).max(9999).required()
+        next: Joi.number().integer().min(minSequenceNumber).max(maxSequenceNumber).required()
       }),
       failAction: (_request, _h, error) => {
         throw boom.badRequest(error.details[0].message)
