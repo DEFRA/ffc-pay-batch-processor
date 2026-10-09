@@ -16,7 +16,8 @@ jest.mock('ffc-pay-event-publisher', () => ({
 const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
 
-const db = require('../../../app/data')
+const db = require('../../../app/database')
+const { truncate } = require('../../helpers/truncate')
 const storageConfig = require('../../../app/config/storage')
 const pollInbound = require('../../../app/processing/poll-inbound')
 const { SOURCE } = require('../../../app/constants/source')
@@ -65,8 +66,8 @@ describe('process batch files', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks()
-    await db.sequelize.truncate({ cascade: true })
-    await db.scheme.bulkCreate([
+    await truncate()
+    await db.schemes().insert([
       { schemeId: 1, scheme: 'SFI' },
       { schemeId: 2, scheme: 'SFI Pilot' },
       { schemeId: 3, scheme: 'Lump Sums' },
@@ -75,7 +76,7 @@ describe('process batch files', () => {
       { schemeId: 11, scheme: 'IMPS' },
       { schemeId: 16, scheme: 'COHTC' }
     ])
-    await db.sequence.bulkCreate([
+    await db.sequences().insert([
       { schemeId: 1, next: 1 },
       { schemeId: 2, next: 1 },
       { schemeId: 3, next: 1 },
@@ -84,7 +85,7 @@ describe('process batch files', () => {
       { schemeId: 11, next: 1 },
       { schemeId: 16, next: 1 }
     ])
-    await db.status.bulkCreate([
+    await db.statuses().insert([
       { statusId: 1, status: 'In progress' },
       { statusId: 2, status: 'Success' },
       { statusId: 3, status: 'Failed' }
@@ -97,8 +98,8 @@ describe('process batch files', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.truncate({ cascade: true })
-    await db.sequelize.close()
+    await truncate()
+    await db.close()
   })
 
   const uploadAndProcess = async (fileName) => {
