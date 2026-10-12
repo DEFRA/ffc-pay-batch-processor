@@ -5,6 +5,24 @@ const nextSequenceId = async (schemeId) => {
   return sequence?.next
 }
 
+const getAllSequences = async () => {
+  return db.sequence.findAll({
+    include: [{
+      model: db.scheme,
+      as: 'scheme',
+      attributes: ['scheme']
+    }],
+    order: [['schemeId', 'ASC']]
+  })
+}
+
+const updateSequence = async (schemeId, next) => {
+  return db.sequence.update(
+    { next },
+    { where: { schemeId } }
+  )
+}
+
 const create = async (filename, sequenceNumber, schemeId) => {
   await db.batch.create({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
   await db.sequence.update({ next: Number(sequenceNumber) + 1 }, { where: { schemeId } })
@@ -24,6 +42,8 @@ const exists = async (filename) => {
 
 module.exports = {
   nextSequenceId,
+  getAllSequences,
+  updateSequence,
   create,
   updateStatus,
   exists,
