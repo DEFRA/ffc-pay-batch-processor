@@ -1,86 +1,109 @@
-jest.mock('../../../app/data')
+const { createKnexMock } = require('../../helpers/mock-knex')
 
-const db = require('../../../app/data')
+const mockDb = createKnexMock(['batches', 'sequences'])
 
-const {
-  getAllSequences,
-  updateSequence
-} = require('../../../app/processing/batch')
+jest.mock('../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
+}))
+
+const batch = require('../../../app/processing/batch')
+
+const filename = 'SITISFI0001_AP_1.dat'
 
 describe('batch', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-
-    db.sequence = {
-      findAll: jest.fn(),
-      update: jest.fn()
-    }
-
-    db.scheme = {}
+    mockDb.builder.resolves(undefined)
   })
 
-  describe('getAllSequences', () => {
-    test('gets all sequences ordered by schemeId', async () => {
-      const sequences = [
-        {
-          schemeId: 1,
-          next: 1
-        }
-      ]
+  describe('nextSequenceId', () => {
+    test('returns the next sequence for the scheme', async () => {
+      mockDb.builder.resolves({ schemeId: 1, next: 5 })
 
-      db.sequence.findAll.mockResolvedValue(sequences)
+      const result = await batch.nextSequenceId(1)
 
-      const result = await getAllSequences()
+      expect(result).toBe(5)
+      expect(mockDb.tables.sequences).toHaveBeenCalledTimes(1)
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ schemeId: 1 })
+      expect(mockDb.builder.first).toHaveBeenCalledTimes(1)
+    })
 
-      expect(db.sequence.findAll).toHaveBeenCalledWith({
-        include: [{
-          model: db.scheme,
-          as: 'scheme',
-          attributes: ['scheme']
-        }],
-        order: [['schemeId', 'ASC']]
+    test('returns undefined when there is no sequence', async () => {
+      const result = await batch.nextSequenceId(1)
+
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('create', () => {
+    test('inserts the batch with a numeric sequence number', async () => {
+      await batch.create(filename, '0001', 1)
+
+      expect(mockDb.tables.batches).toHaveBeenCalledTimes(1)
+      expect(mockDb.builder.insert).toHaveBeenCalledWith({
+        filename,
+        sequenceNumber: 1,
+        schemeId: 1
       })
-
-      expect(result).toEqual(sequences)
     })
 
-    test('throws when findAll fails', async () => {
-      const error = new Error('database error')
+    test('increments the scheme sequence', async () => {
+      await batch.create(filename, '0004', 2)
 
-      db.sequence.findAll.mockRejectedValue(error)
+      expect(mockDb.tables.sequences).toHaveBeenCalledTimes(1)
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ schemeId: 2 })
+      expect(mockDb.builder.update).toHaveBeenCalledWith({ next: 5 })
+    })
 
-      await expect(getAllSequences())
-        .rejects
-        .toThrow('database error')
+    test('rejects when the insert fails', async () => {
+      const error = new Error('DB error')
+      mockDb.builder.rejects(error)
+
+      await expect(batch.create(filename, '0001', 1)).rejects.toBe(error)
     })
   })
 
-  describe('updateSequence', () => {
-    test('updates sequence number for scheme', async () => {
-      db.sequence.update.mockResolvedValue([1])
+  describe('updateStatus', () => {
+    test('sets the status, processed and updated dates', async () => {
+      await batch.updateStatus(filename, batch.status.success)
 
-      const result = await updateSequence(5, 123)
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ filename })
+      expect(mockDb.builder.update).toHaveBeenCalledWith({
+        statusId: batch.status.success,
+        processedOn: expect.any(Date),
+        updatedAt: expect.any(Date)
+      })
+    })
+  })
 
-      expect(db.sequence.update).toHaveBeenCalledWith(
-        { next: 123 },
-        {
-          where: {
-            schemeId: 5
-          }
-        }
-      )
+  describe('incrementProcessingTries', () => {
+    test('increments processing tries and sets updated date for the file', async () => {
+      await batch.incrementProcessingTries(filename)
 
-      expect(result).toEqual([1])
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ filename })
+      expect(mockDb.builder.increment).toHaveBeenCalledWith('processingTries', 1)
+      expect(mockDb.builder.update).toHaveBeenCalledWith({ updatedAt: expect.any(Date) })
+    })
+  })
+
+  describe('exists', () => {
+    test('returns the batch when found', async () => {
+      const row = { batchId: 1, filename }
+      mockDb.builder.resolves(row)
+
+      await expect(batch.exists(filename)).resolves.toBe(row)
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ filename })
     })
 
-    test('throws when update fails', async () => {
-      const error = new Error('database error')
-
-      db.sequence.update.mockRejectedValue(error)
-
-      await expect(updateSequence(5, 123))
-        .rejects
-        .toThrow('database error')
+    test('returns null when not found', async () => {
+      await expect(batch.exists(filename)).resolves.toBeNull()
     })
+  })
+
+  test('exposes the batch statuses', () => {
+    expect(batch.status).toEqual({ inProgress: 1, success: 2, failed: 3 })
   })
 })

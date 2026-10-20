@@ -1,12 +1,12 @@
 const { getSchemeFromBatchFileName } = require('ffc-pay-schemes')
-const db = require('../data')
+const db = require('../database')
 const storage = require('../storage')
 const processPaymentFile = require('./process-payment-file')
 
 const pollInbound = async () => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.transaction()
   try {
-    await db.lock.findByPk(1, { transaction, lock: true })
+    await db.locks(transaction).where({ lockId: 1 }).forUpdate().first()
     const inboundFiles = await storage.getInboundFileList()
 
     for (const inboundFile of inboundFiles) {

@@ -7,13 +7,15 @@ jest.mock('ffc-pay-schemes', () => {
   }
 })
 
-jest.mock('../../../app/data', () => ({
-  sequelize: {
-    transaction: jest.fn()
-  },
-  lock: {
-    findByPk: jest.fn()
-  }
+const { createKnexMock } = require('../../helpers/mock-knex')
+
+const mockKnex = createKnexMock(['locks'])
+
+jest.mock('../../../app/database', () => ({
+  client: mockKnex.knex,
+  transaction: mockKnex.transaction,
+  close: mockKnex.close,
+  ...mockKnex.tables
 }))
 
 jest.mock('../../../app/storage', () => ({
@@ -22,7 +24,6 @@ jest.mock('../../../app/storage', () => ({
 
 jest.mock('../../../app/processing/process-payment-file', () => jest.fn())
 
-const mockDb = require('../../../app/data')
 const mockStorage = require('../../../app/storage')
 const { getSchemeFromBatchFileName, getSchemeIds } = require('ffc-pay-schemes')
 const mockProcessPaymentFile = require('../../../app/processing/process-payment-file')
@@ -43,13 +44,11 @@ describe('poll inbound', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    transaction = {
-      commit: jest.fn().mockResolvedValue(),
-      rollback: jest.fn().mockResolvedValue()
-    }
+    transaction = mockKnex.trx
+    transaction.commit.mockResolvedValue()
+    transaction.rollback.mockResolvedValue()
 
-    mockDb.sequelize.transaction.mockResolvedValue(transaction)
-    mockDb.lock.findByPk.mockResolvedValue()
+    mockKnex.builder.resolves()
     mockStorage.getInboundFileList.mockResolvedValue(['file1', 'file2'])
     mockProcessPaymentFile.mockResolvedValue()
     getSchemeFromBatchFileName.mockReturnValue(sfi)
@@ -64,16 +63,16 @@ describe('poll inbound', () => {
   test('creates a database transaction', async () => {
     await pollInbound()
 
-    expect(mockDb.sequelize.transaction).toHaveBeenCalledTimes(1)
+    expect(mockKnex.transaction).toHaveBeenCalledTimes(1)
   })
 
   test('locks the lock table using the transaction', async () => {
     await pollInbound()
 
-    expect(mockDb.lock.findByPk).toHaveBeenCalledWith(1, {
-      transaction,
-      lock: true
-    })
+    expect(mockKnex.tables.locks).toHaveBeenCalledWith(transaction)
+    expect(mockKnex.builder.where).toHaveBeenCalledWith({ lockId: 1 })
+    expect(mockKnex.builder.forUpdate).toHaveBeenCalledTimes(1)
+    expect(mockKnex.builder.first).toHaveBeenCalledTimes(1)
   })
 
   test('gets the inbound file list', async () => {
