@@ -6,35 +6,47 @@ const nextSequenceId = async (schemeId) => {
 }
 
 const getAllSequences = async () => {
-  return db.sequence.findAll({
-    include: [{
-      model: db.scheme,
-      as: 'scheme',
-      attributes: ['scheme']
-    }],
-    order: [['schemeId', 'ASC']]
-  })
+  return sequences()
+    .select('sequences.*', 'schemes.scheme')
+    .join('schemes', 'sequences.schemeId', 'schemes.schemeId')
+    .orderBy('sequences.schemeId', 'asc')
 }
 
 const updateSequence = async (schemeId, next) => {
-  return db.sequence.update(
-    { next },
-    { where: { schemeId } }
-  )
+  return sequences()
+    .where({ schemeId })
+    .update({ next })
 }
 
 const create = async (filename, sequenceNumber, schemeId) => {
-  await batches().insert({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
-  await sequences().where({ schemeId }).update({ next: Number(sequenceNumber) + 1 })
+  await batches().insert({
+    filename,
+    sequenceNumber: Number(sequenceNumber),
+    schemeId
+  })
+
+  await sequences()
+    .where({ schemeId })
+    .update({ next: Number(sequenceNumber) + 1 })
 }
 
 const updateStatus = async (filename, statusId) => {
   const now = new Date()
-  await batches().where({ filename }).update({ statusId, processedOn: now, updatedAt: now })
+
+  await batches()
+    .where({ filename })
+    .update({
+      statusId,
+      processedOn: now,
+      updatedAt: now
+    })
 }
 
 const incrementProcessingTries = async (filename) => {
-  await batches().where({ filename }).increment('processingTries', 1).update({ updatedAt: new Date() })
+  await batches()
+    .where({ filename })
+    .increment('processingTries', 1)
+    .update({ updatedAt: new Date() })
 }
 
 const exists = async (filename) => {

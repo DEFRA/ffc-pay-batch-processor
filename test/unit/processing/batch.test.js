@@ -1,6 +1,6 @@
 const { createKnexMock } = require('../../helpers/mock-knex')
 
-const mockDb = createKnexMock(['batches', 'sequences'])
+const mockDb = createKnexMock(['batches', 'sequences', 'schemes'])
 
 jest.mock('../../../app/database', () => ({
   client: mockDb.knex,
@@ -35,6 +35,69 @@ describe('batch', () => {
       const result = await batch.nextSequenceId(1)
 
       expect(result).toBeUndefined()
+    })
+  })
+
+  describe('getAllSequences', () => {
+    test('returns all sequences with their schemes', async () => {
+      const rows = [
+        {
+          schemeId: 1,
+          next: 5,
+          scheme: 'SFI'
+        },
+        {
+          schemeId: 2,
+          next: 10,
+          scheme: 'CS'
+        }
+      ]
+
+      mockDb.builder.resolves(rows)
+
+      const result = await batch.getAllSequences()
+
+      expect(result).toEqual(rows)
+      expect(mockDb.tables.sequences).toHaveBeenCalledTimes(1)
+      expect(mockDb.builder.select).toHaveBeenCalledWith(
+        'sequences.*',
+        'schemes.scheme'
+      )
+      expect(mockDb.builder.join).toHaveBeenCalledWith(
+        'schemes',
+        'sequences.schemeId',
+        'schemes.schemeId'
+      )
+      expect(mockDb.builder.orderBy).toHaveBeenCalledWith(
+        'sequences.schemeId',
+        'asc'
+      )
+    })
+
+    test('returns an empty array when there are no sequences', async () => {
+      mockDb.builder.resolves([])
+
+      const result = await batch.getAllSequences()
+
+      expect(result).toEqual([])
+    })
+  })
+
+  describe('updateSequence', () => {
+    test('updates the next sequence number for the scheme', async () => {
+      await batch.updateSequence(2, 15)
+
+      expect(mockDb.tables.sequences).toHaveBeenCalledTimes(1)
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ schemeId: 2 })
+      expect(mockDb.builder.update).toHaveBeenCalledWith({ next: 15 })
+    })
+
+    test('returns the result from the update', async () => {
+      mockDb.builder.resolves(1)
+
+      const result = await batch.updateSequence(2, 15)
+
+      expect(result).toBe(1)
     })
   })
 
@@ -85,7 +148,9 @@ describe('batch', () => {
 
       expect(mockDb.builder.where).toHaveBeenCalledWith({ filename })
       expect(mockDb.builder.increment).toHaveBeenCalledWith('processingTries', 1)
-      expect(mockDb.builder.update).toHaveBeenCalledWith({ updatedAt: expect.any(Date) })
+      expect(mockDb.builder.update).toHaveBeenCalledWith({
+        updatedAt: expect.any(Date)
+      })
     })
   })
 
@@ -104,6 +169,10 @@ describe('batch', () => {
   })
 
   test('exposes the batch statuses', () => {
-    expect(batch.status).toEqual({ inProgress: 1, success: 2, failed: 3 })
+    expect(batch.status).toEqual({
+      inProgress: 1,
+      success: 2,
+      failed: 3
+    })
   })
 })
