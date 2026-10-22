@@ -5,18 +5,48 @@ const nextSequenceId = async (schemeId) => {
   return sequence?.next
 }
 
+const getAllSequences = async () => {
+  return sequences()
+    .select('sequences.*', 'schemes.scheme')
+    .join('schemes', 'sequences.schemeId', 'schemes.schemeId')
+    .orderBy('sequences.schemeId', 'asc')
+}
+
+const updateSequence = async (schemeId, next) => {
+  return sequences()
+    .where({ schemeId })
+    .update({ next })
+}
+
 const create = async (filename, sequenceNumber, schemeId) => {
-  await batches().insert({ filename, sequenceNumber: Number(sequenceNumber), schemeId })
-  await sequences().where({ schemeId }).update({ next: Number(sequenceNumber) + 1 })
+  await batches().insert({
+    filename,
+    sequenceNumber: Number(sequenceNumber),
+    schemeId
+  })
+
+  await sequences()
+    .where({ schemeId })
+    .update({ next: Number(sequenceNumber) + 1 })
 }
 
 const updateStatus = async (filename, statusId) => {
   const now = new Date()
-  await batches().where({ filename }).update({ statusId, processedOn: now, updatedAt: now })
+
+  await batches()
+    .where({ filename })
+    .update({
+      statusId,
+      processedOn: now,
+      updatedAt: now
+    })
 }
 
 const incrementProcessingTries = async (filename) => {
-  await batches().where({ filename }).increment('processingTries', 1).update({ updatedAt: new Date() })
+  await batches()
+    .where({ filename })
+    .increment('processingTries', 1)
+    .update({ updatedAt: new Date() })
 }
 
 const exists = async (filename) => {
@@ -25,6 +55,8 @@ const exists = async (filename) => {
 
 module.exports = {
   nextSequenceId,
+  getAllSequences,
+  updateSequence,
   create,
   updateStatus,
   exists,

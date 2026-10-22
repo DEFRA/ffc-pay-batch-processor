@@ -1,5 +1,6 @@
 const chainableMethods = [
   'select',
+  'join',
   'where',
   'whereIn',
   'whereNot',
@@ -42,7 +43,7 @@ const createQueryBuilder = () => {
   builder.rejects = (error) => {
     pending = Promise.reject(error)
 
-    pending.catch(() => {})
+    pending.catch(() => { })
     return builder
   }
 
