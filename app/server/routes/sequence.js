@@ -5,6 +5,10 @@ const batch = require('../../processing/batch')
 
 const minSequenceNumber = 1
 const maxSequenceNumber = 9999
+const maxCsSequenceNumber = 99999
+const csSchemeId = 5
+
+const schemesWithoutSequenceMaximum = [4, 7, 9, 10, 11, 17, 18]
 
 module.exports = [{
   method: 'GET',
@@ -31,7 +35,30 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         schemeId: Joi.number().integer().required(),
-        next: Joi.number().integer().min(minSequenceNumber).max(maxSequenceNumber).required()
+        next: Joi.when('schemeId', {
+          switch: [
+            {
+              is: csSchemeId,
+              then: Joi.number()
+                .integer()
+                .min(minSequenceNumber)
+                .max(maxCsSequenceNumber)
+                .required()
+            },
+            {
+              is: Joi.valid(...schemesWithoutSequenceMaximum),
+              then: Joi.number()
+                .integer()
+                .min(minSequenceNumber)
+                .required()
+            }
+          ],
+          otherwise: Joi.number()
+            .integer()
+            .min(minSequenceNumber)
+            .max(maxSequenceNumber)
+            .required()
+        })
       }),
       failAction: (_request, _h, error) => {
         throw boom.badRequest(error.details[0].message)

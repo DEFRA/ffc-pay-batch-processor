@@ -81,6 +81,15 @@ describe('Transform header', () => {
       deliveryBodyIndex: 8
     },
     {
+      filename: 'SITICS10000_AP.dat',
+      headerData: ['H', 'CS000000001', '001', 'A0000001', '1', '1000000001', 'GBP', '100', 'NE00', 'GBP'],
+      schemeId: CS,
+      frnIndex: 5,
+      valueIndex: 7,
+      prnIndex: 2,
+      deliveryBodyIndex: 8
+    },
+    {
       filename: 'ESFIO0001_AP.dat',
       headerData: ['H', 'ESFIO0000001', '01', 'E000001', '1', '1000000001', 'GBP', '100', 'RP00', 'GBP', SFI_EXPANDED_SOURCE_SYSTEM, 'Q4'],
       schemeId: SFI_EXPANDED,
