@@ -1,14 +1,34 @@
 const Joi = require('joi')
 const boom = require('@hapi/boom')
+const { getSchemeIds } = require('ffc-pay-schemes')
 
 const batch = require('../../processing/batch')
+
+const {
+  VET_VISITS,
+  CS,
+  ES,
+  FC,
+  IMPS,
+  FPTT,
+  WMP
+} = getSchemeIds()
 
 const minSequenceNumber = 1
 const maxSequenceNumber = 9999
 const maxCsSequenceNumber = 99999
-const csSchemeId = 5
 
-const schemesWithoutSequenceMaximum = [4, 7, 9, 10, 11, 17, 18]
+const dpsSchemeId = 7
+
+const schemesWithoutSequenceMaximum = new Set([
+  VET_VISITS,
+  dpsSchemeId,
+  ES,
+  FC,
+  IMPS,
+  FPTT,
+  WMP
+])
 
 module.exports = [{
   method: 'GET',
@@ -38,7 +58,7 @@ module.exports = [{
         next: Joi.when('schemeId', {
           switch: [
             {
-              is: csSchemeId,
+              is: CS,
               then: Joi.number()
                 .integer()
                 .min(minSequenceNumber)
@@ -46,7 +66,7 @@ module.exports = [{
                 .required()
             },
             {
-              is: Joi.valid(...schemesWithoutSequenceMaximum),
+              is: Joi.valid(...Array.from(schemesWithoutSequenceMaximum)),
               then: Joi.number()
                 .integer()
                 .min(minSequenceNumber)
