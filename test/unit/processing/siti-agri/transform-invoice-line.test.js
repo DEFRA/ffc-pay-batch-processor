@@ -79,10 +79,10 @@ describe('Transform invoice lines', () => {
   })
 
   test('throws error if no scheme', () => {
-    expect(() => transformInvoiceLine([])).toThrowError('Unknown scheme: undefined')
+    expect(() => transformInvoiceLine([])).toThrow('Unknown scheme: undefined')
   })
 
   test('throws error if unknown scheme', () => {
-    expect(() => transformInvoiceLine([], 99)).toThrowError('Unknown scheme: 99')
+    expect(() => transformInvoiceLine([], 99)).toThrow('Unknown scheme: 99')
   })
 })
