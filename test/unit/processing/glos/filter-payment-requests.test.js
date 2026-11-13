@@ -45,7 +45,7 @@ describe('filterPaymentRequests', () => {
     ])('calls buildPaymentRequests once with $desc', ({ requests }) => {
       const reqArray = requests()
       filterPaymentRequest(reqArray, sourceSystem)
-      expect(buildPaymentRequests).toBeCalledTimes(1)
+      expect(buildPaymentRequests).toHaveBeenCalledTimes(1)
       expect(buildPaymentRequests).toHaveBeenCalledWith(reqArray, sourceSystem)
     })
   })
@@ -65,7 +65,7 @@ describe('filterPaymentRequests', () => {
     test('not called when buildPaymentRequests returns empty array', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(paymentRequestSchema.validate).not.toBeCalled()
+      expect(paymentRequestSchema.validate).not.toHaveBeenCalled()
     })
   })
 
@@ -86,7 +86,7 @@ describe('filterPaymentRequests', () => {
     test('not called when buildPaymentRequests returns empty array', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(isInvoiceLineValid).not.toBeCalled()
+      expect(isInvoiceLineValid).not.toHaveBeenCalled()
     })
   })
 
@@ -103,7 +103,7 @@ describe('filterPaymentRequests', () => {
         setup: () => {
           paymentRequestSchema.validate.mockReturnValue({ value: mappedPaymentRequest, error: { message: 'Error' } })
           unsuccessfulMappedPaymentRequest.errorMessage =
-          `Payment request for FRN: ${mappedPaymentRequest.frn} - ${mappedPaymentRequest.invoiceNumber} from batch ${mappedPaymentRequest.batch} is invalid, Payment request content is invalid, Error. `
+            `Payment request for FRN: ${mappedPaymentRequest.frn} - ${mappedPaymentRequest.invoiceNumber} from batch ${mappedPaymentRequest.batch} is invalid, Payment request content is invalid, Error. `
         }
       },
       {
@@ -111,7 +111,7 @@ describe('filterPaymentRequests', () => {
         setup: () => {
           isInvoiceLineValid.mockReturnValue({ result: false, errorMessage: 'Error' })
           unsuccessfulMappedPaymentRequest.errorMessage =
-          `Payment request for FRN: ${mappedPaymentRequest.frn} - ${mappedPaymentRequest.invoiceNumber} from batch ${mappedPaymentRequest.batch} is invalid, Error`
+            `Payment request for FRN: ${mappedPaymentRequest.frn} - ${mappedPaymentRequest.invoiceNumber} from batch ${mappedPaymentRequest.batch} is invalid, Error`
         }
       }
     ])('unsuccessfulPaymentRequests contains mappedPaymentRequest when $desc', ({ setup }) => {
