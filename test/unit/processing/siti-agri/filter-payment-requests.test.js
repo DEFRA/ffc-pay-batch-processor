@@ -43,48 +43,48 @@ describe('Filter payment requests', () => {
   // --- Basic buildPaymentRequests tests ---
   test('calls buildPaymentRequests with correct args', () => {
     callFilter()
-    expect(buildPaymentRequests).toBeCalledWith(paymentRequests, sourceSystem)
-    expect(buildPaymentRequests).toBeCalledTimes(1)
+    expect(buildPaymentRequests).toHaveBeenCalledWith(paymentRequests, sourceSystem)
+    expect(buildPaymentRequests).toHaveBeenCalledTimes(1)
   })
 
   test('handles empty paymentRequests', () => {
     buildPaymentRequests.mockReturnValue([])
     filterPaymentRequest([], sourceSystem)
-    expect(paymentRequestSchema.validate).not.toBeCalled()
-    expect(isInvoiceLineValid).not.toBeCalled()
-    expect(convertToPence).not.toBeCalled()
-    expect(getTotalValueInPence).not.toBeCalled()
+    expect(paymentRequestSchema.validate).not.toHaveBeenCalled()
+    expect(isInvoiceLineValid).not.toHaveBeenCalled()
+    expect(convertToPence).not.toHaveBeenCalled()
+    expect(getTotalValueInPence).not.toHaveBeenCalled()
   })
 
   test('validates each mapped payment request', () => {
     callFilter()
-    expect(paymentRequestSchema.validate).toBeCalledWith(mappedPaymentRequest, { abortEarly: false })
-    expect(paymentRequestSchema.validate).toBeCalledTimes(1)
+    expect(paymentRequestSchema.validate).toHaveBeenCalledWith(mappedPaymentRequest, { abortEarly: false })
+    expect(paymentRequestSchema.validate).toHaveBeenCalledTimes(1)
 
     mappedPaymentRequests.push(mappedPaymentRequest)
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
     callFilter()
-    expect(paymentRequestSchema.validate).toBeCalledTimes(3) // 1 previous + 2 new
+    expect(paymentRequestSchema.validate).toHaveBeenCalledTimes(3) // 1 previous + 2 new
   })
 
   test('validates each invoice line', () => {
     callFilter()
-    expect(isInvoiceLineValid).toBeCalledWith(mappedPaymentRequest.invoiceLines[0])
-    expect(isInvoiceLineValid).toBeCalledTimes(1)
+    expect(isInvoiceLineValid).toHaveBeenCalledWith(mappedPaymentRequest.invoiceLines[0])
+    expect(isInvoiceLineValid).toHaveBeenCalledTimes(1)
 
     mappedPaymentRequest.invoiceLines.push(mappedInvoiceLines[0])
     mappedPaymentRequests = [mappedPaymentRequest]
     buildPaymentRequests.mockReturnValue(mappedPaymentRequests)
     callFilter()
-    expect(isInvoiceLineValid).toBeCalledTimes(3) // 1 previous + 2 new
+    expect(isInvoiceLineValid).toHaveBeenCalledTimes(3) // 1 previous + 2 new
   })
 
   test('calls convertToPence and getTotalValueInPence for value matching', () => {
     callFilter()
-    expect(convertToPence).toBeCalledWith(mappedPaymentRequest.value)
-    expect(getTotalValueInPence).toBeCalledWith(mappedPaymentRequest.invoiceLines, 'value')
-    expect(convertToPence).toBeCalledTimes(1)
-    expect(getTotalValueInPence).toBeCalledTimes(1)
+    expect(convertToPence).toHaveBeenCalledWith(mappedPaymentRequest.value)
+    expect(getTotalValueInPence).toHaveBeenCalledWith(mappedPaymentRequest.invoiceLines, 'value')
+    expect(convertToPence).toHaveBeenCalledTimes(1)
+    expect(getTotalValueInPence).toHaveBeenCalledTimes(1)
   })
 
   test('returns successful and unsuccessful payment requests correctly', () => {

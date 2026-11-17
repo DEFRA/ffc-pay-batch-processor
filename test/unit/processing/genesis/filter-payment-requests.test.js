@@ -57,7 +57,7 @@ describe('filterPaymentRequests', () => {
     test.each(testCases)('should call buildPaymentRequests once when $desc and sourceSystem are given', ({ arr }) => {
       const actualArr = arr()
       filterPaymentRequest(actualArr, sourceSystem)
-      expect(buildPaymentRequests).toBeCalledTimes(1)
+      expect(buildPaymentRequests).toHaveBeenCalledTimes(1)
       expect(buildPaymentRequests).toHaveBeenCalledWith(actualArr, sourceSystem)
     })
   })
@@ -77,7 +77,7 @@ describe('filterPaymentRequests', () => {
     test('should not call paymentRequestSchema.validate for empty mappedPaymentRequests', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(paymentRequestSchema.validate).not.toBeCalled()
+      expect(paymentRequestSchema.validate).not.toHaveBeenCalled()
     })
   })
 
@@ -98,7 +98,7 @@ describe('filterPaymentRequests', () => {
     test('should not call isInvoiceLineValid for empty mappedPaymentRequests', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(isInvoiceLineValid).not.toBeCalled()
+      expect(isInvoiceLineValid).not.toHaveBeenCalled()
     })
   })
 
@@ -117,7 +117,7 @@ describe('filterPaymentRequests', () => {
     test('should not call convertToPence for empty mappedPaymentRequests', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(convertToPence).not.toBeCalled()
+      expect(convertToPence).not.toHaveBeenCalled()
     })
   })
 
@@ -136,7 +136,7 @@ describe('filterPaymentRequests', () => {
     test('should not call getTotalValueInPence for empty mappedPaymentRequests', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(getTotalValueInPence).not.toBeCalled()
+      expect(getTotalValueInPence).not.toHaveBeenCalled()
     })
   })
 
@@ -148,7 +148,7 @@ describe('filterPaymentRequests', () => {
     ]
 
     test.each(errorScenarios)('should return unsuccessfulPaymentRequest when $desc', ({ message }) => {
-    // Reset mocks for each scenario
+      // Reset mocks for each scenario
       jest.clearAllMocks()
 
       if (message.includes('Example error') && message.includes('content')) {

@@ -41,21 +41,21 @@ describe('Filter payment requests', () => {
   describe('buildPaymentRequests behavior', () => {
     test('calls buildPaymentRequests with normal array of paymentRequests', () => {
       filterPaymentRequest(paymentRequests, sourceSystem)
-      expect(buildPaymentRequests).toBeCalledTimes(1)
-      expect(buildPaymentRequests).toBeCalledWith(paymentRequests, sourceSystem)
+      expect(buildPaymentRequests).toHaveBeenCalledTimes(1)
+      expect(buildPaymentRequests).toHaveBeenCalledWith(paymentRequests, sourceSystem)
     })
 
     test('calls buildPaymentRequests with empty array', () => {
       filterPaymentRequest([], sourceSystem)
-      expect(buildPaymentRequests).toBeCalledTimes(1)
-      expect(buildPaymentRequests).toBeCalledWith([], sourceSystem)
+      expect(buildPaymentRequests).toHaveBeenCalledTimes(1)
+      expect(buildPaymentRequests).toHaveBeenCalledWith([], sourceSystem)
     })
 
     test('calls buildPaymentRequests with array containing 2 paymentRequests', () => {
       const twoRequests = [...paymentRequests, paymentRequest]
       filterPaymentRequest(twoRequests, sourceSystem)
-      expect(buildPaymentRequests).toBeCalledTimes(1)
-      expect(buildPaymentRequests).toBeCalledWith(twoRequests, sourceSystem)
+      expect(buildPaymentRequests).toHaveBeenCalledTimes(1)
+      expect(buildPaymentRequests).toHaveBeenCalledWith(twoRequests, sourceSystem)
     })
   })
 
@@ -78,7 +78,7 @@ describe('Filter payment requests', () => {
     test('does not call validate when mappedPaymentRequests is empty', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(paymentRequestSchema.validate).not.toBeCalled()
+      expect(paymentRequestSchema.validate).not.toHaveBeenCalled()
     })
   })
 
@@ -97,7 +97,7 @@ describe('Filter payment requests', () => {
     test('does not call isInvoiceLineValid when mappedPaymentRequests is empty', () => {
       buildPaymentRequests.mockReturnValue([])
       filterPaymentRequest([], sourceSystem)
-      expect(isInvoiceLineValid).not.toBeCalled()
+      expect(isInvoiceLineValid).not.toHaveBeenCalled()
     })
   })
 
